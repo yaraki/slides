@@ -12,6 +12,15 @@
 
       a {
         text-decoration: none;
+        color: blue;
+      }
+
+      a:visited {
+        color: blue;
+      }
+
+      a:hover {
+        text-decoration: underline;
       }
 
       li {
@@ -81,6 +90,7 @@
       .normal h1 {
         color: white;
         margin-top: 0px;
+        margin-left: 1em;
         font-size: 28pt;
       }
 
@@ -110,6 +120,8 @@
 
       .card img {
         float: right;
+        max-width: 32%;
+        max-height: 32%;
       }
 
     </style>
@@ -119,7 +131,7 @@
 
 class: center, middle, hero, chapter-1
 
-# サポート ライブラリの<br>できるまで
+# <nobr>サポート ライブラリの<wbr>できるまで</nobr>
 
 ---
 
@@ -150,7 +162,7 @@ Developer Program Engineer
 
 class: center, middle, hero, chapter-1
 
-# Material Design Support Library
+# <nobr>Android Design <wbr>Support Library</nobr>
 
 ---
 
@@ -177,9 +189,202 @@ Material Design のコンポーネント群
 
 ---
 
+class: normal, chapter-1
+
+# 使い方
+
+.card[
+Android Design Support Library について  
+http://googledevjp.blogspot.jp/2015/07/android-design-support-library.html
+
+Android サポート ライブラリ 23.1 のご紹介  
+http://googledevjp.blogspot.jp/2015/11/android-231.html
+
+Techbooster Android Masters!  
+https://techbooster.booth.pm/items/126263
+]
+
+???
+
+その他インターネットで検索するとたくさん見つかります
+
+今回は使い方の話は最低限にとどめて、この Design サポート ライブラリができるまでの話をします
+
+---
+
+class: normal, chapter-1
+
+# 歴史
+
+.card[
+- 2014/06: Google I/O 2014  
+  [Material Design を発表](https://www.youtube.com/watch?v=Q8TXgCzxEnw)
+- 2014/10: Android 5.0 Lollipop リリース
+- 2014/12: 企画開始
+- 2015/01: 開発開始
+- 2015/05: Google I/O 2015  
+  Design Support Library をリリース (バージョン 22.2.0)
+- 2015/07: バージョン 22.2.1
+- 2015/08: バージョン 23.0.0
+- 2015/09: バージョン 23.0.1
+- 2015/10: バージョン 23.1.0
+- 2015/11: バージョン 23.1.1
+]
+
+???
+
+- I/O 2014 アプリ
+  - 非マテリアル版とマテリアル版の 2 種類ありました
+  - Design ライブラリはありませんでした
+- I/O 2015 アプリ
+  - Design ライブラリをつかった最初のアプリ
+
+バージョン番号
+- 1 つ目はフレームワークの最新 API レベル
+- 2 つ目はライブラリの API が変更されたときにあげられる
+- 3 つ目は (基本的に) API 変更を伴わないバグフィックス、改善
+
+---
+
+class: normal, chapter-1
+
+# 立ち位置
+
+.card[
+## Support v4
+- v4 以降に追加された API のバックポート
+- リソースなし
+
+## AppCompat
+- v7 以降に追加された UI 関係の API のバックポート
+- リソースあり
+- Support v4 に依存
+
+## Design
+- プラットフォームにはない
+- AppCompat v7 と RecyclerView に依存
+]
+
+???
+
+なぜ既存のライブラリに機能を追加するのではなく、新規にライブラリを作成したか
+
+どこに何があるかわからなくなったときの参考に
+
+RecyclerView には 23.1.0 から依存するようになりました
+
+---
+
 class: center, middle, hero, chapter-2
 
 # 23.1.0, 23.1.1 の変更点
+
+---
+
+class: normal, chapter-2
+
+# AppBar の layout_scrollFlags で snap
+
+.card[
+AppBar 内の要素が部分的に表示されている状態を避ける
+
+```xml
+<android.support.design.widget.CoordinatorLayout ... >
+
+    <android.support.design.widget.AppBarLayout ... >
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            `app:layout_scrollFlags="scroll|enterAlways|snap"` />
+
+...
+```
+]
+
+???
+
+- 例は cheesesquare から
+
+---
+
+class: normal, chapter-2
+
+# TextInputLayout の文字数カウンター
+
+.card[
+![TextInputLayout スクリーンショット](til-counter.png)
+
+自動的に入力文字数をカウントする
+
+```xml
+<android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        `app:counterEnabled="true"`
+        `app:counterMaxLength="30"`>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/description"/>
+
+</android.support.design.widget.TextInputLayout>
+```
+
+- TextView の android:maxLength と違って、制限数を超えて入力できる
+]
+
+???
+
+- Java から使うなら setCounterEnabled, setCounterMaxLength
+- エラー表示とも共存できる
+- https://twitter.com/yanzm/status/638543443745181696
+
+---
+
+class: normal, chapter-2
+
+# NavigationView の app:actionLayout
+
+.card[
+![NavigationView スクリーンショット](nv-actionlayout.png)
+
+NavigationView の項目の右端に任意のレイアウトを配置する
+
+```xml
+<menu ...>
+  <group android:checkableBehavior="single">
+    ...
+    <item
+      android:id="@+id/navigation_item_3"
+      android:icon="@drawable/ic_android"
+      android:title="@string/navigation_item_3"
+      `app:actionLayout="@layout/action_layout"`/>
+...
+```
+
+- MenuItem#getActionView() で参照を取得
+]
+
+???
+
+- Gmail の未読数など
+
+---
+
+class: normal chapter-2
+
+# その他
+
+.card[
+- NavigationView の getHeaderView (23.1.1)  
+  XML の app:headerLayout で指定したヘッダーを getHeaderView で取得できる
+- バグフィックス
+]
 
 ---
 
@@ -191,8 +396,22 @@ class: center, middle, hero, chapter-3
 
 class: normal, chapter-3
 
-- コンストラクターについて
-- 
+# 基本
+
+.card[
+```java
+
+```
+]
+
+---
+
+class: normal, chapter-3
+
+# アノテーション
+
+.card[
+]
 
 ---
 
@@ -267,7 +486,8 @@ class: normal, chapter-5
       var slideshow = remark.create({
         highlightStyle: 'googlecode',
         highlightLanguage: 'remark',
-        highlightLines: true
+        highlightLines: true,
+        highlightSpans: true
       }) ;
     </script>
   </body>

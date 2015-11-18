@@ -1,0 +1,47 @@
+
+# 23.1.0, 23.1.1 の変更点
+
+- AppBar の snap (23.1.0)
+- TextInputLayout の文字数カウンター
+  - TextView#setMaxLength との違い
+- NavigationView の actionLayout
+- NavigationView の getHeaderView (23.1.1)
+
+# カスタム View
+
+- コンストラクター
+- カスタム属性の作り方
+- レイアウト XML を使う
+- SavedState
+  - 何を保存するべきか、何を保存するべきでないか
+- AppCompat の なんとかCompat を継承するべきかもしれない
+- キャッシュしたほうがいい
+  - Drawable などの リソース ID を指定する系のメソッド
+- TextView の Compound Drawable
+  - 
+- RTL の扱い
+  - layout_margin の Left/Right, Start/End
+
+# コード作法
+
+- インターフェイスを実装するのではなく、メンバー変数として持つべき
+
+# あるものを使う
+
+
+
+# ライブラリ
+
+- API レベルでの分割方法 (Impl)
+- リソースの隠し方
+- Proguard 設定
+
+# 
+
+- ?textColorSecondary
+- ?attr/selectableItemBackground
+- interpolator
+- @null
+
+- レイアウトが変わる呼び出しを知る TextView#setTextAppearance など
+- DrawableCompat

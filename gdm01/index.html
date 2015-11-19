@@ -3,6 +3,23 @@
   <head>
     <meta charset="utf-8">
     <title>サポート ライブラリのできるまで</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
     <style>
       @import url(http://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
 
@@ -157,7 +174,7 @@ class: normal, chapter-1
 Developer Programs Engineer
 
 - Google I/O アプリ
-- Google サンタを追いかけよう for Android
+- Google Santa Tracker アプリ
 - [d.android.com/samples](http://d.android.com/samples) のサンプル
   - MIDI 関連
   - Camera2 関連
@@ -199,35 +216,6 @@ Material Design のコンポーネント群
 
 class: normal, chapter-1
 
-# 立ち位置
-
-.card[
-## Support v4
-- v4 以降に追加された API のバックポート
-- リソースなし
-
-## AppCompat
-- v7 以降に追加された UI 関係の API のバックポート
-- リソースあり
-- Support v4 に依存
-
-## Design
-- プラットフォームにはない
-- AppCompat v7 と RecyclerView に依存
-]
-
-???
-
-なぜ既存のライブラリに機能を追加するのではなく、新規にライブラリを作成したか
-
-どこに何があるかわからなくなったときの参考に
-
-RecyclerView には 23.1.0 から依存するようになりました
-
----
-
-class: normal, chapter-1
-
 # 歴史
 
 .card[
@@ -250,16 +238,46 @@ Design Support Library をリリース (バージョン 22.2.0)
 
 ???
 
-- I/O 2014 アプリ
-  - 非マテリアル版とマテリアル版の 2 種類ありました
-  - Design ライブラリはありませんでした
-- I/O 2015 アプリ
-  - Design ライブラリをつかった最初のアプリ
+- I/O アプリ
+  - 2014
+    - 非マテリアル版とマテリアル版の 2 種類あった
+    - Design ライブラリはありませんでした
+  - 2015
+    - Design ライブラリをつかった最初のアプリ
+- バージョン番号
+  - 1 つ目はフレームワークの最新 API レベル
+  - 2 つ目はライブラリの API が変更されたときにあげられる
+  - 3 つ目は (基本的に) API 変更を伴わないバグフィックス、改善
+  - SDK マネージャーで出てくる Support Repository の リビジョン番号とは関係ない
+  - ビルドツールのバージョンとも直接は関係ない
 
-バージョン番号
-- 1 つ目はフレームワークの最新 API レベル
-- 2 つ目はライブラリの API が変更されたときにあげられる
-- 3 つ目は (基本的に) API 変更を伴わないバグフィックス、改善
+---
+
+class: normal, chapter-1
+
+# 立ち位置
+
+.card[
+## Support v4
+- v4 以降に追加された API のバックポート
+- リソースなし
+
+## AppCompat
+- v7 以降に追加された UI 関係の API のバックポート
+- リソースあり
+- Support v4 に依存
+
+## Design
+- プラットフォームにはない
+- AppCompat v7 と RecyclerView に依存
+]
+
+???
+
+- よく聞かれる質問: なぜ既存のライブラリに機能を追加するのではなく、新規にライブラリを作成したか
+- フレームワークにあるもののバックポートは AppCompat に、フレームワークにないものは Design に
+- どこに何があるかわからなくなったときの参考に
+- RecyclerView には 23.1.0 から依存するようになった
 
 ---
 
@@ -280,9 +298,10 @@ https://techbooster.booth.pm/items/126263
 
 ???
 
-その他インターネットで検索するとたくさん見つかります
-
-今回は使い方の話は最低限にとどめて、この Design サポート ライブラリができるまでの話をします
+- 丸投げ
+- その他インターネットで検索するとたくさん見つかる
+- 今回は使い方の話は最低限にとどめて、この Design サポート ライブラリを作る上で役に立った知見を共有する
+  - ただし、あくまでサポート ライブラリ以外でも役に立つものに限る
 
 ---
 
@@ -300,23 +319,19 @@ class: normal, chapter-2
 AppBar 内の要素が部分的に表示されている状態を避ける
 
 ```xml
-<android.support.design.widget.CoordinatorLayout ... >
+&lt;android.support.design.widget.CoordinatorLayout ... &gt;
 
-    <android.support.design.widget.AppBarLayout ... >
+    &lt;android.support.design.widget.AppBarLayout ... &gt;
 
-        <android.support.v7.widget.Toolbar
+        &lt;android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            `app:layout_scrollFlags="scroll|enterAlways|snap"` />
+            `app:layout_scrollFlags="scroll|enterAlways|snap"` /&gt;
 
         ...
-
-    </android.support.design.widget.AppBarLayout>
-
-</android.support.design.widget.CoordinatorLayout>
 ```
 ]
 
@@ -376,18 +391,18 @@ class: normal, chapter-2
 NavigationView の項目の右端に任意のレイアウトを配置する
 
 ```xml
-<menu ...>
-  <group android:checkableBehavior="single">
+&lt;menu ...&gt;
+  &lt;group android:checkableBehavior="single"&gt;
 
-    <item
+    ...
+
+    &lt;item
       android:id="@+id/navigation_item_3"
       android:icon="@drawable/ic_android"
       android:title="@string/navigation_item_3"
-      `app:actionLayout="@layout/action_layout"`/>
+      `app:actionLayout="@layout/action_layout"`/&gt;
 
     ...
-  </group>
-</menu>  
 ```
 
 - MenuItem#getActionView() で参照を取得
@@ -395,11 +410,10 @@ NavigationView の項目の右端に任意のレイアウトを配置する
 
 ???
 
-NavigationView はナビゲーション ドローワーの中のメニューを作るコンポーネント
-
-DrawerLayout に入れて使う。メニュー XML を使う。
-
-- Gmail の未読数など
+- NavigationView はナビゲーション ドローワーの中のメニューを作るコンポーネント
+- DrawerLayout に入れて使う。メニュー XML を使う。
+- app:actionLayout を使うと、各メニュー項目に任意の View を配置することができる
+  - Gmail の未読数など
 
 ---
 
@@ -423,6 +437,8 @@ class: center, middle, hero, chapter-3
 
 - Design サポート ライブラリはカスタム View のかたまり
 - もっとみんなカスタム View を作るべき
+  - リストの項目と同じものを詳細画面でも使いたい場合
+  - Activity や Fragment に UI ロジックが多くなって見通しが悪くなった場合
 
 ---
 
@@ -463,7 +479,7 @@ public class NavigationView extends ScrimInsetsFrameLayout {
 
 class: normal, chapter-3
 
-# カスタム属性の定義
+# カスタム属性の定義 - シンプルな型
 
 .card[
 values/attrs.xml にカスタム View と同名の declare-styleable を追加する
@@ -487,7 +503,38 @@ values/attrs.xml にカスタム View と同名の declare-styleable を追加�
 
 - レイアウト XML に記述する属性名を自分で定義できる
 - 対応するメソッドも用意する
-- format の方は boolean, color, dimension, integer, reference などがある。enum や flag も定義できる。
+- format の方は boolean, color, dimension, integer, reference などがある。
+
+---
+
+class: normal, chapter-3
+
+# カスタム属性の定義 - enum, flag
+
+.card[
+enum は選択肢の中から一つ選ばせるとき  
+flag は選択肢の中から複数選ばせるとき
+
+```xml
+    <declare-styleable name="FloatingActionButton">
+        ...
+        <attr name="fabSize">
+            <enum name="normal" value="0"/>
+            <enum name="mini" value="1"/>
+        </attr>
+        ...
+    </declare-styleable>
+```
+
+コードでも対応する値を int 定数として宣言する
+]
+
+???
+
+- 例は FloatingActionButton
+- 仕様上の大きさが 56dp か 40dp の 2 通り
+- Android Studio での補完も効くようになる
+- コード側で対応する int 定数を宣言する方法は後ほど
 
 ---
 
@@ -500,15 +547,18 @@ class: normal, chapter-3
 
 名前は Widget.[プロジェクト名].[カスタム View 名]
 ```xml
-    <style name="Widget.Design.NavigationView" parent="android:Widget">
-        <item name="elevation">@dimen/navigation_elevation</item>
+    &lt;style name="Widget.Design.NavigationView" parent="android:Widget"&gt;
+        &lt;item name="elevation"&gt;@dimen/navigation_elevation&lt;/item&gt;
+        &lt;item name="android:maxWidth"&gt;@dimen/navigation_max_width&lt;/item&gt;
         ...
-        <item name="android:maxWidth">@dimen/navigation_max_width</item>
-    </style>
+    &lt;/style&gt;
 ```
 ]
 
 ???
+
+- ディレクトリのサフィックスで画面の縦横などによってスタイルを変えることもできる
+  - 例: TabLayout など
 
 ---
 
@@ -574,9 +624,12 @@ public class NavigationMenuItemView extends ForegroundLinearLayout
 
 ???
 
-- android.view.View クラスを extends することはあまりないはず
-- すでに存在する View、とくに ViewGroup を extends する場合、レイアウト XML が利用できる
-- レイアウト XML は merge で始める。そうしないと LinearLayout が二重になる。
+- android.view.View クラスを直接拡張して onDraw をオーバーライドしてカスタム View を作ることもできるが、あまりしない
+  - 大抵は既存の View や ViewGroup を継承して作る
+- ViewGroup を拡張する場合、レイアウト XML を利用するべき
+- レイアウト XML は merge で始める。そうしないと LinearLayout が二重になる
+- merge タグの中では親クラスの LayoutParams を利用できる
+  - RelativeLayout を継承しているなら、layout_alignParentTop などを利用できる
 
 ---
 
@@ -587,7 +640,7 @@ class: normal, chapter-3
 .card[
 View.BaseSavedState を継承したインナー クラス SavedState を作る
 ```java
-    public static class SavedState extends BaseSavedState {
+    protected static class SavedState extends BaseSavedState {
         public Bundle menuState;
 
         public SavedState(Parcel in, ClassLoader loader) {
@@ -606,7 +659,7 @@ View.BaseSavedState を継承したインナー クラス SavedState を作る
         }
 
         public static final Parcelable.Creator&lt;SavedState&gt; CREATOR
-                = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks&l;SavedState&gt;() {
+                = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks&lt;SavedState&gt;() {
             @Override
             public SavedState createFromParcel(Parcel parcel, ClassLoader loader) {
                 return new SavedState(parcel, loader);
@@ -623,9 +676,6 @@ View.BaseSavedState を継承したインナー クラス SavedState を作る
 ???
 
 - 画面回転時などに、カスタム View の状態を保持するオブジェクト
-- 何を保存するべきかよく考える
-  - 保存される例: EditText の入力内容, 保存されない例: padding
-  - レイアウト XML で指定するもののうち、縦横で切り替える可能性があるもの
 - Parcel に複数の値を入れる場合は、書き込む順番と読み込む順番を合わせる
 
 ---
@@ -653,8 +703,17 @@ class: normal, chapter-3
     }
 ```
 
-ここまでの内容を押さえておけば簡単なカスタム View は作れるはず
+- View を利用するときは id を付けておくのを忘れずに
+
 ]
+
+???
+
+- 何を保存するべきかよく考える
+  - 保存される例: EditText の入力内容, 保存されない例: padding
+  - レイアウト XML で指定するもののうち、縦横などで切り替える可能性があるもの
+- EditText は画面回転時も入力内容を保持するが、id がついてないと保持されない
+- ここまでの内容を押さえておけば簡単なカスタム View は作れるはず
 
 ---
 
@@ -818,11 +877,171 @@ class: normal, chapter-3
 # RTL
 
 .card[
+## マージン、パディングなど
+
+左右対称のとき
+
+```xml
+    layout_marginLeft="@dimen/item_margin_horizontal"
+    layout_marginRight="@dimen/item_margin_horizontal"
+```
+
+左右非対称の時
+
+```xml
+    layout_marginStart="@dimen/item_margin_start"
+    layout_marginLeft="@dimen/item_margin_start"
+    layout_marginEnd="@dimen/item_margin_end"
+    layout_marginRight="@dimen/item_margin_end"
+```
+
+## Gravity 系
+
+```
+    gravity="top|start"
+```
 ]
+
+???
+
+- 左右対称のときは left/right だけでいい
+  - Android Studio も警告を出さないようになっている
+- 左右対称でないときは start/end と left/right の両方書く
+- Gravity は start/end だけでいい
+  - コードから指定するなら GravityCompat.START/END
 
 ---
 
-class: hero, center, chapter-5
+class: normal, chapter-3
+
+# レイアウト変更を引き起こす操作を知る
+
+.card[
+レイアウト変更を引き起こす操作は、外観上問題がなくても、必要なとき以外は呼び出さない
+
+```java
+    public void setCounterEnabled(boolean enabled) {
+        if (mCounterEnabled != enabled) {
+            if (enabled) {
+                ...
+*               mCounterView.setTextAppearance(getContext(), mCounterTextAppearance);
+                ...
+            } else {
+                ...
+            }
+            mCounterEnabled = enabled;
+        }
+    }
+```
+]
+
+???
+
+- TextView の setTextAppearance は、文字のサイズや色などをまとめて設定するメソッド
+- TextView 自体のサイズが変わる可能性がある
+  - つまりその TextView を含む ViewGroup のサイズも変わる可能性がある
+    - さらにその ViewGroup を含む ...
+  - ツリー上のすべての View をレイアウトし直す必要がある
+- レイアウト変更は重い処理
+- 文字の色を変更するだけなら大丈夫なように思うが、そんなことはない
+- まったく同じ TextAppearance を設定してもやはりレイアウト変更が発生する
+- 他にも TextView なら setText など
+
+---
+
+class: normal, chapter-3
+
+# テーマでカスタマイズできるようにする
+
+.card[
+styles.xml などで既存の ?android:attr/... や ?attr/... を利用する
+
+```xml
+   android:background="`?attr/colorPrimary`"
+   android:foreground="`?attr/selectableItemBackground`"
+   android:textColor="`?android:attr/textColorPrimary`"
+```
+]
+
+???
+
+- カスタム View がアプリのテーマに従った見た目になるようにする
+- AppCompat にあるものは ?attr
+  - システム標準で昔からあるものは ?android:attr
+  - 同じ名前で両方あるなら AppCompat のもの、つまり ?attr を使う
+
+---
+
+class: center, middle, hero, chapter-4
+
+# ライブラリに関する Tips
+
+---
+
+class: normal, chapter-4
+
+# リソースを隠す
+
+.card[
+Public and Private Resources  
+http://developer.android.com/intl/ja/tools/studio/studio-features.html#private-res
+
+values/public.xml に宣言したものは public、それ以外は private
+
+```xml
+&lt;resources&gt;
+    &lt;public type="attr" name="elevation"/&gt;
+    &lt;public type="string" name="appbar_scrolling_view_behavior"/&gt;
+    &lt;public type="style" name="Widget.Design.FloatingActionButton"/&gt;
+&lt;/resources&gt;
+```
+]
+
+???
+
+- 何もしなければライブラリ内のすべてのリソースが public になってしまう
+  - カスタム View を作るための layout ファイルも外から見えるようになってしまう
+  - Android Studio の補完にどうでもいいリソースが出てきてイラッとする
+- public リソースがあれば、宣言されていないものは private になる
+  - 明示的に private なものを指定する方法はない
+
+---
+
+class: normal, chapter-4
+
+# ProGuard 設定
+
+.card[
+ライブラリの build.gradle で ProGuard 設定を指定
+
+```ruby
+android {
+    buildTypes.all {
+*       consumerProguardFiles 'proguard-rules.pro'
+    }
+}
+```
+
+```java
+-keep public class * extends
+        android.support.design.widget.CoordinatorLayout$Behavior {
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>();
+}
+```
+
+ProGuard Usage  
+https://stuff.mit.edu/afs/sipb/project/android/sdk/android-sdk-linux/tools/proguard/docs/index.html#manual/usage.html
+]
+
+???
+
+- 主にライブラリ内でリフレクションを使っている場合
+- このライブラリを使っているアプリで ProGuard を使った時にこの設定が利用される
+
+---
+
+class: center, middle, hero, chapter-5
 
 # <nobr>Design ライブラリについての<wbr>ご意見・ご要望</nobr>
 
@@ -842,8 +1061,13 @@ class: hero, center, chapter-5
         highlightStyle: 'googlecode',
         highlightLanguage: 'remark',
         highlightLines: true,
-        highlightSpans: true
-      }) ;
+        highlightSpans: true,
+        navigation: {
+          click: false,
+          scroll: false,
+          touch: true
+        }
+      });
     </script>
   </body>
 </html>

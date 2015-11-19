@@ -28,10 +28,10 @@
 - ?textColorSecondary
 - ?attr/selectableItemBackground
 - interpolator
+- API レベルでの分割方法 (Impl)
 
 # ライブラリ
 
-- API レベルでの分割方法 (Impl)
 - リソースの隠し方
 - Proguard 設定
 

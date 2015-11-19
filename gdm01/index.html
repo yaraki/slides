@@ -79,8 +79,12 @@
         opacity: 1;
       }
 
-      .hero h1 {
+      .hero h1, .hero h2, .hero h3 {
         color: #FFFFFF;
+      }
+
+      .hero h2 {
+        margin-left: 1em;
       }
 
       .normal {
@@ -308,7 +312,11 @@ AppBar 内の要素が部分的に表示されている状態を避ける
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             `app:layout_scrollFlags="scroll|enterAlways|snap"` />
 
-...
+        ...
+
+    </android.support.design.widget.AppBarLayout>
+
+</android.support.design.widget.CoordinatorLayout>
 ```
 ]
 
@@ -371,15 +379,15 @@ NavigationView の項目の右端に任意のレイアウトを配置する
 <menu ...>
   <group android:checkableBehavior="single">
 
-    ...
-
     <item
       android:id="@+id/navigation_item_3"
       android:icon="@drawable/ic_android"
       android:title="@string/navigation_item_3"
       `app:actionLayout="@layout/action_layout"`/>
 
-...
+    ...
+  </group>
+</menu>  
 ```
 
 - MenuItem#getActionView() で参照を取得
@@ -553,7 +561,6 @@ public class NavigationMenuItemView extends ForegroundLinearLayout
         setOrientation(HORIZONTAL);
         LayoutInflater.from(context)
             .inflate(R.layout.design_navigation_menu_item, this, `true`);
-
         ...
 ```
 
@@ -563,7 +570,6 @@ public class NavigationMenuItemView extends ForegroundLinearLayout
     ...
 </merge>
 ```
-
 ]
 
 ???
@@ -599,8 +605,8 @@ View.BaseSavedState を継承したインナー クラス SavedState を作る
 *           dest.writeBundle(menuState);
         }
 
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks<SavedState>() {
+        public static final Parcelable.Creator&lt;SavedState&gt; CREATOR
+                = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks&l;SavedState&gt;() {
             @Override
             public SavedState createFromParcel(Parcel parcel, ClassLoader loader) {
                 return new SavedState(parcel, loader);
@@ -616,7 +622,7 @@ View.BaseSavedState を継承したインナー クラス SavedState を作る
 ]
 ???
 
-- 画面回転時に、カスタム View の状態を保持する
+- 画面回転時などに、カスタム View の状態を保持するオブジェクト
 - 何を保存するべきかよく考える
   - 保存される例: EditText の入力内容, 保存されない例: padding
   - レイアウト XML で指定するもののうち、縦横で切り替える可能性があるもの
@@ -654,6 +660,31 @@ class: normal, chapter-3
 
 class: normal, chapter-3
 
+# AppCompat のコンポーネントを継承
+
+.card[
+AppCompat なんとか が存在する場合、そちらを継承する
+
+- AppCompatButton
+- AppCompatTextView
+- AppCompatEditText
+- AppCompatCheckBox
+- AppCompatRadioButton
+- AppCompatSpinner
+- etc
+]
+
+???
+
+- Design サポート ライブラリでこのパターンはなかった
+- AppCompat なんとかには backgroundTint などの機能のバックポートが含まれる
+- AppCompat を適切に使っている限り、レイアウト XML で Button タグを使えば、AppCompat が自動的に AppCompatButton を inflate するので、AppCompatButton の存在を意識することはない
+- カスタム View に関しては明示的に継承する必要がある
+
+---
+
+class: normal, chapter-3
+
 # アノテーション
 
 .card[
@@ -686,88 +717,118 @@ int を enum 代替として使う場合には独自のアノテーションを�
 
 class: normal, chapter-3
 
-# AppCompat のコンポーネントを継承
+# 不用意にインターフェイスを実装しない
 
 .card[
-AppCompat なんとか が存在する場合、そちらを継承する
-
-- AppCompatButton
-- AppCompatTextView
-- AppCompatEditText
-- AppCompatCheckBox
-- AppCompatRadioButton
-- AppCompatSpinner
-- etc
+```java
+public class TextInputLayout extends LinearLayout `implements TextWatcher` {
+    private void setEditText(EditText editText) {
+        mEditText.addTextChangedListener(`this`);
+    }
+}
+```
+.center[
+↓
+]
+```java
+public class TextInputLayout extends LinearLayout {
+    private void setEditText(EditText editText) {
+        mEditText.addTextChangedListener(`mTextWatcher`);
+    }
+    private final TextWatcher mTextWatcher = new TextWatcher() {
+        ...
+    };
+}
+```
 ]
 
 ???
 
-- Design サポート ライブラリでこのパターンはなかった
-- AppCompat なんとかには backgroundTint などの機能のバックポートが含まれる
-- AppCompat を適切に使っている限り、レイアウト XML で Button タグを使えば、AppCompat が自動的に AppCompatButton を inflate するので、AppCompatButton の存在を意識することはない
-- カスタム View に関しては明示的に継承する必要がある
+- 例は TextInputLayout、EditText への入力を監視する必要があるので、TextWatcher を使う
+- 上の書き方だと、外部からこのクラスのインスタンスを TextWatcher として利用できてしまう
 
 ---
 
-class: center, middle, hero, chapter-4
+class: normal, chapter-3
 
-# パフォーマンス
-
----
-
-class: normal, chapter-4
-
-# enum を使わない
-
----
-
-class: normal, chapter-4
-
-# メンバー変数を書き換え過ぎない
+# 複数のメソッドを持つリスナー
 
 .card[
-こうじゃなくて
+## 従来のパターン
 
+インターフェイス と 空実装の抽象クラス をそれぞれ用意する
+
+例:  
+DrawerLayout.DrawerListener + DrawerLayout.SimpleDrawerListener  
+AnimatorListener + AnimatorListenerAdapter
+
+## 新しいパターン
+
+抽象クラスのみ
+
+例:  
+FloatingActionButton.OnVisibilityChangedListener
+]
+
+???
+
+- すべてのリスナーをこうするべきとは限らない
+
+---
+
+class: normal, chapter-3
+
+# API レベルによって処理を分ける
+
+.card[
 ```java
-    private int mSomething;
-
-    private void doSomething() {
-        for (int i = 0; i < 1000; i++) {
-            mSomething += getSomeValue(i);
+public class FloatingActionButton extends ImageButton {
+    `private final FloatingActionButtonImpl mImpl`;
+    public FloatingActionButton(Context context, AttributeSet attrs,
+                                int defStyleAttr) {
+        final int sdk = Build.VERSION.SDK_INT;
+        if (sdk >= 21) {
+            mImpl = new FloatingActionButtonLollipop(this, delegate);
+        } else if (sdk >= 14) {
+            mImpl = new FloatingActionButtonIcs(this, delegate);
+        } else {
+            mImpl = new FloatingActionButtonEclairMr1(this, delegate);
         }
     }
-```
-
-こう
-
-```java
-    private void doSomething() {
-        int something = mSomething;
-        for (int i = 0; i < 1000; i++) {
-            something += getSomeValue(i);
-        }
-        mSomething = something;
+    public void show(@Nullable OnVisibilityChangedListener listener) {
+        `mImpl.show(wrapOnVisibilityChangedListener(listener))`;
     }
+}
 ```
+]
+
+???
+
+- if 文の分岐が増えるとコードが煩雑になってしまう
+- FloatingActionButtonImpl は抽象クラスで、API レベルごとの処理が必要なメソッドの空定義が入っている
+- FloatingActionButtonEclairMr1 は FloatingActionButtonImpl を拡張していて、すべてのメソッドを EclarMr1 向けに実装している
+- FloatingActionButtonIcs は FloatingActionButtonEclairMr1 を拡張していて、Ics で使える機能に置き換えている
+- FloatingActionButtonLollipop は FloatingActionButtonIcs を拡張していて、Lollipop で使える機能に置き換えている
+- すべての API レベルで共通の処理は FloatingActionButton クラスに直接書く
+
+---
+
+class: normal, chapter-3
+
+# RTL
+
+.card[
 ]
 
 ---
 
-class: normal, chapter-5
+class: hero, center, chapter-5
 
-# サンプル
+# <nobr>Design ライブラリについての<wbr>ご意見・ご要望</nobr>
 
-.card[
-これが Java の Hello, world! です。
+## b.android.com
 
-```java
-   public static void main(String[] args) {
-       System.out.println("Hello, world!");
-   }
-```
-
-画面に "Hello, world!" と表示されます。
-]
+## @yuichi_araki
 
     </textarea>
     <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">

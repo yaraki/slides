@@ -21,14 +21,13 @@
   - 
 - RTL の扱い
   - layout_margin の Left/Right, Start/End
-
-# コード作法
-
 - インターフェイスを実装するのではなく、メンバー変数として持つべき
+- レイアウトが変わる呼び出しを知る TextView#setTextAppearance など
 
 # あるものを使う
-
-
+- ?textColorSecondary
+- ?attr/selectableItemBackground
+- interpolator
 
 # ライブラリ
 
@@ -36,12 +35,4 @@
 - リソースの隠し方
 - Proguard 設定
 
-# 
 
-- ?textColorSecondary
-- ?attr/selectableItemBackground
-- interpolator
-- @null
-
-- レイアウトが変わる呼び出しを知る TextView#setTextAppearance など
-- DrawableCompat

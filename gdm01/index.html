@@ -294,6 +294,9 @@ http://googledevjp.blogspot.jp/2015/11/android-231.html
 
 Techbooster Android Masters!  
 https://techbooster.booth.pm/items/126263
+
+chrisbanes/cheesesquare  
+https://github.com/chrisbanes/cheesesquare
 ]
 
 ???
@@ -329,7 +332,7 @@ AppBar 内の要素が部分的に表示されている状態を避ける
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            `app:layout_scrollFlags="scroll|enterAlways|snap"` /&gt;
+            app:layout_scrollFlags="scroll|enterAlways|`snap`" /&gt;
 
         ...
 ```
@@ -473,6 +476,7 @@ public class NavigationView extends ScrimInsetsFrameLayout {
 ???
 
 - 例は NavigationView
+- ただし、LinearLayout の 3 引数コンストラクターは API Level 11 以降なので
 - 4 引数のコンストラクターを使えばデフォルトのスタイルを指定できるが、 v21 以降なのでいったん忘れよう
 
 ---
@@ -904,6 +908,7 @@ class: normal, chapter-3
 
 ???
 
+- Gravity の start/end は 14, margin/padding の start/end は API Level 17 (JB MR1)以降
 - 左右対称のときは left/right だけでいい
   - Android Studio も警告を出さないようになっている
 - 左右対称でないときは start/end と left/right の両方書く

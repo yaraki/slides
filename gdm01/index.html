@@ -89,6 +89,14 @@
         background-color: #FF5722;
       }
 
+      .chapter-6.normal {
+        background-image: linear-gradient(180deg, #2196F3 50%, #FFFFFF 50%);
+      }
+
+      .chapter-6.hero {
+        background-color: #2196F3;
+      }
+
       /* ページ番号 */
       .remark-slide-number {
         color: #CCCCCC;
@@ -240,10 +248,10 @@ Design Support Library をリリース (バージョン 22.2.0)
 
 - I/O アプリ
   - 2014
-    - 非マテリアル版とマテリアル版の 2 種類あった
-    - Design ライブラリはありませんでした
+      - 非マテリアル版とマテリアル版の 2 種類あった
+      - Design ライブラリはありませんでした
   - 2015
-    - Design ライブラリをつかった最初のアプリ
+      - Design ライブラリをつかった最初のアプリ
 - バージョン番号
   - 1 つ目はフレームワークの最新 API レベル
   - 2 つ目はライブラリの API が変更されたときにあげられる
@@ -434,7 +442,7 @@ class: normal chapter-2
 
 class: center, middle, hero, chapter-3
 
-# カスタム View の作り方
+# カスタム View の基本
 
 ???
 
@@ -721,7 +729,13 @@ class: normal, chapter-3
 
 ---
 
-class: normal, chapter-3
+class: middle, center, hero, chapter-4
+
+# カスタム View の Tips
+
+---
+
+class: normal, chapter-4
 
 # AppCompat のコンポーネントを継承
 
@@ -746,7 +760,7 @@ AppCompat なんとか が存在する場合、そちらを継承する
 
 ---
 
-class: normal, chapter-3
+class: normal, chapter-4
 
 # アノテーション
 
@@ -778,7 +792,7 @@ int を enum 代替として使う場合には独自のアノテーションを�
 
 ---
 
-class: normal, chapter-3
+class: normal, chapter-4
 
 # 不用意にインターフェイスを実装しない
 
@@ -812,7 +826,7 @@ public class TextInputLayout extends LinearLayout {
 
 ---
 
-class: normal, chapter-3
+class: normal, chapter-4
 
 # 複数のメソッドを持つリスナー
 
@@ -839,7 +853,7 @@ FloatingActionButton.OnVisibilityChangedListener
 
 ---
 
-class: normal, chapter-3
+class: normal, chapter-4
 
 # API レベルによって処理を分ける
 
@@ -876,7 +890,7 @@ public class FloatingActionButton extends ImageButton {
 
 ---
 
-class: normal, chapter-3
+class: normal, chapter-4
 
 # RTL
 
@@ -917,7 +931,7 @@ class: normal, chapter-3
 
 ---
 
-class: normal, chapter-3
+class: normal, chapter-4
 
 # レイアウト変更を引き起こす操作を知る
 
@@ -954,7 +968,7 @@ class: normal, chapter-3
 
 ---
 
-class: normal, chapter-3
+class: normal, chapter-4
 
 # テーマでカスタマイズできるようにする
 
@@ -977,13 +991,13 @@ styles.xml などで既存の ?android:attr/... や ?attr/... を利用する
 
 ---
 
-class: center, middle, hero, chapter-4
+class: center, middle, hero, chapter-5
 
 # ライブラリに関する Tips
 
 ---
 
-class: normal, chapter-4
+class: normal, chapter-5
 
 # リソースを隠す
 
@@ -1012,7 +1026,7 @@ values/public.xml に宣言したものは public、それ以外は private
 
 ---
 
-class: normal, chapter-4
+class: normal, chapter-5
 
 # ProGuard 設定
 
@@ -1046,7 +1060,7 @@ https://stuff.mit.edu/afs/sipb/project/android/sdk/android-sdk-linux/tools/progu
 
 ---
 
-class: center, middle, hero, chapter-5
+class: center, middle, hero, chapter-6
 
 # <nobr>Design ライブラリについての<wbr>ご意見・ご要望</nobr>
 

@@ -267,16 +267,16 @@ class: normal, chapter-1
 
 .card[
 ## Support v4
-- v4 以降に追加された API のバックポート
+- v4 以降の API のバックポート + プラットフォームにないもの
 - リソースなし
 
 ## AppCompat
-- v7 以降に追加された UI 関係の API のバックポート
+- v7 以降 UI 関係の API のバックポート
 - リソースあり
 - Support v4 に依存
 
 ## Design
-- プラットフォームにはない
+- プラットフォームにはないものだけ
 - AppCompat v7 と RecyclerView に依存
 ]
 
@@ -313,6 +313,30 @@ https://github.com/chrisbanes/cheesesquare
 - その他インターネットで検索するとたくさん見つかる
 - 今回は使い方の話は最低限にとどめて、この Design サポート ライブラリを作る上で役に立った知見を共有する
   - ただし、あくまでサポート ライブラリ以外でも役に立つものに限る
+
+---
+
+class: normal, chapter-1
+
+# これだけ
+
+.card[
+```ruby
+android {
+    compileSdkVersion `23`
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:`23`.1.1'
+}
+```
+]
+
+???
+
+- 必ずサポートライブラリのメジャー バージョンと compileSdkVersion を合わせる
 
 ---
 
@@ -621,8 +645,7 @@ public class NavigationMenuItemView extends ForegroundLinearLayout
                                   int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOrientation(HORIZONTAL);
-        LayoutInflater.from(context)
-            .inflate(R.layout.design_navigation_menu_item, this, `true`);
+*       inflate(context, R.layout.design_navigation_menu_item, this);
         ...
 ```
 

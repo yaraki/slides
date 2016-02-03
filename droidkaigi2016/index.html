@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>サポートライブラリ DroidKaigi 2016</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+      @import url(http://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
+
+      body {
+        font-family: 'Noto Sans Japanese', sans-serif;
+      }
+
+      a {
+        text-decoration: none;
+        color: blue;
+      }
+
+      a:visited {
+        color: blue;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      li {
+        line-height: 1.8;
+      }
+
+      h1, h2, h3 {
+        font-family: 'Noto Sans Japanese', sans-serif;
+        font-weight: bold;
+      }
+
+      .chapter-1.normal {
+        background-image: linear-gradient(180deg, #3F51B5 50%, #FFFFFF 50%);
+      }
+
+      .chapter-1.hero {
+        background-color: #3F51B5;
+      }
+
+      .chapter-2.normal {
+        background-image: linear-gradient(180deg, #F44336 50%, #FFFFFF 50%);
+      }
+
+      .chapter-2.hero {
+        background-color: #F44336;
+      }
+
+      .chapter-3.normal {
+        background-image: linear-gradient(180deg, #009688 50%, #FFFFFF 50%);
+      }
+
+      .chapter-3.hero {
+        background-color: #009688;
+      }
+
+      .chapter-4.normal {
+        background-image: linear-gradient(180deg, #E91E63 50%, #FFFFFF 50%);
+      }
+
+      .chapter-4.hero {
+        background-color: #E91E63;
+      }
+
+      .chapter-5.normal {
+        background-image: linear-gradient(180deg, #FF5722 50%, #FFFFFF 50%);
+      }
+
+      .chapter-5.hero {
+        background-color: #FF5722;
+      }
+
+      .chapter-6.normal {
+        background-image: linear-gradient(180deg, #2196F3 50%, #FFFFFF 50%);
+      }
+
+      .chapter-6.hero {
+        background-color: #2196F3;
+      }
+
+      /* ページ番号 */
+      .remark-slide-number {
+        color: #CCCCCC;
+        font-size: 12pt;
+        opacity: 1;
+      }
+
+      .hero h1, .hero h2, .hero h3 {
+        color: #FFFFFF;
+      }
+
+      .hero h2 {
+        margin-left: 1em;
+      }
+
+      .normal {
+        background-position: right 0em bottom 8em;
+      }
+
+      .normal h1 {
+        color: white;
+        margin-top: 0px;
+        margin-left: 1em;
+        font-size: 28pt;
+      }
+
+      .normal h2 {
+        margin: 0px;
+        font-size: 18pt;
+      }
+
+      .remark-code, .remark-inline-code {
+        font-family: monospace;
+      }
+
+      code {
+        border-radius: 4px;
+        max-height: 400px;
+      }
+
+      .hljs-googlecode .hljs {
+        background-color: #EEEEEE;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 0.1em;
+        padding: 1em 2em;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+      }
+
+      .card img {
+        float: right;
+        margin-left: 8px;
+        max-width: 32%;
+        max-height: 32%;
+      }
+
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle, hero, chapter-1
+
+# <nobr>サポート ライブラリ<br>Droid Kaigi 2016</nobr>
+
+---
+
+class: normal, chapter-1
+
+# 自己紹介
+
+.card[
+![近影](../images/yaraki.png)
+
+荒木佑一
+
+[@yuichi_araki](https://twitter.com/yuichi_araki)
+
+Developer Programs Engineer
+
+- Google I/O アプリ
+- Google Santa Tracker アプリ
+- [d.android.com/samples](http://d.android.com/samples) のサンプル
+  - MIDI 関連
+  - Camera2 関連
+  - Android for Work 関連
+  - ScreenCapture
+  - Transition 関連
+]
+
+---
+
+class: center, middle, hero, chapter-1
+
+# <nobr>Android Design<br>Support Library</nobr>
+
+---
+
+class: center, middle, hero, chapter-6
+
+# <nobr>Design ライブラリについての<wbr>ご意見・ご要望</nobr>
+
+## b.android.com
+
+## @yuichi_araki
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var hljs = remark.highlighter.engine;
+    </script>
+    <script src="http://gnab.github.io/remark/remark.language.js"></script>
+    <script>
+      var slideshow = remark.create({
+        highlightStyle: 'googlecode',
+        highlightLanguage: 'remark',
+        highlightLines: true,
+        highlightSpans: true,
+        navigation: {
+          click: false,
+          scroll: false,
+          touch: true
+        }
+      });
+    </script>
+  </body>
+</html>

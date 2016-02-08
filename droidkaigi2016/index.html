@@ -125,6 +125,10 @@
 
       .normal h2 {
         margin: 0px;
+        font-size: 20pt;
+      }
+
+      .normal {
         font-size: 18pt;
       }
 
@@ -157,6 +161,12 @@
         max-height: 32%;
       }
 
+      .card .large img {
+        float: none;
+        max-width: 100%;
+        max-height: 100%;
+      }
+
     </style>
   </head>
   <body>
@@ -173,7 +183,7 @@ class: normal, chapter-1
 # 自己紹介
 
 .card[
-![近影](../images/yaraki.png)
+<!-- ![近影](../images/yaraki.png) -->
 
 荒木佑一
 
@@ -181,31 +191,411 @@ class: normal, chapter-1
 
 Developer Programs Engineer
 
+- サポート ライブラリ (主に design ライブラリ)
 - Google I/O アプリ
 - Google Santa Tracker アプリ
-- [d.android.com/samples](http://d.android.com/samples) のサンプル
-  - MIDI 関連
-  - Camera2 関連
-  - Android for Work 関連
-  - ScreenCapture
-  - Transition 関連
+- [d.android.com/samples](http://d.android.com/samples) のサンプルいろいろ
 ]
 
 ---
 
-class: center, middle, hero, chapter-1
+class: center, middle, hero, chapter-2
 
-# <nobr>Android Design<br>Support Library</nobr>
+# <nobr>サポート ライブラリ<br>の<br>ススメ</nobr>
+
+???
+
+- 分かっている人にはおさらい
 
 ---
 
-class: center, middle, hero, chapter-6
+class: normal, chapter-2
 
-# <nobr>Design ライブラリについての<wbr>ご意見・ご要望</nobr>
+# ご意見・ご要望
 
+.card[
 ## b.android.com
 
-## @yuichi_araki
+- Template は "Support Library bug" を選択
+- スクリーンショット重要
+]
+
+???
+
+- サポート ライブラリ チームは割と頑張っています
+- バグ報告でなくても、新機能要望でも "Support Library bug" でいい
+- スクリーンショット、できれば動画
+  - Android Studio で簡単に撮影できる
+
+---
+
+class: normal, chapter-2
+
+# 背景
+
+.card[
+プラットフォームの新バージョンがリリースされる
+
+- 新しい機能
+- バグフィックス
+
+古い API レベルも存在し続ける
+
+どうやって互換性を保つか
+]
+
+???
+
+- 最近で言えば
+  - Lollipop でマテリアル デザイン
+  - Marshmallow で新しい権限モデル
+- これ自体はいいこと
+- いわゆるフラグメンテーション
+
+---
+
+class: normal, chapter-2
+
+# サポート ライブラリとは
+
+.card[
+Android アプリに組み込むライブラリ
+
+Android プラットフォーム本体と並行して開発される
+
+- プラットフォーム本体の機能のバックポート
+- プラットフォーム本体には存在しない追加の機能
+]
+
+???
+
+- Web の世界では "shim" や "polyfill" と呼ばれるもの
+- 当初は API レベル間の互換性のためのライブラリだったが、今はいろいろ
+
+---
+
+class: normal, chapter-2
+
+# サポート ライブラリ 一覧
+
+.card[
+- インフラ互換性: support-v4, support-v13, support-annotations
+- UI 互換性: appcompat-v7, preferences-v7, preferences-v14
+- UI ライブラリ: recyclerview-v7, design, percent, cardview-v7, gridlayout-v7
+- その他: palette-v7, customtabs, renderscript-v8, mediarouter-v7, leanback-v17, recommendation, preference-leanback-v17
+- 特殊: Testing Support Library (Espresso 含む), Data Binding, MultiDex
+]
+
+???
+
+- 20 個ぐらい
+
+---
+
+class: normal, chapter-2
+
+# 依存関係
+
+.card[
+  .large[![依存関係](dependencies.png)]
+]
+
+???
+
+- support-v4 がすべての基礎
+- cardview-v7 が仲間外れ
+
+---
+
+class: normal, chapter-2
+
+# support-v4
+
+.card[
+## プラットフォーム基本機能のバックポート
+
+- 置き換え<br>
+  Fragment, Loader, etc<br>
+- なんとか Compat 系<br>
+  ViewCompat, NotificationCompat, etc
+
+## 一部追加機能
+
+ViewPager, DrawerLayout, ViewDragHelper, FileProvider, etc
+]
+
+???
+
+- 一番最初のサポートライブラリ "The support library"
+- Gradle や AAR がなかった時代に作られたのでリソースを含まない
+  - 互換性以外の機能も入っていてちょっとややこしい
+- ゲームを除くほぼすべてのアプリが使うのでは
+  - Lollipop や Marshmallow で一部の Deprecated メソッドが SDK から削除された
+  - Jellybean で新しい API が導入されて古い機能は Deprecated になった
+  - Marshmallow で削除された
+  - ICS もサポートしたい場合、support-v4 を使う以外にない (自前で if 文分岐しようとしてもビルドできない)
+  - なので必須ライブラリ
+
+---
+
+class: normal, chapter-2
+
+# appcompat-v7
+
+.card[
+KitKat 以前のプラットフォームでもマテリアル デザインを実現
+
+バックポート専門: プラットフォームにない機能は入れない
+]
+
+???
+
+- 以前は Holo のバックポートだった (AcitionBarCompat)
+  - 最小 SDK バージョンが ICS 以降なら必要ないのでは？ という意見もあった
+- 現在はマテリアル デザインのバックポート
+  - 特に理由がなければ使うはず
+
+
+---
+
+class: normal, chapter-2
+
+# gridlayout-v7
+
+.card[
+API レベル 14 で追加された GridLayout のバックポート
+
+格子状に View を配置するレイアウト
+]
+
+???
+
+- 最小 SDK バージョンが Gingerbread とかのアプリで格子状に配置したい人に
+- GridLayout に限ったことではないが、既存レイアウトを使うと難しい特殊なレイアウトを実現したい場合、ViewGroup を自作するのも手
+
+---
+
+class: normal, chapter-2
+
+# recyclerview-v7
+
+.card[
+ListView や GridView を置き換える
+
+Nested Scroll にも対応
+]
+
+???
+
+- Q: ListView から移行すべき？
+  - いま動いているなら別にいいのでは
+  - 新規に作るなら RecyclerView の方が何かと便利 (モダンな API、Nested Scroll など)
+
+---
+
+class: normal, chapter-2
+
+# cardview-v7
+
+.card[
+      <br><br><br>
+      <br><br><br>
+      <br><br><br>
+]
+
+???
+
+- マテリアル デザインっぽく見せるためだけに使い過ぎない
+  - ガイドライン的には、一貫性のあるコンテンツはリストやタイル グリッドにすべき
+
+---
+
+class: normal, chapter-2
+
+# percent
+
+.card[
+パーセント指定で View をレイアウトできる
+
+PercentFrameLayout, PercentRelativeLayout
+
+- layout_width/heightPercent
+- layout_MarginStart/End/Top/BottomPercent
+- layout_aspectRatio
+]
+
+???
+
+- 主に Wear 用
+  - 単に割合を指定したいなら LinearLayout の layout_weight で可能
+- aspectRatio は幅÷高さ。width か height どっちかを指定してもう一方を計算させることができる
+
+---
+
+class: normal, chapter-2
+
+# preference-v7/v14
+
+.card[
+PreferenceFragmentCompat
+
+API レベル 11 で導入された PreferenceFragment のバックポート
+]
+
+???
+
+- v7 は support-v4 の Fragment を継承、v14 はシステムの Fragment を継承
+  - v14 を使うことはあまりないはず
+
+---
+
+class: normal, chapter-2
+
+# palette-v7
+
+.card[
+画像から UI コンポーネントの配色に使える色を抽出する
+
+[github.com/romainguy/google-io-2014](https://github.com/romainguy/google-io-2014)
+
+]
+
+???
+
+- 最新版でパフォーマンスが 6 倍良くなった
+
+---
+
+class: normal, chapter-2
+
+# customtabs
+
+.card[
+「アプリ内ブラウザ」
+
+]
+
+???
+
+- WebView で自前で作るのに比べて
+  - ログイン状態が引き継がれる
+- Intent で Chrome などのブラウザに飛ばすのに比べて
+  - メニュー項目のカスタマイズなどが可能
+
+---
+
+class: normal, chapter-2
+
+# その他
+
+.card[
+## mediarouter-v7
+
+Cast 対応
+
+## leanback-v17, preference-leanback-v17, recommendation
+
+Android TV 対応
+
+## renderscript-v8
+
+RenderScript (API レベル 11 以降) のバックポート
+]
+
+---
+
+class: center, middle, hero, chapter-3
+
+# Design Support Library
+
+???
+
+---
+
+class: normal, chapter-3
+
+# Design Support Library
+
+.card[
+マテリアル デザインで使われるコンポーネント群
+
+API レベル 7 からサポート
+
+サンプル: [github.com/chrisbanes/cheesesquare](https://github.com/chrisbanes/cheesesquare)
+]
+
+---
+
+class: normal, chapter-3
+
+# NavigationView
+
+.card[
+]
+
+---
+
+class: normal, chapter-3
+
+# TabLayout
+
+.card[
+]
+
+---
+
+class: normal, chapter-3
+
+# TextInputLayout
+
+.card[
+]
+
+---
+
+class: normal, chapter-3
+
+# FloatingActionButton
+
+.card[
+]
+
+---
+
+class: normal, chapter-3
+
+# Snackbar
+
+.card[
+]
+
+---
+
+class: normal, chapter-3
+
+# CoordinatorLayout
+
+.card[
+]
+
+---
+
+class: normal, chapter-3
+
+# AppBarLayout
+
+.card[
+]
+
+---
+
+class: normal, chapter-3
+
+# CollapsingToolbarLayout
+
+.card[
+]
+
 
     </textarea>
     <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
@@ -227,5 +617,20 @@ class: center, middle, hero, chapter-6
         }
       });
     </script>
+
+<!-- 
+FAQ 候補
+
+* 後ろについている v7 とかは何
+* サポート ライブラリをバージョンアップしたら動かなくなった
+* どっちの Fragment を使えばいいの
+* CardView/FAB のマージンが API レベルによって違う
+* 64k を超えたアプリの開発
+  デバッグ版は multidex, リリース版は proguard
+* ListView から RecyclerView に移行すべき?
+* AppCompat なんとかっていう View を使うべき？
+* android: と app: はどちらを使うべき
+-->
+
   </body>
 </html>

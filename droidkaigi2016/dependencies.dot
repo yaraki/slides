@@ -1,0 +1,24 @@
+digraph dependencies {
+        graph [ dpi = 256 ];
+        rankdir = "LR";
+
+        // design
+        "support-v4" -> "support-annotations";
+        "appcompat-v7" -> "support-v4";
+        "recyclerview-v7" -> "support-v4";
+        "design" -> "appcompat-v7";
+        "design" -> "recyclerview-v7";
+
+        // non-design
+        "support-v13" -> "support-v4";
+        "preference-v7" -> "appcompat-v7";
+        "preference-v7" -> "recyclerview-v7";
+        "palette-v7" -> "support-v4";
+        "gridlayout-v7" -> "support-v4";
+        "mediarouter-v7" -> "palette-v7";
+        "mediarouter-v7" -> "appcompat-v7";
+        "percent" -> "support-v4";
+        "cardview-v7";
+        "recommendation" -> "support-v4";
+        "leanback-v17" -> "recyclerview-v7";
+}

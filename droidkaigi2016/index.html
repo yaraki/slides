@@ -49,59 +49,16 @@
         font-weight: bold;
       }
 
-      .chapter-1.normal {
-        background-image: linear-gradient(180deg, #3F51B5 50%, #FFFFFF 50%);
-      }
-
-      .chapter-1.hero {
-        background-color: #3F51B5;
-      }
-
-      .chapter-2.normal {
-        background-image: linear-gradient(180deg, #F44336 50%, #FFFFFF 50%);
-      }
-
-      .chapter-2.hero {
-        background-color: #F44336;
-      }
-
-      .chapter-3.normal {
-        background-image: linear-gradient(180deg, #009688 50%, #FFFFFF 50%);
-      }
-
-      .chapter-3.hero {
-        background-color: #009688;
-      }
-
-      .chapter-4.normal {
-        background-image: linear-gradient(180deg, #E91E63 50%, #FFFFFF 50%);
-      }
-
-      .chapter-4.hero {
-        background-color: #E91E63;
-      }
-
-      .chapter-5.normal {
-        background-image: linear-gradient(180deg, #FF5722 50%, #FFFFFF 50%);
-      }
-
-      .chapter-5.hero {
-        background-color: #FF5722;
-      }
-
-      .chapter-6.normal {
-        background-image: linear-gradient(180deg, #2196F3 50%, #FFFFFF 50%);
-      }
-
-      .chapter-6.hero {
-        background-color: #2196F3;
-      }
-
       /* ページ番号 */
       .remark-slide-number {
         color: #CCCCCC;
         font-size: 12pt;
         opacity: 1;
+      }
+
+      .hero {
+        background-color: var(--bg-color);
+        color: #fff;
       }
 
       .hero h1, .hero h2, .hero h3 {
@@ -113,6 +70,7 @@
       }
 
       .normal {
+        background-image: linear-gradient(180deg, var(--bg-color) 50%, #FFFFFF 50%);
         background-position: right 0em bottom 8em;
       }
 
@@ -130,6 +88,16 @@
 
       .normal {
         font-size: 18pt;
+      }
+
+      .faq {
+        background-color: var(--bg-color);
+        font-size: 20pt;
+        color: #fff;
+      }
+
+      .faq h1 {
+        font-size: 28pt;
       }
 
       .remark-code, .remark-inline-code {
@@ -156,7 +124,7 @@
 
       .card img {
         float: right;
-        margin-left: 8px;
+        margin-left: 1em;
         max-width: 32%;
         max-height: 32%;
       }
@@ -167,11 +135,35 @@
         max-height: 100%;
       }
 
+
+      .chapter-1 {
+        --bg-color: #F44336;
+      }
+
+      .chapter-2 {
+        --bg-color: #3F51B5;
+      }
+
+      .chapter-3 {
+        --bg-color: #009688;
+      }
+
+      .chapter-4 {
+        --bg-color: #E91E63;
+      }
+
+      .chapter-5 {
+        --bg-color: #FF5722;
+      }
+
+      .chapter-6 {
+        --bg-color: #2196F3;
+      }
+
     </style>
   </head>
   <body>
     <textarea id="source">
-
 class: center, middle, hero, chapter-1
 
 # <nobr>サポート ライブラリ<br>Droid Kaigi 2016</nobr>
@@ -289,6 +281,7 @@ class: normal, chapter-2
 ???
 
 - 20 個ぐらい
+- 「特殊」は他のサポート ライブラリとバージョンが別
 
 ---
 
@@ -302,6 +295,7 @@ class: normal, chapter-2
 
 ???
 
+- 一部省略
 - support-v4 がすべての基礎
 - cardview-v7 が仲間外れ
 
@@ -315,13 +309,13 @@ class: normal, chapter-2
 ## プラットフォーム基本機能のバックポート
 
 - 置き換え<br>
-  Fragment, Loader, etc<br>
+  Fragment, Loader など<br>
 - なんとか Compat 系<br>
-  ViewCompat, NotificationCompat, etc
+  ViewCompat, NotificationCompat など
 
 ## 一部追加機能
 
-ViewPager, DrawerLayout, ViewDragHelper, FileProvider, etc
+ViewPager, DrawerLayout, ViewDragHelper, FileProvider など
 ]
 
 ???
@@ -329,6 +323,8 @@ ViewPager, DrawerLayout, ViewDragHelper, FileProvider, etc
 - 一番最初のサポートライブラリ "The support library"
 - Gradle や AAR がなかった時代に作られたのでリソースを含まない
   - 互換性以外の機能も入っていてちょっとややこしい
+- 「置き換え」はほぼフレームワークの機能そのまま
+- 「なんとか Compat」は static メソッドがたくさん
 - ゲームを除くほぼすべてのアプリが使うのでは
   - Lollipop や Marshmallow で一部の Deprecated メソッドが SDK から削除された
   - Jellybean で新しい API が導入されて古い機能は Deprecated になった
@@ -338,23 +334,45 @@ ViewPager, DrawerLayout, ViewDragHelper, FileProvider, etc
 
 ---
 
+class: faq, chapter-2
+
+# Q: どっちの Fragment を使えばいいの
+
+- android.app.Fragment
+- android.support.v4.app.Fragment
+]
+
+# A: android.support.v4.app.Fragment
+
+???
+
+- 一つ目はプラットフォームの Fragment、二つ目は support-v4 の Fragment
+- minSdkVersion が 11 以降のアプリなら android.app.Fragment でも良さそうに思うが、他のサポートライブラリが support-v4 の Fragment を前提としていることがある
+- 特に理由がなければ support-v4 の Fragment を使おう
+]
+
+---
+
 class: normal, chapter-2
 
 # appcompat-v7
 
 .card[
+![Google I/O 2015](iosched-main.webp)
+
 KitKat 以前のプラットフォームでもマテリアル デザインを実現
 
 バックポート専門: プラットフォームにない機能は入れない
+
+<br><br><br>
 ]
 
 ???
 
-- 以前は Holo のバックポートだった (AcitionBarCompat)
+- 以前は Holo のバックポートだった (ActionBarCompat)
   - 最小 SDK バージョンが ICS 以降なら必要ないのでは？ という意見もあった
 - 現在はマテリアル デザインのバックポート
   - 特に理由がなければ使うはず
-
 
 ---
 
@@ -398,9 +416,13 @@ class: normal, chapter-2
 # cardview-v7
 
 .card[
-      <br><br><br>
-      <br><br><br>
-      <br><br><br>
+<br><br><br><br>
+]
+
+<br>
+
+.card[
+<br><br><br><br>
 ]
 
 ???
@@ -517,11 +539,15 @@ class: normal, chapter-3
 # Design Support Library
 
 .card[
+![cheesesquare](design-cheesesquare.png)
+
 マテリアル デザインで使われるコンポーネント群
 
 API レベル 7 からサポート
 
-サンプル: [github.com/chrisbanes/cheesesquare](https://github.com/chrisbanes/cheesesquare)
+appcompat-v7 の使用が前提
+
+[github.com/chrisbanes/cheesesquare](https://github.com/chrisbanes/cheesesquare)
 ]
 
 ---
@@ -531,7 +557,29 @@ class: normal, chapter-3
 # NavigationView
 
 .card[
+![NavigationView](design-navigationview.png)
+
+ナビゲーション ドロワーの中のメニューをリソースで作ることができる
+
+```xml
+&lt;android.support.design.widget.NavigationView
+  android:id="@+id/nav_view"
+  android:layout_height="match_parent"
+  android:layout_width="wrap_content"
+  android:layout_gravity="start"
+  android:fitsSystemWindows="true"
+  app:headerLayout="@layout/nav_header"
+  `app:menu="@menu/drawer_view"`/&gt;
+```
+
+<br>
 ]
+
+???
+
+- セクション分け、セクションのサブタイトルなどに対応
+- app:actionLayout 属性でカスタム要素を追加できる
+  - 例: Gmail の未読数、Google Play Music の「ダウンロード済み」のスイッチなど
 
 ---
 
@@ -540,7 +588,20 @@ class: normal, chapter-3
 # TabLayout
 
 .card[
+![TabLayout](design-tablayout.png)
+
+ViewPager (support-v4) と連携するタブ
+
+```java
+tabLayout.`setupWithViewPager(viewPager)`;
+```
+
 ]
+
+???
+
+- 昔は ActionBar のナビゲーションモードでタブを作っていた
+  - API レベル 21 で deprecated になった
 
 ---
 
@@ -549,6 +610,23 @@ class: normal, chapter-3
 # TextInputLayout
 
 .card[
+![TextInputLayout](design-textinputlayout.png)
+
+EditText に機能追加<br>
+ヒント、エラー、カウンター
+
+```xml
+&lt;android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:counterEnabled="true"
+        app:counterMaxLength="30"&gt;
+  &lt;EditText
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:hint="@string/description"/&gt;
+&lt;/android.support.design.widget.TextInputLayout&gt;
+```
 ]
 
 ---
@@ -558,7 +636,25 @@ class: normal, chapter-3
 # FloatingActionButton
 
 .card[
+![FloatingActionButton](design-floatingactionbutton.png)
+
+FAB
+
+影付きの丸い ImageButton
+
+```xml
+&lt;android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fabSize="normal"
+        android:src="@drawable/ic_done" /&gt;
+```
 ]
+
+???
+
+- API レベルの違いによる影の扱いは CardView と同じ
 
 ---
 
@@ -567,7 +663,32 @@ class: normal, chapter-3
 # Snackbar
 
 .card[
+![Snackbar](design-snackbar.png)
+
+Toast の進化版
+
+アクションを設定できる
+
+```java
+Snackbar.make(view, "Here's a Snackbar",
+              Snackbar.LENGTH_LONG)
+        .setAction("Action", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // ...
+            }
+        }).show();
+```
 ]
+
+???
+
+- 使い方は大体 Toast と同じ
+- show を忘れると出ないので注意
+- 一つ目の引数は Context でなく View
+  - 親を辿っていって CoordinatorLayout があればそこに Snackbar の View を出す
+  - なければ適当に出す
+- setAction でアクションを設定できる
 
 ---
 
@@ -576,6 +697,11 @@ class: normal, chapter-3
 # CoordinatorLayout
 
 .card[
+超すごい FrameLayout
+
+- 子要素の Behavior を取り持つ
+- ある要素を別の要素に anchor する
+- keyline に並べる
 ]
 
 ---
@@ -585,6 +711,20 @@ class: normal, chapter-3
 # AppBarLayout
 
 .card[
+![AppBarLayout](design-appbarlayout.png)
+
+スクロールに従って Toolbar を隠す
+
+```xml
+&lt;CoordinatorLayout&gt;
+  &lt;AppBarLayout&gt;
+    &lt;Toolbar
+      app:layout_scrollFlags
+      ="scroll|enterAlways|snap"/&gt;
+    &lt;TabLayout/&gt;
+  &lt;/AppBarLayout&gt;
+&lt;/CoordinatorLayout&gt;
+```
 ]
 
 ---
@@ -594,7 +734,36 @@ class: normal, chapter-3
 # CollapsingToolbarLayout
 
 .card[
+![CollapsingToolbarLayout](design-collapsingtoolbarlayout.png)
+
+Toolbar に動きを加える
+
+```xml
+&lt;CoordinatorLayout&gt;
+  &lt;AppBarLayout&gt;
+    &lt;CollapsingToolbarLayout
+      app:layout_scrollFlags
+      ="scroll|exitUntilCollapsed"&gt;
+      &lt;ImageView
+        app:layout_collapseMode="parallax"/&gt;
+      &lt;Toolbar
+        app:layout_collapseMode="pin"/&gt;
+    &lt;/CollapsingToolbarLayout&gt;
+  &lt;/AppBarLayout&gt;
+&lt;/CoordinatorLayout&gt;
+```
 ]
+
+???
+
+- cheesesquare のようにタイトル文字を動かしたい場合、CollapsingToolbarLayout に setTitle しないといけないので注意
+
+---
+
+class: center, middle, hero, chapter-3
+
+# Design ライブラリの新機能
+
 
 
     </textarea>
@@ -623,7 +792,6 @@ FAQ 候補
 
 * 後ろについている v7 とかは何
 * サポート ライブラリをバージョンアップしたら動かなくなった
-* どっちの Fragment を使えばいいの
 * CardView/FAB のマージンが API レベルによって違う
 * 64k を超えたアプリの開発
   デバッグ版は multidex, リリース版は proguard

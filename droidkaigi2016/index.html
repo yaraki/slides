@@ -100,6 +100,10 @@
         font-size: 28pt;
       }
 
+      .faq a {
+        color: #fff;
+      }
+
       .remark-code, .remark-inline-code {
         font-family: monospace;
       }
@@ -149,15 +153,15 @@
       }
 
       .chapter-4 {
-        --bg-color: #E91E63;
-      }
-
-      .chapter-5 {
         --bg-color: #FF5722;
       }
 
-      .chapter-6 {
+      .chapter-5 {
         --bg-color: #2196F3;
+      }
+
+      .chapter-6 {
+        --bg-color: #E91E63;
       }
 
     </style>
@@ -285,6 +289,22 @@ class: normal, chapter-2
 
 ---
 
+class: faq, chapter-2
+
+# Q. 後ろについている -v7 とかは何
+
+support-v7, appcompat-v7
+
+# A. そのライブラリがサポートする最小 API レベル
+
+ライブラリ自体のバージョンではない
+
+???
+
+- 最近のライブラリには付けないようになった
+
+---
+
 class: normal, chapter-2
 
 # 依存関係
@@ -336,20 +356,18 @@ ViewPager, DrawerLayout, ViewDragHelper, FileProvider など
 
 class: faq, chapter-2
 
-# Q: どっちの Fragment を使えばいいの
+# Q. どっちの Fragment を使えばいいの
 
 - android.app.Fragment
 - android.support.v4.app.Fragment
-]
 
-# A: android.support.v4.app.Fragment
+# A. android.support.v4.app.Fragment
 
 ???
 
 - 一つ目はプラットフォームの Fragment、二つ目は support-v4 の Fragment
 - minSdkVersion が 11 以降のアプリなら android.app.Fragment でも良さそうに思うが、他のサポートライブラリが support-v4 の Fragment を前提としていることがある
 - 特に理由がなければ support-v4 の Fragment を使おう
-]
 
 ---
 
@@ -373,6 +391,28 @@ KitKat 以前のプラットフォームでもマテリアル デザインを実
   - 最小 SDK バージョンが ICS 以降なら必要ないのでは？ という意見もあった
 - 現在はマテリアル デザインのバックポート
   - 特に理由がなければ使うはず
+
+---
+
+class: faq, chapter-2
+
+# Q. 「AppCompat なんとか」な View を使うべき？
+
+- [AppCompatTextView](http://developer.android.com/intl/ja/reference/android/support/v7/widget/AppCompatTextView.html)
+- [AppCompatButton](http://developer.android.com/intl/ja/reference/android/support/v7/widget/AppCompatButton.html)
+- [AppCompatCheckBox](http://developer.android.com/intl/ja/reference/android/support/v7/widget/AppCompatCheckBox.html)
+- [AppCompatRadioButton](http://developer.android.com/intl/ja/reference/android/support/v7/widget/AppCompatRadioButton.html)
+
+# A. 使わないでいい
+
+ただし、カスタム View を使うときの継承元としては使う
+
+???
+
+- 最近のバージョンで追加された
+- 外観の調整と Drawable の Tint 機能のバックポートが含まれる
+- 通常通りレイアウト XML から inflate していれば appcompat が自動的に差し替える
+- 念のため、AppCompatActivity や AppCompatDialog は使うことに変わりはない
 
 ---
 
@@ -405,9 +445,19 @@ Nested Scroll にも対応
 
 ???
 
-- Q: ListView から移行すべき？
-  - いま動いているなら別にいいのでは
-  - 新規に作るなら RecyclerView の方が何かと便利 (モダンな API、Nested Scroll など)
+---
+
+class: faq, chapter-2
+
+# Q. ListView から移行すべき？
+
+# A. いま動いているなら別にいいのでは
+
+新規に作るなら RecyclerView の方が便利
+
+???
+
+- モダンな API、Nested Scroll など
 
 ---
 
@@ -432,6 +482,14 @@ class: normal, chapter-2
 
 ---
 
+class: faq, chapter-2
+
+# Q. CardView のマージンが API レベルによって違う
+
+# A. WAI
+
+---
+
 class: normal, chapter-2
 
 # percent
@@ -442,7 +500,7 @@ class: normal, chapter-2
 PercentFrameLayout, PercentRelativeLayout
 
 - layout_width/heightPercent
-- layout_MarginStart/End/Top/BottomPercent
+- layout_marginStart/End/Top/BottomPercent
 - layout_aspectRatio
 ]
 
@@ -493,8 +551,13 @@ class: normal, chapter-2
 # customtabs
 
 .card[
-「アプリ内ブラウザ」
+![customtabs](lib-customtabs.jpg)
 
+アプリ内ブラウザ
+
+- Chrome のログイン状態を保持
+- メニュー項目のカスタマイズ
+<br><br><br><br><br><br>
 ]
 
 ???
@@ -526,6 +589,29 @@ RenderScript (API レベル 11 以降) のバックポート
 
 ---
 
+class: faq, chapter-2
+
+# Q. サポート ライブラリをバージョンアップしたら動かなくなった
+
+# A. compileSdkVersion とサポート ライブラリのバージョンが揃っているか確認
+
+```groovy
+android {
+    compileSdkVersion `23`
+    // ...
+}
+
+
+dependencies {
+    compile 'com.android.support:design:`23`.1.1'
+    // ...
+}
+```
+
+それでもダメなら b.android.com
+
+---
+
 class: center, middle, hero, chapter-3
 
 # Design Support Library
@@ -549,6 +635,11 @@ appcompat-v7 の使用が前提
 
 [github.com/chrisbanes/cheesesquare](https://github.com/chrisbanes/cheesesquare)
 ]
+
+???
+
+- ちょうど去年の DroidKaigi の時期に開発していた
+- Google I/O 2015 で発表
 
 ---
 
@@ -628,6 +719,11 @@ EditText に機能追加<br>
 &lt;/android.support.design.widget.TextInputLayout&gt;
 ```
 ]
+
+???
+
+- ヒントは EditText のヒントからアニメーションでフロート表示になる
+- counterMaxLength は EditText の maxLength と違って、最大文字数を超えて入力できる
 
 ---
 
@@ -760,9 +856,143 @@ Toolbar に動きを加える
 
 ---
 
-class: center, middle, hero, chapter-3
+class: center, middle, hero, chapter-4
 
 # Design ライブラリの新機能
+
+---
+
+class: normal, chapter-4
+
+# BottomSheetBehavior
+
+.card[
+![Bottom Sheet](bs-design.png)
+
+マテリアル デザインの [ボトム シート](https://www.google.com/design/spec/components/bottom-sheets.html) コンポーネントの実装
+
+- Persistent
+- Hideable
+- Modal
+
+<br><br><br><br>
+]
+
+???
+
+- BottomSheet というクラスはない
+- 使い方が大きく分けて 3 パターン
+
+---
+
+class: normal, chapter-4
+
+# 実用例
+
+.card[
+![サンタ トラッカー](bs-santatracker.webp)
+
+[Google サンタ トラッカー 2015](https://play.google.com/store/apps/details?id=com.google.android.apps.santatracker)
+
+Persistent なボトムシート
+
+CoordinatorLayout の anchor 機能で FAB を留める
+
+<br><br><br><br>
+]
+
+---
+
+class: normal, chapter-4
+
+# Persistent な BottomSheetBehavior
+
+.card[
+
+```xml
+&lt;android.support.design.widget.CoordinatorLayout&gt;
+    &lt;!-- 他の View --&gt;
+    &lt;FrameLayout
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/windowBackground"
+        `app:layout_behavior="@string/bottom_sheet_behavior"`
+        `app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"`&gt;
+        &lt;!-- ボトム シートの中身 --&gt;
+    &lt;/FrameLayout&gt;
+&lt;/android.support.design.widget.CoordinatorLayout&gt;
+```
+]
+
+???
+- どんな View でもボトム シートにできる
+- ボトムシート内のスクロールする部分は NestedScrollView か RecyclerView
+  - NestedScrollingChild を継承したもの
+
+---
+
+class: normal, chapter-4
+
+# Hideable な BottomSheetBehavior
+
+.card[
+```xml
+&lt;android.support.design.widget.CoordinatorLayout&gt;
+    &lt;!-- 他の View --&gt;
+    &lt;FrameLayout
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/windowBackground"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"
+        `app:behavior_hideable="true"`&gt;
+        &lt;!-- ボトム シートの中身 --&gt;
+    &lt;/FrameLayout&gt;
+&lt;/android.support.design.widget.CoordinatorLayout&gt;
+```
+]
+
+---
+
+class: normal, chapter-4
+
+# BottomSheetBehavior のコールバック
+
+.card[
+```java
+BottomSheetBehavior behavior = BottomSheetBehavior.from(
+    (LinearLayout) findViewById(R.id.bottom_sheet));
+behavior.setBottomSheetCallback(
+    new BottomSheetBehavior.BottomSheetCallback() {
+        @Override
+        public void onStateChanged(@NonNull View bottomSheet,
+                @BottomSheetBehavior.State int newState) {
+            // ...
+        }
+        @Override
+        public void onSlide(@NonNull View bottomSheet,
+                            float slideOffset) {
+            // ...
+        }
+});
+```
+]
+
+---
+
+class: normal, chapter-4
+
+# Modal な BottomSheetBehavior
+
+.card[
+## BottomSheetDialogFragment
+
+通常の (AppCompat)DialogFragment と使い方は同じ
+
+ただしスクロール部分は NestedScrollView / RecyclerView を使う
+]
 
 
 
@@ -790,12 +1020,8 @@ class: center, middle, hero, chapter-3
 <!-- 
 FAQ 候補
 
-* 後ろについている v7 とかは何
-* サポート ライブラリをバージョンアップしたら動かなくなった
-* CardView/FAB のマージンが API レベルによって違う
 * 64k を超えたアプリの開発
   デバッグ版は multidex, リリース版は proguard
-* ListView から RecyclerView に移行すべき?
 * AppCompat なんとかっていう View を使うべき？
 * android: と app: はどちらを使うべき
 -->

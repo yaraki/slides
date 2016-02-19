@@ -213,7 +213,7 @@ class: normal, chapter-2
 ## b.android.com
 
 - Template は "Support Library bug" を選択
-- スクリーンショット重要
+- スクリーンショットお願いします
 ]
 
 ???
@@ -276,8 +276,8 @@ class: normal, chapter-2
 
 .card[
 - インフラ互換性: support-v4, support-v13, support-annotations
-- UI 互換性: appcompat-v7, preferences-v7, preferences-v14
-- UI ライブラリ: recyclerview-v7, design, percent, cardview-v7, gridlayout-v7
+- UI 互換性: appcompat-v7, preferences-v7, preferences-v14, gridlayout-v7
+- UI ライブラリ: recyclerview-v7, design, percent, cardview-v7
 - その他: palette-v7, customtabs, renderscript-v8, mediarouter-v7, leanback-v17, recommendation, preference-leanback-v17
 - 特殊: Testing Support Library (Espresso 含む), Data Binding, MultiDex
 ]
@@ -293,7 +293,15 @@ class: faq, chapter-2
 
 # Q. 後ろについている -v7 とかは何
 
-support-v7, appcompat-v7
+support-v4, appcompat-v7
+
+---
+
+class: faq, chapter-2
+
+# Q. 後ろについている -v7 とかは何
+
+support-v4, appcompat-v7
 
 # A. そのライブラリがサポートする最小 API レベル
 
@@ -318,6 +326,43 @@ class: normal, chapter-2
 - 一部省略
 - support-v4 がすべての基礎
 - cardview-v7 が仲間外れ
+
+---
+
+class: normal, chapter-2
+
+# 導入方法
+
+.card[
+app/build.gradle
+
+```groovy
+dependencies {
+    compile 'com.android.support:design:23.1.1'
+}
+```
+]
+
+---
+
+class: normal, chapter-2
+
+# 複数のサポート ライブラリ
+
+.card[
+app/build.gradle
+
+```groovy
+ext {
+    supportLibVersion = '23.1.1'
+}
+
+dependencies {
+    compile "com.android.support:design:${supportLibVersion}"
+    compile "com.android.support:cardview-v7:${supportLibVersion}"
+}
+```
+]
 
 ---
 
@@ -361,11 +406,23 @@ class: faq, chapter-2
 - android.app.Fragment
 - android.support.v4.app.Fragment
 
+???
+
+- 一つ目はプラットフォームの Fragment、二つ目は support-v4 の Fragment
+
+---
+
+class: faq, chapter-2
+
+# Q. どっちの Fragment を使えばいいの
+
+- android.app.Fragment
+- android.support.v4.app.Fragment
+
 # A. android.support.v4.app.Fragment
 
 ???
 
-- 一つ目はプラットフォームの Fragment、二つ目は support-v4 の Fragment
 - minSdkVersion が 11 以降のアプリなら android.app.Fragment でも良さそうに思うが、他のサポートライブラリが support-v4 の Fragment を前提としていることがある
 - 特に理由がなければ support-v4 の Fragment を使おう
 
@@ -382,7 +439,7 @@ KitKat 以前のプラットフォームでもマテリアル デザインを実
 
 バックポート専門: プラットフォームにない機能は入れない
 
-<br><br><br>
+<br><br><br><br>
 ]
 
 ???
@@ -403,14 +460,28 @@ class: faq, chapter-2
 - [AppCompatCheckBox](http://developer.android.com/intl/ja/reference/android/support/v7/widget/AppCompatCheckBox.html)
 - [AppCompatRadioButton](http://developer.android.com/intl/ja/reference/android/support/v7/widget/AppCompatRadioButton.html)
 
+???
+
+- 最近のバージョンで追加された
+- 外観の調整と Drawable の Tint 機能のバックポートが含まれる
+
+---
+
+class: faq, chapter-2
+
+# Q. 「AppCompat なんとか」な View を使うべき？
+
+- [AppCompatTextView](http://developer.android.com/intl/ja/reference/android/support/v7/widget/AppCompatTextView.html)
+- [AppCompatButton](http://developer.android.com/intl/ja/reference/android/support/v7/widget/AppCompatButton.html)
+- [AppCompatCheckBox](http://developer.android.com/intl/ja/reference/android/support/v7/widget/AppCompatCheckBox.html)
+- [AppCompatRadioButton](http://developer.android.com/intl/ja/reference/android/support/v7/widget/AppCompatRadioButton.html)
+
 # A. 使わないでいい
 
 ただし、カスタム View を使うときの継承元としては使う
 
 ???
 
-- 最近のバージョンで追加された
-- 外観の調整と Drawable の Tint 機能のバックポートが含まれる
 - 通常通りレイアウト XML から inflate していれば appcompat が自動的に差し替える
 - 念のため、AppCompatActivity や AppCompatDialog は使うことに変わりはない
 
@@ -449,7 +520,13 @@ Nested Scroll にも対応
 
 class: faq, chapter-2
 
-# Q. ListView から移行すべき？
+# Q. ListView から RecyclerView に移行すべき？
+
+---
+
+class: faq, chapter-2
+
+# Q. ListView から RecyclerView に移行すべき？
 
 # A. いま動いているなら別にいいのでは
 
@@ -466,19 +543,12 @@ class: normal, chapter-2
 # cardview-v7
 
 .card[
-<br><br><br><br>
-]
-
-<br>
-
-.card[
-<br><br><br><br>
+カード
 ]
 
 ???
 
-- マテリアル デザインっぽく見せるためだけに使い過ぎない
-  - ガイドライン的には、一貫性のあるコンテンツはリストやタイル グリッドにすべき
+- 一貫性のあるコンテンツはただのリストやタイル グリッドでいい
 
 ---
 
@@ -486,7 +556,25 @@ class: faq, chapter-2
 
 # Q. CardView のマージンが API レベルによって違う
 
-# A. WAI
+???
+
+- API レベル 21 より前は CardView の周囲に余分な空白が入る
+
+---
+
+class: faq, chapter-2
+
+# Q. CardView のマージンが API レベルによって違う
+
+# A.
+
+- values と values-v21 で margin/padding を分ける
+- app:cardUseCompatPadding="true"
+
+???
+
+- elevation 属性のある Lollipop 以降ではシステムが影を出している、それ以前では CardView 自身が影を出している
+- app:cardUseCompatPadding="true" すると Lollipop 以降にもマージンを入れる
 
 ---
 
@@ -517,6 +605,8 @@ class: normal, chapter-2
 # preference-v7/v14
 
 .card[
+設定画面
+
 PreferenceFragmentCompat
 
 API レベル 11 で導入された PreferenceFragment のバックポート
@@ -576,7 +666,7 @@ class: normal, chapter-2
 .card[
 ## mediarouter-v7
 
-Cast 対応
+Google Cast 対応
 
 ## leanback-v17, preference-leanback-v17, recommendation
 
@@ -586,6 +676,12 @@ Android TV 対応
 
 RenderScript (API レベル 11 以降) のバックポート
 ]
+
+---
+
+class: faq, chapter-2
+
+# Q. サポート ライブラリをバージョンアップしたら動かなくなった
 
 ---
 
@@ -609,6 +705,10 @@ dependencies {
 ```
 
 それでもダメなら b.android.com
+
+???
+
+- 例は design だが、design 以外も同様
 
 ---
 
@@ -653,7 +753,7 @@ class: normal, chapter-3
 ナビゲーション ドロワーの中のメニューをリソースで作ることができる
 
 ```xml
-&lt;android.support.design.widget.NavigationView
+&lt;a.s.d.w.NavigationView
   android:id="@+id/nav_view"
   android:layout_height="match_parent"
   android:layout_width="wrap_content"
@@ -671,6 +771,38 @@ class: normal, chapter-3
 - セクション分け、セクションのサブタイトルなどに対応
 - app:actionLayout 属性でカスタム要素を追加できる
   - 例: Gmail の未読数、Google Play Music の「ダウンロード済み」のスイッチなど
+
+---
+
+class: normal, chapter-3
+
+# NavigationView のメニュー
+
+.card[
+```xml
+&lt;menu xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+
+  &lt;group android:checkableBehavior="single"&gt;
+    &lt;item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_dashboard"
+        android:title="Home"
+        app:actionLayout="@layout/action_layout.xml" /&gt;
+    &lt;!-- ... --&gt;
+  &lt;/group&gt;
+  &lt;item android:title="Sub items"&lt;
+    &lt;menu&gt;
+      &lt;item
+          android:icon="@drawable/ic_dashboard"
+          android:title="Sub item 1" /&gt;
+```
+]
+
+???
+
+- グループ分け
+- サブヘッダー
+- actionLayout
 
 ---
 
@@ -707,7 +839,7 @@ EditText に機能追加<br>
 ヒント、エラー、カウンター
 
 ```xml
-&lt;android.support.design.widget.TextInputLayout
+&lt;a.s.d.w.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:counterEnabled="true"
@@ -716,7 +848,7 @@ EditText に機能追加<br>
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:hint="@string/description"/&gt;
-&lt;/android.support.design.widget.TextInputLayout&gt;
+&lt;/a.s.d.w.TextInputLayout&gt;
 ```
 ]
 
@@ -766,14 +898,14 @@ Toast の進化版
 アクションを設定できる
 
 ```java
-Snackbar.make(view, "Here's a Snackbar",
-              Snackbar.LENGTH_LONG)
+Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
         .setAction("Action", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // ...
             }
-        }).show();
+        })
+        .show();
 ```
 ]
 
@@ -812,14 +944,14 @@ class: normal, chapter-3
 スクロールに従って Toolbar を隠す
 
 ```xml
-&lt;CoordinatorLayout&gt;
-  &lt;AppBarLayout&gt;
-    &lt;Toolbar
+&lt;a.s.d.w.CoordinatorLayout&gt;
+  &lt;a.s.d.w.AppBarLayout&gt;
+    &lt;a.s.v7.w.Toolbar
       app:layout_scrollFlags
       ="scroll|enterAlways|snap"/&gt;
-    &lt;TabLayout/&gt;
-  &lt;/AppBarLayout&gt;
-&lt;/CoordinatorLayout&gt;
+    &lt;a.s.d.w.TabLayout/&gt;
+  &lt;/a.s.d.w.AppBarLayout&gt;
+&lt;/a.s.d.w.CoordinatorLayout&gt;
 ```
 ]
 
@@ -835,18 +967,18 @@ class: normal, chapter-3
 Toolbar に動きを加える
 
 ```xml
-&lt;CoordinatorLayout&gt;
-  &lt;AppBarLayout&gt;
-    &lt;CollapsingToolbarLayout
+&lt;a.s.d.w.CoordinatorLayout&gt;
+  &lt;a.s.d.w.AppBarLayout&gt;
+    &lt;a.s.d.w.CollapsingToolbarLayout
       app:layout_scrollFlags
       ="scroll|exitUntilCollapsed"&gt;
       &lt;ImageView
         app:layout_collapseMode="parallax"/&gt;
-      &lt;Toolbar
+      &lt;a.s.v7.w.Toolbar
         app:layout_collapseMode="pin"/&gt;
-    &lt;/CollapsingToolbarLayout&gt;
-  &lt;/AppBarLayout&gt;
-&lt;/CoordinatorLayout&gt;
+    &lt;/a.s.d.w.CollapsingToolbarLayout&gt;
+  &lt;/a.s.d.w.AppBarLayout&gt;
+&lt;/a.s.d.w.CoordinatorLayout&gt;
 ```
 ]
 
@@ -881,6 +1013,7 @@ class: normal, chapter-4
 ???
 
 - BottomSheet というクラスはない
+- CoordinatorLayout の Behavior
 - 使い方が大きく分けて 3 パターン
 
 ---
@@ -896,9 +1029,11 @@ class: normal, chapter-4
 
 Persistent なボトムシート
 
-CoordinatorLayout の anchor 機能で FAB を留める
+CoordinatorLayout の anchor 機能で FAB をボトムシートの上端に留める
 
-<br><br><br><br>
+ボトム シートが引き上げられたときは FAB を隠す
+
+<br>
 ]
 
 ---
@@ -961,9 +1096,11 @@ class: normal, chapter-4
 # BottomSheetBehavior のコールバック
 
 .card[
+状態が変わった時とスライドした時
+
 ```java
 BottomSheetBehavior behavior = BottomSheetBehavior.from(
-    (LinearLayout) findViewById(R.id.bottom_sheet));
+    (FrameLayout) findViewById(R.id.bottom_sheet));
 behavior.setBottomSheetCallback(
     new BottomSheetBehavior.BottomSheetCallback() {
         @Override
@@ -994,6 +1131,294 @@ class: normal, chapter-4
 ただしスクロール部分は NestedScrollView / RecyclerView を使う
 ]
 
+---
+
+class: center, middle, hero, chapter-5
+
+# Support Library Internals
+
+---
+
+class: center, middle, hero, chapter-5
+
+# サポート ライブラリを作る
+
+---
+
+class: normal, chapter-5
+
+# サポート ライブラリを作る
+
+.card[
+CL を送りたい方へ
+
+## AOSP Contributing
+
+## [source.android.com/source/contributing.html](https://source.android.com/source/contributing.html)
+]
+
+???
+
+- GitHub のはミラーなのでプルリクを出してもマージできない
+
+---
+
+class: normal, chapter-5
+
+# 所在
+
+.card[
+```sh
+$ repo init -u \
+    https://android.googlesource.com/platform/manifest
+$ repo sync frameworks/support
+```
+
+依存しているもの
+
+```sh
+$ repo sync external/proguard
+$ repo sync external/doclava
+$ repo sync external/antlr
+$ repo sync prebuilts/gradle-plugin
+$ repo sync prebuilts/tools
+$ repo sync prebuilts/maven_repo/android
+$ repo sync prebuilts/sdk
+$ repo sync tools/external/gradle
+$ repo sync development
+$ repo sync build
+```
+]
+
+---
+
+class: normal, chapter-5
+
+# ビルド
+
+.card[
+```
+$ cd frameworks/support
+$ ./gradlew assembleDebug
+```
+
+`../../out` に AAR ができるはず
+]
+
+???
+
+- サポート ライブラリを含む SDK 全体をビルドする方法もある
+- ディレクトリ構造が違うので Android Studio は使えない、InelliJ を使っている
+- 簡単な CL を出すだけなら
+  - エディターで頑張る
+  - 編集したいクラスだけ Android Studio に持ってきて編集してコピーして戻すのが簡単では
+
+---
+
+class: normal, chapter-5
+
+# ディレクトリ構造
+
+.card[
+```
+design
+├── api (API 一覧)
+├── base
+├── eclair-mr1
+├── honeycomb
+├── honeycomb-mr1
+├── ics
+├── lollipop
+├── src
+├── res (リソース)
+└── res-public (リソース)
+```
+]
+
+???
+
+- 例は design
+- 何も書いていないのはソースディレクトリ
+  - 通常の Android Studio で作るアプリだと app/src/main/java に相当
+  - この下にパッケージが入って Java ファイルが入る
+
+---
+
+class: center, middle, hero, chapter-5
+
+# CoordinatorLayout.Behavior
+
+---
+
+class: normal, chapter-5
+
+# CoordinatorLayout
+
+.card[
+## CoordinatorLayout.Behavior
+
+- 子 View の挙動
+- 複数の子 View 間の挙動の関係
+
+## すること
+
+- レイアウト
+- タッチ イベント処理
+- 他 View との関係
+]
+
+???
+
+- design サポート ライブラリの肝となる ViewGroup
+  - FAB, Snackbar や BottomSheet の機能の基礎
+- Behavior を自作することができる
+
+---
+
+class: normal, chapter-5
+
+# ViewGroup のレイアウト
+
+.card[
+## レイアウトとは
+
+ViewGroup が子 View の大きさを測って配置する
+
+- onMeasure
+  - 子 View の大きさを測る
+  - 自分の大きさを決める
+- onLayout
+  - 子 View を配置する
+
+## LayoutParams
+
+その時のパラメーター
+]
+
+---
+
+class: normal, chapter-5
+
+# CoordinatorLayout の LayoutParams
+
+.card[
+- Behavior
+- Anchor
+  - anchorId
+  - anchorGravity
+- Keyline
+]
+
+---
+
+class: normal, chapter-5
+
+# CoordinatorLayout の onMeasure/onLayout
+
+.card[
+それぞれの個ビューについて
+- Behavior があれば Behavior に処理を移譲<br>
+  Behavior は処理したかどうかを返す
+- Anchor があれば Anchor に従って処理
+- Keyline があれば Keyline に従って処理
+- なければ FrameLayout と同じように処理
+]
+
+---
+
+class: normal, chapter-5
+
+# Behavior でのレイアウト
+
+.card[
+- onMeasureChild
+- onLayoutChild
+]
+
+???
+
+- オーバーライドしなければデフォルト実装が false を返す
+
+---
+
+class: normal, chapter-5
+
+# Behavior でのタッチ イベント処理
+
+.card[
+## 通常のタッチ イベント処理
+- onTouchEvent, onInterceptTouchEvent
+
+## ネスト スクロール系
+- onStartNestedScroll, onNestedScrollAccepted
+- onNestedPreScroll, onNestedScroll
+- onStopNestedScroll
+- onNestedPreFling, onNestedFling
+]
+
+---
+
+class: normal, chapter-5
+
+# Behavior と他の View との関係
+
+.card[
+## 依存するかどうかを申告する
+
+- boolean layoutDependsOn(parent, child, dependency)
+
+## 依存するものに変更があったとき
+
+- onDependentViewChanged, onDependentViewRemoved
+
+]
+
+???
+
+- 例: FAB の Behavior は Snackbar なら layoutDependsOn で true を返す
+- 依存するものがレイアウトされた時、ポジションが変わった時
+
+---
+
+class: normal, chapter-5
+
+# 作った Behavior を使う
+
+.card[
+```xml
+&lt;android.support.design.widget.CoordinatorLayout&gt;
+    &lt;TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        `app:layout_behavior="com.example.MyBehavior"`/&gt;
+&lt;/android.support.design.widget.CoordinatorLayout&gt;
+```
+]
+
+---
+
+class: normal, chapter-5
+
+# カスタム View のデフォルト Behavior
+
+.card[
+```java
+@CoordinatorLayout.DefaultBehavior(
+        FloatingActionButton.Behavior.class)`
+public class FloatingActionButton
+        extends VisibilityAwareImageButton {
+    // ...
+}
+```
+]
+
+---
+
+class: center, middle, hero, chapter-6
+
+# <nobr>サポート ライブラリについての<wbr>ご意見・ご要望</nobr>
+
+## b.android.com
 
 
     </textarea>

@@ -149,6 +149,13 @@
         max-height: 20%
       }
 
+      .card .medium img {
+        float: right;
+        margin-left: 1em;
+        max-width: 70%;
+        max-height: 70%;
+      }
+
       .chapter-1 {
         --bg-color: #2196F3;
       }
@@ -202,7 +209,7 @@
       }
 
       .chapter-14 {
-        --bg-color: #689F38;
+        --bg-color: #757575;
       }
 
       .chapter-15 {
@@ -214,7 +221,7 @@
       }
 
       .chapter-17 {
-        --bg-color: #757575;
+        --bg-color: #689F38;
       }
 
       table {
@@ -241,7 +248,9 @@
     <textarea id="source">
 class: chapter-1, hero, center, middle
 
-# <nobr>Android N</nobr>
+# <nobr>Android N など</nobr>
+
+Google I/O Extended 報告会 2016 in 関西
 
 2016/06/11
 
@@ -278,9 +287,9 @@ class: chapter-1, normal
 # Android N Developer Preview
 
 .card[
-[d.android.com/preview](http://d.android.com/preview)
+Developer Preview 3 ([d.android.com/preview](http://d.android.com/preview))
 
-Developer Preview 3
+Android Beta Program ([android.com/beta](https://www.google.com/android/beta))
 
 .large[![N Developer Preview](n-preview-hero_2x.png)]
 ]
@@ -305,14 +314,11 @@ class: chapter-1, normal
 
 .large[![予定](n-preview-updates_2x.png)]
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↑いまここ
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↑いまここ
 ]
 
 ???
 
-- これからも API は変わる可能性あり
-  - なので targetSdkVersion は 24 ではなく、'N'
-  - targetSdkVersion を N にすると minSdkVersion も N になる
 - Preview 4 で API はフリーズ、あとはバグフィックスのみ (予定)
   - ちゃんとした API レベル 24 になる (予定)
 
@@ -362,10 +368,12 @@ class: chapter-2, normal
 
 同時に複数のアプリを表示
 
-- 二分割
+二つのモード
+
+- 上下・左右 二分割
 - Picture in Picture (TV)
 
-<br><br><br><br><br><br>
+<br><br><br><br><br>
 ]
 
 ???
@@ -383,19 +391,19 @@ class: chapter-2, normal
 # レイアウト
 
 .card[
-これまで通り
+これまで通り「相対的」なデザイン
 
 画面サイズ
-- <s>`-small`, `-normal`, `-large`, `-xlarge`</s>
 - `-sw&lt;N&gt;dp`
 
 幅、高さ
-- <s>`-land`</s>
 - `-w&lt;N&gt;dp`, `-h&lt;N&gt;dp`
 ]
 
 ???
 
+- <s>`-small`, `-normal`, `-large`, `-xlarge`</s>
+- <s>`-land`</s>
 - ベスト プラクティスはこれまで通り。相対的なデザイン
   - wrap_content, match_parent の活用
   - LinearLayout の layout_weight 活用
@@ -413,20 +421,20 @@ class: chapter-2, normal
 .card[
 これまで通り
 
-- 画面リサイズ
-- アクティブ/非アクティブ
+- 画面リサイズ = Activity 作り直し
+- アクティブ/非アクティブ = onResume/onPause
 
 ※ UI 更新の停止は onPause ではなく onStop で
 ]
 
 ???
 
-- 複数アプリが表示されるが、アクティブなのは一つ
-  - アクティブになった時に onResume
-  - アクティブでなくなった時に onPause
 - ちゃんと作っていれば問題ないはず
   - 画面のリサイズ = 画面回転、Activity が作り直される
   - 画面に表示されているがアクティブでない状態 は 上にダイアログ型の Activity が出た状態、onPause は呼ばれるが、onStop は呼ばれない
+- 複数アプリが表示されるが、アクティブなのは一つ
+  - アクティブになった時に onResume
+  - アクティブでなくなった時に onPause
 - ユーザーのインタラクションなしに画面が動く場合、処理の停止は onPause でなく onStop で
   - 動画再生、Twitter クライアントのタイムライン更新、時計アプリの表示変更
   - onStop が呼ばれない場合があるので注意。必ずしないといけない後処理は onPause で。
@@ -476,7 +484,7 @@ AndroidManifest.xml
 </activity>
 ```
 
-最小サイズ 220x220 dp で問題なければ大丈夫
+※ 指定しなくても最小サイズ 220dp
 ]
 
 ???
@@ -511,11 +519,11 @@ class: chapter-2, normal
 # マルチ ウィンドウの切り替え
 
 .card[
-## 分割、自由形式
+## 分割モード
 
 アプリ側からは制御できない。ユーザーが操作する。
 
-## Picture in Picture
+## Picture in Picture モード
 
 Activity.enterPictureInPictureMode()
 ]
@@ -1082,7 +1090,203 @@ LocaleList.getDefault() でリストを取得できる
 
 class: chapter-13, hero, center, middle
 
-# サポート ライブラリ
+# サポート ライブラリ など
+
+---
+
+class: chapter-13, normal
+
+# DayNight (AppCompat v23.2)
+
+.card[
+![DayNight Night](day-night-1.png)
+![DayNight Day](day-night-2.png)
+
+[AppCompat v23.2 — DayNight](https://medium.com/@chrisbanes/appcompat-v23-2-daynight-d10f90c83e94#.vn3v9a3jn)
+
+<br><br><br><br><br><br>
+]
+
+???
+
+- 時間帯によってテーマを変える
+
+---
+
+class: chapter-13, normal
+
+# DayNight (AppCompat v23.2)
+
+.card[
+二つテーマを用意
+
+- values/styles.xml
+- values***-night***/styles.xml
+
+```java
+static {
+    AppCompatDelegate.setDefaultNightMode(
+            AppCompatDelegate.MODE_NIGHT_AUTO);
+}
+public class MyApplication extends Application {
+}
+```
+]
+
+---
+
+class: chapter-13, normal
+
+# VectorDrawableCompat (v23.2)
+
+.card[
+```groovy
+android {
+  defaultConfig {
+    vectorDrawables.useSupportLibrary = true
+  }
+}
+```
+
+]
+
+???
+
+- v21 Lollipop で入った VectorDrawable のバックポート
+- 一年ほど前に Android Studio に入った互換性機能 (ベクターを PNG に変換する機能) とは別
+  - Android 端末側で VectorDrawable を動かす
+  - build.gradle で指定する
+
+---
+
+class: chapter-13, normal
+
+# VectorDrawableCompat (v23.2)
+
+.card[
+res/drawable/ic_android.xml
+
+```xml
+<vector xmlns:android="..."
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="24.0"
+        android:viewportHeight="24.0"
+        android:tint="?attr/colorControlNormal">
+  <path
+      android:fillColor="#FFFFFFFF"
+      android:pathData="..."/>
+</vector>
+```
+]
+
+???
+
+- Android Studio なら File > New > Vector Asset でマテリアル デザインのアイコンを VectorDrawable として追加できる
+
+---
+
+class: chapter-13, normal
+
+# VectorDrawableCompat (v23.2)
+
+.card[
+レイアウト
+```xml
+<ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    `app:srcCompat`="@drawable/ic_android"/>
+```
+
+メニュー
+```xml
+<item
+    android:id="@+id/action_android"
+    android:icon="@drawable/ic_android"
+    android:title="@string/android"
+    app:showAsAction="ifRoom"/>
+```
+]
+
+???
+
+- 通常 android:src と書くところで app:srcCompat と書けば VectorDrawable を使える
+  - ImageButton や FloatingActionButton は ImageView を継承しているので、同じ
+- メニューで使うときはそのまま android:icon でいい
+
+---
+
+class: chapter-13, normal
+
+# VectorDrawableCompat (v23.2)
+
+.card[
+
+コード
+```java
+VectorDrawableCompat icon =
+  VectorDrawableCompat.create(getResources(),
+                              R.drawable.ic_android,
+                              getTheme());
+```
+]
+
+---
+
+class: chapter-13, normal
+
+# BottomSheetBehavior (Design v23.2)
+
+.card[
+![ボトムシート](bs-design.png)
+
+マテリアル デザインの [ボトム シート](https://www.google.com/design/spec/components/bottom-sheets.html) コンポーネントの実装
+
+- モーダルで
+  - <small>BottomSheetDialogFragment</small>
+- 画面上の要素として
+  - ずっと出てる
+  - 隠せる
+
+<br><br>
+]
+
+???
+
+- モーダル
+  - システムの共有メニュー
+- 画面上の要素
+  - Google Play Music など
+- 画面下からドラッグで引き出せる
+
+---
+
+class: chapter-13, normal
+
+# BottomSheetBehavior (Design v23.2)
+
+.card[
+```xml
+&lt;android.support.design.widget.CoordinatorLayout
+    ... &gt;
+    &lt;!-- 他の View --&gt;
+    &lt;FrameLayout
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/windowBackground"
+        `app:layout_behavior="@string/bottom_sheet_behavior"`
+        `app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"`&gt;
+        &lt;!-- ボトム シートの中身 --&gt;
+    &lt;/FrameLayout&gt;
+&lt;/android.support.design.widget.CoordinatorLayout&gt;
+```
+]
+
+???
+- どんな View でもボトム シートにできる
+- ボトムシート内のスクロールする部分は NestedScrollView か RecyclerView
 
 ---
 
@@ -1091,31 +1295,88 @@ class: chapter-13, normal
 # ConstraintLayout
 
 .card[
+.medium[
+![ConstraintLayout](constraint-layout.png)
+]
 
+制約ベースのレイアウト
+
+レイアウト エディターとの統合
+
+<br><br><br><br><br>
 ]
 
 ???
 
 - 超すごい RelativeLayout
-
-<!--
-
-   - Night Mode
-   - BottomSheetBehavior
-   - VectorDrawableCompat, AnimatedVectorDrawableCompat
-   - RecyclerView アイテム アニメーション
-
--->
+- 既存の ViewGroup ならネストしないと実現できなかったような複雑なレイアウトを ConstraintLayout 一つで実現できる
 
 ---
 
-class: chapter-13, hero
+class: chapter-13, normal
+
+# FlexboxLayout
+
+.card[
+![FlexboxLayout 縦長](flexbox-layout-1.png)
+
+[github.com/google/flexbox-layout](https://github.com/google/flexbox-layout)
+
+CSS の flexbox を Android アプリでも使える
+
+```groovy
+dependencies {
+ compile 'com.google.android:flexbox:0.2.2'
+}
+```
+
+<br><br>
+]
+
+???
+
+- 超すごい LinearLayout
+- 折り返しできる
+
+---
+
+class: chapter-13, normal
+
+# FlexboxLayout
+
+.card[
+.large[
+![FlexboxLayout 横長](flexbox-layout-2.png)
+]
+]
+
+---
+
+class: chapter-13, normal
+
+# サポート ライブラリ 今後の予定
+
+.card[
+N との互換性 (通知など)
+
+support-v4 を小分けに
+
+最小 SDK バージョンを 9 に
+]
+
+---
+
+class: chapter-14, hero
 
 # N Developer Preview
 
 ## d.android.com/preview
 
-### テスト、フィードバックをお願いします
+# サポート ライブラリ
+
+## b.android.com
+
+### バグ報告、機能要望はこちらから
 
     </textarea>
     <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">

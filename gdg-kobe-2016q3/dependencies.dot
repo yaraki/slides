@@ -1,0 +1,64 @@
+digraph dependencies {
+        graph [ dpi = 256 ];
+        rankdir = "TB";
+
+        "compat" -> "annotations";
+
+        "media-compat" -> "annotations";
+        "media-compat" -> "compat";
+
+        "core-utils" -> "annotations";
+        "core-utils" -> "compat";
+
+        "core-ui" -> "annotations";
+        "core-ui" -> "compat";
+
+        "fragment" -> "annotations";
+        "fragment" -> "compat";
+        "fragment" -> "core-utils";
+        "fragment" -> "media-compat";
+        "fragment" -> "core-ui";
+
+        "support-v4" -> "compat";
+        "support-v4" -> "media-compat";
+        "support-v4" -> "core-utils";
+        "support-v4" -> "core-ui";
+        "support-v4" -> "fragment";
+
+        "vector-drawable" -> "compat";
+        "animated-vector-drawable" -> "vector-drawable";
+
+        "appcompat-v7" -> "support-v4";
+        "appcompat-v7" -> "vector-drawable";
+        "appcompat-v7" -> "animated-vector-drawable";
+
+        "recyclerview-v7" -> "compat";
+        "recyclerview-v7" -> "core-ui";
+
+        "design" -> "appcompat-v7";
+        "design" -> "recyclerview-v7";
+
+        "support-v13" -> "support-v4";
+
+        "preference-v7" -> "appcompat-v7";
+        "preference-v7" -> "recyclerview-v7";
+
+        "palette-v7" -> "compat";
+        "palette-v7" -> "core-utils";
+
+        "gridlayout-v7" -> "support-v4";
+
+//        "mediarouter-v7" -> "palette-v7";
+//        "mediarouter-v7" -> "appcompat-v7";
+
+        "percent" -> "compat";
+
+        "cardview-v7" -> "annotations";
+
+        "transition" -> "support-v4";
+
+//        "recommendation" -> "support-v4";
+
+//        "leanback-v17" -> "support-v4";
+//        "leanback-v17" -> "recyclerview-v7";
+}

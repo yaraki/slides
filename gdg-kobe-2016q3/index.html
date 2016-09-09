@@ -488,7 +488,7 @@ TransitionManager.beginDelayedTransition(root);
 アニメーションしたい変更を行う
 
 ```java
-view.setVisibility(View.GONE);
+view.setVisibility(View.INVISIBLE);
 ```
 ]
 
@@ -759,12 +759,6 @@ class: hero, middle, center, chapter-6
 
 # View を動かす
 
-<!--
-   - LayoutParams を変更する
-   - offsetLeftAndRight/TopAndBottom
-   - setTranslationX/Y
-   -->
-
 ---
 
 class: normal, chapter-6
@@ -774,8 +768,7 @@ class: normal, chapter-6
 .card[
 View が表示される位置を決定する要素
 
-- LayoutParams
-- 親の padding
+- レイアウト
 - offsetLeftAndRight, offsetTopAndBottom
 - setTranslationX, setTranslationY
 ]
@@ -784,7 +777,7 @@ View が表示される位置を決定する要素
 
 class: normal, chapter-6
 
-# LayoutParams, 親の padding
+# レイアウト
 
 .card[
 - FrameLayout.LayoutParams<br>
@@ -811,7 +804,16 @@ ViewCompat.offsetLeftAndRight(view, 100);
 ```
 
 指定した値だけ View を現在の位置からずらす
+
+<strong>レイアウトを引き起こさない</strong>
 ]
+
+???
+
+- あまり知らない、使ったことがない人が多いのでは
+- 以前のバージョンのプラットフォームでは盛大にバグっていた
+  - Marshmallow でやっとまともに直った
+  - ViewCompat の中にバグ修正版が入っている
 
 ---
 
@@ -824,7 +826,9 @@ class: normal, chapter-6
 ViewCompat.setTranslationX(view, 100);
 ```
 
-View の本来の位置から指定した値だけずらす
+View の本来の位置からどれだけずらすかを指定する
+
+<strong>レイアウトを引き起こさない</strong>
 ]
 
 ---
@@ -851,6 +855,63 @@ View は 100 ずれたまま
 
 ---
 
+class: normal, chapter-6
+
+# getLeft/Top と getX/Y の違い
+
+.card[
+```java
+int left = view.getLeft();
+int top = view.getTop();
+```
+
+- レイアウトの値を含む
+- offsetTopAndBottom/LeftAndRight の値を含む
+- translationX/Y の値を含まない (= <strong>base position</strong>)
+
+```java
+int y = ViewCompat.getY(view);
+int x = ViewCompat.getX(view);
+```
+
+- 〃
+- translationX/Y の値を含む (= <strong>transformation position</strong>)
+]
+
+---
+
+class: normal, chapter-6
+
+# offsetT&B/offsetL&R の使い道
+
+.card[
+ユーザーがドラッグする場合
+
+例: ViewDragHelper
+
+ViewGroup の中で子 View をずらしたい場合
+]
+
+---
+
+class: normal, chapter-6
+
+# setTranslationX/Y の使い道
+
+.card[
+アニメーションで一時的に View を動かしたい場合
+
+```java
+ViewCompat.animate(view).translationX(300);
+```
+
+```java
+ObjectAnimator.ofFloat(view, "translationX", 300).start();
+```
+]
+
+---
+
 class: hero, middle, center, chapter-7
 
 # CoordinatorLayout
@@ -866,10 +927,10 @@ class: normal, chapter-7
 
 Design サポート ライブラリの中心的なコンポーネント
 
-- Anchor
-- View inset
 - Keyline
 - Behavior
+- <strong>View inset</strong>
+- <strong>Anchor</strong>
 
 <br><br>
 ]
@@ -878,15 +939,164 @@ Design サポート ライブラリの中心的なコンポーネント
 
 class: normal, chapter-7
 
+# FloatingActionButton (FAB)
+
 .card[
+![FAB](design-floatingactionbutton.png)
+
+影付きの丸い ImageButton
+
+```xml
+&lt;a.s.d.w.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fabSize="normal"
+        app:srcCompat="@drawable/ic_done" /&gt;
+```
+]
+
+---
+
+class: normal, chapter-7
+
+# Snackbar
+
+.card[
+![Snackbar](design-snackbar.png)
+
+Toast の進化版
+
+アクションを設定できる
+
+```java
+Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+        .setAction("Action", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // ...
+            }
+        })
+        .show();
+```
+]
+
+???
+
+- 下からスライドでアニメーションしつつ表示される
+
+---
+
+class: normal, chapter-7
+
+# FAB が Snackbar を避ける
+
+.card[
+![FAB](design-snackbar.png)
+FAB を CoodinatorLayout に入れて Snackbar を使うと自動的に発動
+
+アニメーションのリスナーなどをセットする必要はない
+
+Snackbar は setTranslationY でアニメーションしている
+
+FAB は Snackbar をアニメーションしつつ避ける
 
 ]
 
+???
 
-<!--
-- Anchor 機能の概要
-- どうやってアニメーションする相手をトラックしているのか
--->
+- どうやってアニメーションする相手を追跡しているのか
+  - レイアウトが発生しているなら話は簡単。配置しなおせばいいだけ
+  - だがそれだと遅すぎる。レイアウトを引き起こさないようなやり方で動いているはず
+
+---
+
+class: normal, chapter-7
+
+# CoodinatorLayout が取り持つ
+
+.card[
+- FAB は CoodinatorLayout の下端に沿うと宣言 (app:layout_dodgeInsetEdges="bottom")
+- Snackbar は CoordinatorLayout の下端を押し上げると宣言 (app:layout_insetEdge="bottom")
+- CoordinatorLayout は FAB に下端が押し上げられていることを通知
+- FAB が避ける
+
+CoodinatorLayout はどうやって Snackbar の動きを検知している？
+]
+
+---
+
+class: normal, chapter-7
+
+# Anchor
+
+.card[
+![Anchor](design-collapsingtoolbarlayout.png)
+
+FAB が AppBarLayout の下端に anchor されている (app:layout_anchor="@id/ab")
+
+スクロールして AppBarLayout の下端が動けば FAB も追従する
+
+CoodinatorLayout はどうやって AppBarLayout の動きを検知している？
+]
+
+---
+
+class: normal, chapter-7
+
+# ViewTreeObserver.OnPreDrawListener
+
+.card[
+View が描画される度に呼ばれる
+
+CoodinatorLayout は追従すべき View を検知して offsetLeftAndRight/TopAndBottom を使って動かす (= レイアウトが発生しない)
+]
+
+---
+
+class: normal, chapter-7
+
+# 再び beginDelayedTransition
+
+.card[
+```java
+TransitionManager.beginDelayedTransition(root);
+view.setVisibility(View.INVISIBLE);
+```
+
+なぜこれだけでアニメーションできるのか
+
+どうやって setVisibility 前の状態と後の状態を検知しているのか
+]
+
+---
+
+class: normal, chapter-7
+
+# ViewTreeObserver.OnPreDrawListener
+
+.card[
+View が描画される度に呼ばれる
+
+1. 画面変更前の状態を取得
+2. OnPreDrawListener をセットする
+3. (画面を変更)
+4. OnPreDrawListener が呼ばれる = 画面変更後の状態を取得
+5. 変更前と変更後を比較してアニメーションを開始
+6. OnPreDrawListener を外す
+]
+
+---
+
+class: chapter-13, normal
+
+# 伝えたかったこと
+
+.card[
+画面を操作するときはレイアウトの有無を意識するようにする
+
+適切な方法を使って不必要なレイアウトを引き起こさないようにする
+]
 
 ---
 

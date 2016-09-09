@@ -288,7 +288,7 @@ class: normal, chapter-1
 
 Developer Programs Engineer @Google
 
-- サポート ライブラリ (主に design と transition)
+- サポート ライブラリ (主に design)
 - Google I/O アプリ
 - Google Santa Tracker アプリ
 - [d.android.com/samples](http://d.android.com/samples) のサンプルいろいろ
@@ -369,14 +369,17 @@ class: normal, chapter-2
 
 class: normal, chapter-2
 
-# 後ろに付いている -v4 や -v7 は何
+# 最小 SDK バージョン
 
 .card[
-ライブラリ自体のバージョンではない
+ライブラリ名の後ろやパッケージ名に付いている v4 や v7
+- support-v4
+- appcompat-v7 
 
-~~そのライブラリがサポートする最小 API レベル~~
+~~そのライブラリがサポートする最小 API レベル~~  
+すべてのライブラリの最小 SDK バージョンは最低でも 9
 
-歴史的経緯
+v4, v7 は歴史的経緯
 ]
 
 ???
@@ -427,11 +430,91 @@ class: normal, chapter-2
 
 class: hero, middle, center, chapter-3
 
-# 開発の様子
+# Transition Support Library
 
 ---
 
 class: normal, chapter-3
+
+# Transition Support Library
+
+.card[
+KitKat で追加された Transition API のバックポート
+
+API レベル 14 (Ice Cream Sandwich) 以降で使える
+
+[Transitions in the Android Support Library](https://medium.com/google-developers/transitions-in-the-android-support-library-8bc86a1d688e#.z2vlc95mo)
+
+[SimpleTransition](https://github.com/google/android-ui-toolkit-demos/tree/master/Transitions/SimpleTransition)
+]
+
+---
+
+class: normal, chapter-3
+
+# Scene
+
+.card[
+複数のレイアウト XML の切り替えをアニメーション
+
+それぞれのレイアウト XML ごとに Scene を作る
+
+```java
+Scene scene = Scene.getSceneForLayout(root, R.layout.scene, this);
+```
+
+遷移
+
+```java
+TransitionManager.go(scene);
+```
+]
+
+---
+
+class: normal, chapter-3
+
+# beginDelayedTransition
+
+.card[
+beginDelayedTransition を呼ぶ
+
+```java
+TransitionManager.beginDelayedTransition(root);
+```
+
+アニメーションしたい変更を行う
+
+```java
+view.setVisibility(View.GONE);
+```
+]
+
+---
+
+class: normal, chapter-3
+
+# バージョン 24.2.0
+
+.card[
+KitKat で追加された API のみ
+- ChangeBounds, Fade, AutoTransition など
+- TransitionManager
+
+Lollipop 以降で追加された API は (まだ) ない
+- Slide, Explode, 各種 Propagation など
+- Activity/Fragment Transition
+]
+
+---
+
+class: hero, middle, center, chapter-4
+
+# サポート ライブラリの開発
+
+---
+
+class: normal, chapter-4
 
 # ソース取得
 
@@ -461,7 +544,7 @@ $ repo sync -c
 
 ---
 
-class: normal, chapter-3
+class: normal, chapter-4
 
 # ビルド
 
@@ -488,7 +571,7 @@ $ ./gradlew assembleDebug
 
 ---
 
-class: normal, chapter-3
+class: normal, chapter-4
 
 # 開発の流れ
 
@@ -504,7 +587,7 @@ class: normal, chapter-3
 
 ---
 
-class: normal, chapter-3
+class: normal, chapter-4
 
 # 今日の話題
 
@@ -520,13 +603,13 @@ CoordinatorLayout
 
 ---
 
-class: hero, middle, center, chapter-4
+class: hero, middle, center, chapter-5
 
 # レイアウト
 
 ---
 
-class: normal, chapter-4
+class: normal, chapter-5
 
 # View と ViewGroup
 
@@ -542,7 +625,7 @@ FrameLayout, LinearLayout, RelativeLayout など
 
 ---
 
-class: normal, chapter-4
+class: normal, chapter-5
 
 # LayoutParams
 
@@ -564,7 +647,7 @@ XML で「layout_なんとか」な属性
 
 ---
 
-class: normal, chapter-4
+class: normal, chapter-5
 
 # レイアウト
 
@@ -586,7 +669,7 @@ class: normal, chapter-4
 
 ---
 
-class: normal, chapter-4
+class: normal, chapter-5
 
 # レイアウトを引き起こす操作を知る
 
@@ -611,7 +694,7 @@ class: normal, chapter-4
 
 ---
 
-class: normal, chapter-4
+class: normal, chapter-5
 
 # TextInputLayout
 
@@ -634,7 +717,7 @@ class: normal, chapter-4
 
 ---
 
-class: normal, chapter-4
+class: normal, chapter-5
 
 # 文字のアニメーション
 
@@ -654,13 +737,13 @@ class: normal, chapter-4
 
 ---
 
-class: hero, middle, center, chapter-5
+class: hero, middle, center, chapter-6
 
 # CoordinatorLayout
 
 ---
 
-class: hero, middle, center, chapter-6
+class: hero, middle, center, chapter-7
 
 # View を動かす
 

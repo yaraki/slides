@@ -441,6 +441,8 @@ class: normal, chapter-3
 .card[
 KitKat で追加された Transition API のバックポート
 
+アニメーションを自動的に生成して実行する
+
 API レベル 14 (Ice Cream Sandwich) 以降で使える
 
 [Transitions in the Android Support Library](https://medium.com/google-developers/transitions-in-the-android-support-library-8bc86a1d688e#.z2vlc95mo)
@@ -558,7 +560,7 @@ $ repo sync -c external/proguard \
                prebuilts/tools \
                prebuilts/maven_repo/android \
                prebuilts/sdk \
-               tools/external/gradle
+               tools/external/gradle \
                build
 
 $ cd frameworks/support
@@ -579,6 +581,8 @@ class: normal, chapter-4
 バグ報告/新機能要望
  - b.android.com
  - 自分、社内
+
+frameworks/support の中のコードを編集
 
 [Gerrit](https://www.gerritcodereview.com/) によるコード レビュー
 
@@ -696,7 +700,7 @@ class: normal, chapter-5
 
 class: normal, chapter-5
 
-# TextInputLayout
+# 例: TextInputLayout
 
 .card[
 ヒントのテキストをアニメーション
@@ -737,15 +741,152 @@ class: normal, chapter-5
 
 ---
 
+class: normal, chapter-5
+
+# レイアウト まとめ
+
+.card[
+画面更新の際はレイアウトが引き起こされるかどうかを常に意識する
+
+アニメーション中は絶対にレイアウトを引き起こしてはいけない
+
+それ以外の時も最小限に留める
+]
+
+---
+
 class: hero, middle, center, chapter-6
 
-# CoordinatorLayout
+# View を動かす
+
+<!--
+   - LayoutParams を変更する
+   - offsetLeftAndRight/TopAndBottom
+   - setTranslationX/Y
+   -->
+
+---
+
+class: normal, chapter-6
+
+# View の位置
+
+.card[
+View が表示される位置を決定する要素
+
+- LayoutParams
+- 親の padding
+- offsetLeftAndRight, offsetTopAndBottom
+- setTranslationX, setTranslationY
+]
+
+---
+
+class: normal, chapter-6
+
+# LayoutParams, 親の padding
+
+.card[
+- FrameLayout.LayoutParams<br>
+  margin, gravity
+- LinearLayout.LayoutParams<br>
+  margin, weight, gravity
+- RelativeLayout.LayoutParams<br>
+  alignParent*, above, below, …
+
+- 親の padding
+
+<strong>レイアウトを引き起こす</strong>
+]
+
+---
+
+class: normal, chapter-6
+
+# offsetLeftAndRight, offsetTopAndBottom
+
+.card[
+```java
+ViewCompat.offsetLeftAndRight(view, 100);
+```
+
+指定した値だけ View を現在の位置からずらす
+]
+
+---
+
+class: normal, chapter-6
+
+# setTranslationX, setTranslationY
+
+.card[
+```java
+ViewCompat.setTranslationX(view, 100);
+```
+
+View の本来の位置から指定した値だけずらす
+]
+
+---
+
+class: normal, chapter-6
+
+# offsetLeftAndRight/TopAndBottom と setTranslationX/Y の違い
+
+.card[
+```java
+ViewCompat.offsetLeftAndRight(view, 100);
+ViewCompat.offsetLeftAndRight(view, 100);
+```
+
+View は 200 ずれる
+
+```java
+ViewCompat.setTranslationX(view, 100);
+ViewCompat.setTranslationX(view, 100);
+```
+
+View は 100 ずれたまま
+]
 
 ---
 
 class: hero, middle, center, chapter-7
 
-# View を動かす
+# CoordinatorLayout
+
+---
+
+class: normal, chapter-7
+
+# CoordinatorLayout
+
+.card[
+![CoordinatorLayout](coordinatorlayout.png)
+
+Design サポート ライブラリの中心的なコンポーネント
+
+- Anchor
+- View inset
+- Keyline
+- Behavior
+
+<br><br>
+]
+
+---
+
+class: normal, chapter-7
+
+.card[
+
+]
+
+
+<!--
+- Anchor 機能の概要
+- どうやってアニメーションする相手をトラックしているのか
+-->
 
 ---
 

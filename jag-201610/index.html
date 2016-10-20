@@ -1080,10 +1080,12 @@ class: chapter-13, normal
 ## 新機能
 
 - アプリ ショートカット API
-- 丸型アプリ アイコン
-- ライブ壁紙の強化
 - 画像キーボード
-- ストレージ マネージャーの強化
+- 丸型アプリ アイコン
+- 空き容量確保インテント
+- ライブ壁紙の強化
+- デモモード検知
+- VR モード用のスレッド スケジューリング
 ]
 
 ---
@@ -1105,10 +1107,128 @@ class: chapter-14, normal
 
 アプリから静的または動的に項目を登録 (個数制限あり)
 
-メニュー項目をドラッグして独立したショートカットを作成できる
+メニュー項目をドラッグして独立したショートカットを作成できる (ピン留め)
 
 <br><br><br>
 ]
+
+---
+
+class: chapter-14, normal
+
+# 静的なショートカット : 定義
+
+.card[
+res/xml/shortcuts.xml
+
+```xml
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+  <shortcut
+      android:shortcutId="compose"
+      android:enabled="true"
+      android:icon="@drawable/compose_icon"
+      android:shortcutShortLabel="@string/short_label1"
+      android:shortcutLongLabel="@string/long_label1"
+      android:shortcutDisabledMessage="@string/disabled_message1">
+    <intent
+        android:action="android.intent.action.VIEW"
+        android:targetPackage="com.example.myapplication"
+        android:targetClass="com.example.myapplication.ComposeActivity" />
+    <categories android:name="android.shortcut.conversation" />
+  </shortcut>
+</shortcuts>
+```
+]
+
+???
+
+- インテントに基づいた API
+- 複数のショートカットを定義する場合は shortcut**s** 要素の中に shortcut 要素を追加する
+- shortLabel は英数字で 10 文字程度、longLabel は 25 文字程度を目安に
+
+---
+
+class: chapter-14, normal
+
+# 静的なショートカット : 宣言
+
+.card[
+AndroidManifest.xml
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.example.myapplication">
+  <application ... >
+    <activity android:name=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+      <meta-data android:name="android.app.shortcuts"
+                 android:resource="`@xml/shortcuts`" />
+    </activity>
+  </application>
+</manifest>
+```
+]
+
+???
+
+- ランチャー カテゴリーを持つ Activity にショートカットを定義したリソース ファイルをメタ データとして指定する
+
+---
+
+class: chapter-14, normal
+
+# 動的なショートカット
+
+.card[
+```java
+ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+
+ShortcutInfo shortcut = new ShortcutInfo.Builder(this, "id1")
+    .setShortLabel("Web site")
+    .setLongLabel("Open the web site")
+    .setIcon(Icon.createWithResource(context, R.drawable.icon_website))
+    .setIntent(new Intent(Intent.ACTION_VIEW,
+                   Uri.parse("https://www.mysite.example.com/")))
+    .build();
+
+shortcutManager.setDynamicShortcuts(Arrays.asList(shortcut));
+```
+]
+
+???
+
+- チャット アプリで頻繁にチャットする相手など
+- setDynamicShortcuts はショートカットの一覧を一気に設定、addDynamicShortcuts でショートカット追加, updateShortcuts で更新
+- disableShortcuts でピン留めされたショートカットの無効化
+  - チャット アプリで相手がアカウントを削除したときなど
+
+---
+
+class: chapter-14, normal
+
+# 動的なショートカットの注意点
+
+.card[
+- ショートカット更新系の呼び出しには頻度制限がある
+  ```
+  $ adb shell cmd shortcut reset-throttling [ --user your-user-id ]
+  ```
+- 外観上 4 つまで (API 的には現在 5 つまで)
+- 適切に維持する
+  - 追加、削除、更新、無効化
+- 端末のバックアップ & リストア
+  - 動的なショートカットはリストアされない
+  - ピン留めされたショートカットはリストアされる
+]
+
+???
+
+- 開発・テスト時には呼び出し制限をリセットする adb コマンドを使える
+- 個数制限は静的・動的合わせて 5 つ
+- アプリ起動時に毎回、動的なショートカット一覧が適切になっているかチェックする
 
 ---
 
@@ -1129,9 +1249,93 @@ class: chapter-15, normal
 
 アプリ側がどんな種類の入力を受け付けるか宣言するための API
 
-サポート ライブラリに互換用の API を追加予定
+サポート ライブラリにも互換用の API
 
 <br><br><br><br>
+]
+
+---
+
+class: chapter-15, normal
+
+# アプリ側
+
+.card[
+```java
+EditText editText = new EditText(this) {
+    @Override
+    public InputConnection onCreateInputConnection(EditorInfo editorInfo) {
+        final InputConnection ic = super.onCreateInputConnection(editorInfo);
+*       EditorInfoCompat.setContentMimeTypes(editorInfo,
+*               new String [] {"image/png"});
+
+        final InputConnectionCompat.OnCommitContentListener callback =
+            new InputConnectionCompat.OnCommitContentListener() {
+                @Override
+                public boolean onCommitContent(InputContentInfoCompat inputContentInfo,
+                        int flags, Bundle opts) {
+                    // read and display inputContentInfo asynchronously
+                    if (BuildCompat.isAtLeastNMR1() && (flags &
+                        InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
+                        try {
+                            inputContentInfo.requestPermission();
+                        }
+                        catch (Exception e) {
+                            return false; // return false if failed
+                        }
+                    }
+
+                    // read and display inputContentInfo asynchronously.
+                    // call inputContentInfo.releasePermission() as needed.
+
+                    return true;  // return true if succeeded
+                }
+            };
+        return InputConnectionCompat.createWrapper(ic, editorInfo, callback);
+    }
+};
+```
+]
+
+???
+
+- どんなコンテンツを受け付けるか MIME タイプで宣言する
+  - 画像以外も OK
+
+---
+
+class: chapter-16, hero, center, middle
+
+# その他
+
+---
+
+class: chapter-16, normal
+
+# 丸型アイコン
+
+.card[
+![丸型アイコン](round-icon.png)
+
+`android:icon` と別に `android:roundIcon` が追加された
+
+端末によってどちらのアイコンが使われるかが変わる
+
+Android Studio の Asset Studio でも作成できる
+
+<br><br>
+]
+
+---
+
+class: chapter-16, normal
+
+# 空き容量確保インテント
+
+.card[
+`ACTION_MANAGE_STORAGE` インテントで不要アプリ・コンテンツを削除するための画面を開くことができる
+
+容量が足りない時に
 ]
 
 ---

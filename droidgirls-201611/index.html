@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>Material Design Support Library</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+      @import url(http://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
+
+      body {
+        font-family: 'Noto Sans Japanese', sans-serif;
+      }
+
+      a {
+        text-decoration: none;
+        color: blue;
+      }
+
+      a:visited {
+        color: blue;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      li {
+        line-height: 1.8;
+      }
+
+      h1, h2, h3 {
+        font-family: 'Noto Sans Japanese', sans-serif;
+        font-weight: bold;
+      }
+
+      /* ページ番号 */
+      .remark-slide-number {
+        color: #CCCCCC;
+        font-size: 12pt;
+        opacity: 1;
+      }
+
+      .hero {
+        background-color: var(--bg-color);
+        color: #fff;
+      }
+
+      .hero h1, .hero h2, .hero h3 {
+        color: #FFFFFF;
+      }
+
+      .hero h2 {
+        margin-left: 1em;
+      }
+
+      .normal {
+        background-image:
+        url("../android-icon-72x72.png"),
+        linear-gradient(180deg, var(--bg-color) 50%, #FFFFFF 50%);
+        background-position:
+        right 0.4em bottom 1em,
+        right 0em bottom 8em;
+      }
+
+      .normal h1 {
+        color: white;
+        margin-top: 0px;
+        margin-left: 1em;
+        font-size: 28pt;
+      }
+
+      .normal h2 {
+        margin: 0px;
+        font-size: 20pt;
+      }
+
+      .normal {
+        font-size: 18pt;
+      }
+
+      .faq {
+        background-color: var(--bg-color);
+        font-size: 20pt;
+        color: #fff;
+      }
+
+      .faq h1 {
+        font-size: 28pt;
+      }
+
+      .faq a {
+        color: #fff;
+      }
+
+      .remark-code, .remark-inline-code {
+        font-family: monospace;
+      }
+
+      code {
+        border-radius: 4px;
+        max-height: 400px;
+      }
+
+      .hljs-googlecode .hljs {
+        background-color: #EEEEEE;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 0.1em;
+        padding: 1em 2em;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+      }
+
+      .card img {
+        float: right;
+        margin-left: 1em;
+        max-width: 32%;
+        max-height: 32%;
+      }
+
+      .card video {
+        float: right;
+        margin-left: 1em;
+        max-width: 32%;
+        max-height: 32%;
+      }
+
+      .card .large img {
+        float: none;
+        max-width: 90%;
+        max-height: 100%;
+      }
+
+      .card .large video {
+        float: none;
+        max-width: 90%;
+        max-height: 100%;
+      }
+
+      .card .small {
+        font-size: 16pt;
+      }
+
+      .card .small img {
+        margin-top: 30%;
+        max-width: 20%;
+        max-height: 20%
+      }
+
+      .card .medium img {
+        float: right;
+        margin-left: 1em;
+        max-width: 70%;
+        max-height: 70%;
+      }
+
+      .chapter-1 {
+        --bg-color: #2196F3;
+      }
+
+      .chapter-2 {
+        --bg-color: #3F51B5;
+      }
+
+      .chapter-3 {
+        --bg-color: #009688;
+      }
+
+      .chapter-4 {
+        --bg-color: #FF5722;
+      }
+
+      .chapter-5 {
+        --bg-color: #F44336;
+      }
+
+      .chapter-6 {
+        --bg-color: #E91E63;
+      }
+
+      .chapter-7 {
+        --bg-color: #9C27B0;
+      }
+
+      .chapter-8 {
+        --bg-color: #673AB7;
+      }
+
+      .chapter-9 {
+        --bg-color: #795548;
+      }
+
+      .chapter-10 {
+        --bg-color: #607D8B;
+      }
+
+      .chapter-11 {
+        --bg-color: #039BE5;
+      }
+
+      .chapter-12 {
+        --bg-color: #00838F;
+      }
+
+      .chapter-13 {
+        --bg-color: #43A047;
+      }
+
+      .chapter-14 {
+        --bg-color: #757575;
+      }
+
+      .chapter-15 {
+        --bg-color: #827717;
+      }
+
+      .chapter-16 {
+        --bg-color: #EF6C00;
+      }
+
+      .chapter-17 {
+        --bg-color: #689F38;
+      }
+
+      table {
+        width:100%;
+        border-collapse: separate;
+        border-spacing: 0px;
+      }
+
+      th {
+        padding: 6px;
+        background-color: #eee;
+        border: 1px solid #b9b9b9;
+      }
+
+      td {
+        padding: 6px;
+        background-color: #fff;
+        border: 1px solid #b9b9b9;
+      }
+
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+class: chapter-1, hero, center, middle
+
+# <nobr>Design Support Library</nobr>
+
+droid girls meetup
+
+2016/11/16
+
+荒木佑一
+
+---
+
+class: chapter-1, normal
+
+# 自己紹介
+
+.card[
+荒木佑一
+
+[@yuichi_araki](https://twitter.com/yuichi_araki)
+
+Developer Programs Engineer @Google
+
+- サポート ライブラリ (主に design)
+- Google I/O アプリ
+- Google Santa Tracker アプリ
+- [d.android.com/samples](http://d.android.com/samples) のサンプルいろいろ
+- [CameraView](https://github.com/google/cameraview)
+]
+
+---
+
+class: chapter-2, hero, middle, center
+
+# サポート ライブラリ<br>チームからの<br>お知らせ
+
+---
+
+- minSdkVersion が 9 になった
+- 4 が分割された
+- b.android.com
+
+---
+
+class: chapter-3, hero, middle, center
+
+# デザイン サポート ライブラリ
+
+---
+
+(カッコは chapter-)
+
+- gradle の一行 (3)
+- NavigationView (4)
+- BottomNavigationView (5)
+- TabLayout (6)
+- TextInputLayout (7)
+- FloatingActionButton (8)
+- Snackbar (9)
+- CoordinatorLayout (10)
+- AppBarLayout (11)
+- CollapsingToolbarLayout (12)
+- BottomSheet (13)
+
+---
+
+class: chapter-17, hero
+
+# バグ・機能要望
+
+## b.android.com
+
+### スクリーンショット重要
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var hljs = remark.highlighter.engine;
+    </script>
+    <script src="http://gnab.github.io/remark/remark.language.js"></script>
+    <script>
+      var slideshow = remark.create({
+        highlightStyle: 'googlecode',
+        highlightLanguage: 'remark',
+        highlightLines: true,
+        highlightSpans: true,
+        navigation: {
+          click: false,
+          scroll: false,
+          touch: true
+        }
+      });
+    </script>
+
+  </body>
+</html>

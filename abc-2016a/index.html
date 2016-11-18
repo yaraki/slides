@@ -315,7 +315,7 @@ Android プラットフォーム本体と並行して開発される
 - プラットフォーム本体の機能のバックポート
 - プラットフォーム本体には存在しない追加の機能
 
-最新版 24.2.0
+最新版 25.0.1
 
 ]
 
@@ -427,7 +427,9 @@ API レベル 14 (Ice Cream Sandwich) 以降で使える
 
 [Transitions in the Android Support Library](https://medium.com/google-developers/transitions-in-the-android-support-library-8bc86a1d688e#.z2vlc95mo)
 
-[SimpleTransition](https://github.com/google/android-ui-toolkit-demos/tree/master/Transitions/SimpleTransition)
+.large[
+![Transition](transition.png)
+]
 ]
 
 ---
@@ -560,7 +562,7 @@ class: normal, chapter-4
 .card[
 バグ報告/新機能要望
  - b.android.com
- - 自分、社内
+ - 社内、自分
 
 frameworks/support の中のコードを編集
 
@@ -617,9 +619,9 @@ class: normal, chapter-5
 XML で「layout_なんとか」な属性
 
 - FrameLayout.LayoutParams<br>
-  margin
+  margin, gravity
 - LinearLayout.LayoutParams<br>
-  margin, weight
+  margin, weight, gravity
 - RelativeLayout.LayoutParams<br>
   alignParent*, above, below, …
 - …
@@ -850,12 +852,30 @@ int top = view.getTop();
 - translationX/Y の値を含まない (= <strong>base position</strong>)
 
 ```java
-int y = ViewCompat.getY(view);
-int x = ViewCompat.getX(view);
+float x = ViewCompat.getX(view);
+float y = ViewCompat.getY(view);
 ```
 
 - 〃
 - translationX/Y の値を含む (= <strong>transformation position</strong>)
+]
+
+---
+
+class: normal, chapter-6
+
+# View の位置まとめ
+
+.card[
+| 位置の種類     | 含むもの                    | ずらす      | 取得        |
+|:---------------|:----------------------------|-------------|-------------|
+| base           | レイアウト                  | offset      | getLeft/Top |
+| transformation | base + <br>各種変形         | translation | getX/Y      |
+
+- offsetTopAndBottom/LeftAndRight
+- setTranslationX/Y
+
+どちらもレイアウトは**引き起こさない**ことが大切
 ]
 
 ---
@@ -1027,7 +1047,7 @@ class: normal, chapter-7
 # ViewTreeObserver.OnPreDrawListener
 
 .card[
-View が描画される度に呼ばれる
+View が描画される度に呼ばれる (最大 60 FPS)
 
 CoodinatorLayout は追従すべき View を検知して offsetLeftAndRight/TopAndBottom を使って動かす (= レイアウトが発生しない)
 ]
@@ -1070,12 +1090,14 @@ View が描画される度に呼ばれる
 
 class: chapter-13, normal
 
-# 伝えたかったこと
+# まとめ
 
 .card[
-画面を操作するときはレイアウトの有無を意識するようにする
+画面を操作するときは**レイアウトの有無を意識する**ようにする
 
-適切な方法を使って不必要なレイアウトを引き起こさないようにする
+適切な方法を使って**不必要なレイアウトを引き起こさない**ようにする
+
+複雑なユーザー インターフェイスを作るときも、**基本が大切**
 ]
 
 ---

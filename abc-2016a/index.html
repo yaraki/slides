@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>サポート ライブラリを支える技術</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+      @import url(http://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
+
+      body {
+        font-family: 'Noto Sans Japanese', sans-serif;
+      }
+
+      a {
+        text-decoration: none;
+        color: blue;
+      }
+
+      a:visited {
+        color: blue;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      li {
+        line-height: 1.8;
+      }
+
+      h1, h2, h3 {
+        font-family: 'Noto Sans Japanese', sans-serif;
+        font-weight: bold;
+      }
+
+      /* ページ番号 */
+      .remark-slide-number {
+        color: #CCCCCC;
+        font-size: 12pt;
+        opacity: 1;
+      }
+
+      .hero {
+        background-color: var(--bg-color);
+        color: #fff;
+      }
+
+      .hero h1, .hero h2, .hero h3 {
+        color: #FFFFFF;
+      }
+
+      .hero h2 {
+        margin-left: 1em;
+      }
+
+      .normal {
+        background-image:
+          url("../android-icon-72x72.png"),
+          linear-gradient(180deg, var(--bg-color) 50%, #FFFFFF 50%);
+        background-position:
+          right 0.4em bottom 1em,
+          right 0em bottom 8em;
+      }
+
+      .normal h1 {
+        color: white;
+        margin-top: 0px;
+        margin-left: 1em;
+        font-size: 28pt;
+      }
+
+      .normal h2 {
+        margin: 0px;
+        font-size: 20pt;
+      }
+
+      .normal {
+        font-size: 18pt;
+      }
+
+      .faq {
+        background-color: var(--bg-color);
+        font-size: 20pt;
+        color: #fff;
+      }
+
+      .faq h1 {
+        font-size: 28pt;
+      }
+
+      .faq a {
+        color: #fff;
+      }
+
+      .remark-code, .remark-inline-code {
+        font-family: monospace;
+      }
+
+      code {
+        border-radius: 4px;
+        max-height: 400px;
+      }
+
+      .hljs-googlecode .hljs {
+        background-color: #EEEEEE;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 0.1em;
+        padding: 1em 2em;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+      }
+
+      .card img {
+        float: right;
+        margin-left: 1em;
+        max-width: 32%;
+        max-height: 32%;
+      }
+
+      .card video {
+        float: right;
+        margin-left: 1em;
+        max-width: 32%;
+        max-height: 32%;
+      }
+
+      .card .large img {
+        float: none;
+        max-width: 90%;
+        max-height: 100%;
+      }
+
+      .card .large video {
+        float: none;
+        max-width: 90%;
+        max-height: 100%;
+      }
+
+      .card .small {
+        font-size: 16pt;
+      }
+
+      .card .small img {
+        margin-top: 30%;
+        max-width: 20%;
+        max-height: 20%
+      }
+
+      .card .medium img {
+        float: right;
+        margin-left: 1em;
+        max-width: 70%;
+        max-height: 70%;
+      }
+
+      .chapter-1 {
+        --bg-color: #2196F3;
+      }
+
+      .chapter-2 {
+        --bg-color: #3F51B5;
+      }
+
+      .chapter-3 {
+        --bg-color: #009688;
+      }
+
+      .chapter-4 {
+        --bg-color: #FF5722;
+      }
+
+      .chapter-5 {
+        --bg-color: #F44336;
+      }
+
+      .chapter-6 {
+        --bg-color: #E91E63;
+      }
+
+      .chapter-7 {
+        --bg-color: #9C27B0;
+      }
+
+      .chapter-8 {
+        --bg-color: #673AB7;
+      }
+
+      .chapter-9 {
+        --bg-color: #795548;
+      }
+
+      .chapter-10 {
+        --bg-color: #607D8B;
+      }
+
+      .chapter-11 {
+        --bg-color: #039BE5;
+      }
+
+      .chapter-12 {
+        --bg-color: #00838F;
+      }
+
+      .chapter-13 {
+        --bg-color: #43A047;
+      }
+
+      .chapter-14 {
+        --bg-color: #757575;
+      }
+
+      .chapter-15 {
+        --bg-color: #827717;
+      }
+
+      .chapter-16 {
+        --bg-color: #EF6C00;
+      }
+
+      .chapter-17 {
+        --bg-color: #689F38;
+      }
+
+      table {
+        width:100%;
+        border-collapse: separate;
+        border-spacing: 0px;
+      }
+
+      th {
+        padding: 6px;
+        background-color: #eee;
+        border: 1px solid #b9b9b9;
+      }
+
+      td {
+        padding: 6px;
+        background-color: #fff;
+        border: 1px solid #b9b9b9;
+      }
+
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+class: chapter-1, hero, center, middle
+
+# <nobr>サポートライブラリを<br>支える技術</nobr>
+
+Android Bazaar and Conference 2016 Autumn
+
+2016/11/19
+
+荒木佑一
+
+---
+
+class: normal, chapter-1
+
+# 自己紹介
+
+.card[
+      <!-- ![近影](../images/yaraki.png) -->
+
+荒木佑一
+
+[@yuichi_araki](https://twitter.com/yuichi_araki)
+
+Developer Programs Engineer @Google
+
+- サポート ライブラリ (主に design と transition)
+- Google I/O アプリ
+- Google Santa Tracker アプリ
+- [d.android.com/samples](http://d.android.com/samples) のサンプルいろいろ
+- [CameraView](https://github.com/google/cameraview)
+]
+
+---
+
+class: hero, center, middle, chapter-2
+
+# サポート ライブラリ
+
+---
+
+class: normal, chapter-2
+
+# サポート ライブラリとは
+
+.card[
+Android アプリに組み込むライブラリ
+
+Android プラットフォーム本体と並行して開発される
+
+- プラットフォーム本体の機能のバックポート
+- プラットフォーム本体には存在しない追加の機能
+
+最新版 24.2.0
+
+]
+
+???
+
+- Web の世界では "shim" や "polyfill" と呼ばれるもの
+- 当初は API レベル間の互換性のためのライブラリだったが、今はいろいろ
+
+---
+
+class: normal, chapter-2
+
+# サポート ライブラリ 一覧
+
+.card[
+.small[
+- インフラ互換性: support-v4, support-v13, support-annotations, vector-drawable, animated-vector-drawable, transition
+- UI 互換性: appcompat-v7, preferences-v7, preferences-v14, gridlayout-v7
+- UI ライブラリ: recyclerview-v7, design, percent, cardview-v7
+- その他: palette-v7, customtabs, renderscript-v8, mediarouter-v7, leanback-v17, recommendation, preference-leanback-v17
+- 特殊: Testing Support Library (Espresso 含む), Data Binding, MultiDex
+]
+]
+
+???
+
+- 20 個と少し
+- 「特殊」は他のサポート ライブラリとバージョンが別
+
+---
+
+class: normal, chapter-2
+
+# 最小 SDK バージョン
+
+.card[
+ライブラリ名の後ろやパッケージ名に付いている v4 や v7
+- support-v4
+- appcompat-v7 
+
+~~そのライブラリがサポートする最小 API レベル~~  
+すべてのライブラリの最小 SDK バージョンは最低でも 9
+
+v4, v7 は歴史的経緯
+]
+
+???
+
+- バージョン 24.2.0 のアップデートで、すべてのライブラリの最小 SDK バージョンが 9 以上になった
+  - support-v4、各種 -v7、design
+  - 前から 9 より上だったものはそのまま
+- パッケージ名の v4 や v7 も同様
+
+---
+
+class: normal, chapter-2
+
+# support-v4 の分割
+
+.card[
+- support-compat
+- support-core-ui
+- support-core-utils
+- support-fragment
+- support-media-compat
+
+[分割されたv4 Support Librariesのリスト](http://androhi.hatenablog.com/entry/2016/08/19/011805)
+]
+
+???
+
+- バージョン 24.2.0 のアップデートで分割された
+- support-v4 はメタ ライブラリとして残る
+  - ほとんどのアプリはそのままで良い
+
+---
+
+class: normal, chapter-2
+
+# 依存関係
+
+.card[
+  .large[![依存関係](dependencies.png)]
+
+]
+
+???
+
+- 一部割愛
+
+---
+
+class: hero, middle, center, chapter-3
+
+# Transition Support Library
+
+---
+
+class: normal, chapter-3
+
+# Transition Support Library
+
+.card[
+KitKat で追加された Transition API のバックポート
+
+アニメーションを自動的に生成して実行する
+
+API レベル 14 (Ice Cream Sandwich) 以降で使える
+
+[Transitions in the Android Support Library](https://medium.com/google-developers/transitions-in-the-android-support-library-8bc86a1d688e#.z2vlc95mo)
+
+[SimpleTransition](https://github.com/google/android-ui-toolkit-demos/tree/master/Transitions/SimpleTransition)
+]
+
+---
+
+class: normal, chapter-3
+
+# Scene
+
+.card[
+複数のレイアウト XML の切り替えをアニメーション
+
+それぞれのレイアウト XML ごとに Scene を作る
+
+```java
+Scene scene = Scene.getSceneForLayout(root, R.layout.scene, this);
+```
+
+遷移
+
+```java
+TransitionManager.go(scene);
+```
+]
+
+---
+
+class: normal, chapter-3
+
+# beginDelayedTransition
+
+.card[
+beginDelayedTransition を呼ぶ
+
+```java
+TransitionManager.beginDelayedTransition(root);
+```
+
+アニメーションしたい変更を行う
+
+```java
+view.setVisibility(View.INVISIBLE);
+```
+]
+
+---
+
+class: normal, chapter-3
+
+# バージョン 24.2.0
+
+.card[
+KitKat で追加された API のみ
+- ChangeBounds, Fade, AutoTransition など
+- TransitionManager
+
+Lollipop 以降で追加された API は (まだ) ない
+- Slide, Explode, 各種 Propagation など
+- Activity/Fragment Transition
+]
+
+---
+
+class: hero, middle, center, chapter-4
+
+# サポート ライブラリの開発
+
+---
+
+class: normal, chapter-4
+
+# ソース取得
+
+.card[
+
+適当なディレクトリを作成して cd
+
+```sh
+# 作業ディレクトリを初期化
+$ repo init -u https://android.googlesource.com/platform/manifest
+
+# サポート ライブラリのプロジェクトを取得
+$ repo sync frameworks/support
+```
+
+または
+```sh
+# リポジトリ全体を取得
+$ repo sync -c
+```
+]
+
+???
+
+- サポート ライブラリは Android プラットフォーム本体といっしょに開発されている
+- ここに記載している URL は AOSP (オープンソース版) のリポジトリ
+
+---
+
+class: normal, chapter-4
+
+# ビルド
+
+.card[
+```sh
+# 依存しているものを取得
+$ repo sync -c external/proguard \
+               external/doclava \
+               external/antlr \
+               prebuilts/gradle-plugin \
+               prebuilts/tools \
+               prebuilts/maven_repo/android \
+               prebuilts/sdk \
+               tools/external/gradle \
+               build
+
+$ cd frameworks/support
+
+$ ./gradlew assembleDebug
+```
+
+`../../out` に AAR ができるはず
+]
+
+---
+
+class: normal, chapter-4
+
+# 開発の流れ
+
+.card[
+バグ報告/新機能要望
+ - b.android.com
+ - 自分、社内
+
+frameworks/support の中のコードを編集
+
+[Gerrit](https://www.gerritcodereview.com/) によるコード レビュー
+
+リリース
+]
+
+---
+
+class: normal, chapter-4
+
+# 今日の話題
+
+.card[
+レイアウト
+
+View を動かす
+
+CoordinatorLayout
+]
+
+???
+
+---
+
+class: hero, middle, center, chapter-5
+
+# レイアウト
+
+---
+
+class: normal, chapter-5
+
+# View と ViewGroup
+
+.card[
+## View
+
+Button, ImageView などなど
+
+## ViewGroup
+
+FrameLayout, LinearLayout, RelativeLayout など
+]
+
+---
+
+class: normal, chapter-5
+
+# LayoutParams
+
+.card[
+XML で「layout_なんとか」な属性
+
+- FrameLayout.LayoutParams<br>
+  margin
+- LinearLayout.LayoutParams<br>
+  margin, weight
+- RelativeLayout.LayoutParams<br>
+  alignParent*, above, below, …
+- …
+]
+
+???
+
+- ViewGroup ごとに利用できるパラメーターの種類が違う
+
+---
+
+class: normal, chapter-5
+
+# レイアウト
+
+.card[
+メジャー パスとレイアウト パス
+
+[How Android Draws Views](https://developer.android.com/guide/topics/ui/how-android-draws.html)
+
+- [View#onMeasure(int widthMeasureSpec, int heightMeasureSpec)](https://developer.android.com/reference/android/view/View.html#onMeasure(int, int%29)
+- [ViewGroup#onLayout(boolean changed, int l, int t, int r, int b)](https://developer.android.com/reference/android/view/ViewGroup.html#onLayout(boolean, int, int, int, int%29)
+]
+
+???
+
+- 重要なのは、レイアウトが比較的重たい処理だということ
+  - ネットワーク通信やディスク読み込みに比べれば全然軽いが、60 FPS の画面描画の毎フレーム行うには重すぎる
+- アニメーション中は絶対避けるべき
+- それ以外でも最小限に留める
+
+---
+
+class: normal, chapter-5
+
+# レイアウトを引き起こす操作を知る
+
+.card[
+例: TextView
+
+## 親のレイアウトを引き起こさない
+
+- setTextColor
+
+## 親のレイアウトを引き起こす
+
+- setTextSize
+]
+
+???
+
+- 端的に言えばその View の大きさが変わるかどうか
+- その他
+  - invalidate: 描画し直す
+  - requestLayout: レイアウトを引き起こす
+
+---
+
+class: normal, chapter-5
+
+# 例: TextInputLayout
+
+.card[
+ヒントのテキストをアニメーション
+
+.large[
+<video src="til.mp4" autoplay loop></video>
+]
+]
+
+???
+
+- design サポート ライブラリに入っているコンポーネント
+- EditText をくるむことで色んな機能を追加する
+  - エラー表示
+  - カウンター表示
+- ヒントのテキストをアニメーション
+  - アニメーションの毎フレームごとに setTextSize するわけにはいかない
+
+---
+
+class: normal, chapter-5
+
+# 文字のアニメーション
+
+.card[
+自前で Canvas に drawText
+
+文字サイズの変更
+
+- API Level 17 以上: Paint#setTextSize
+- 16 以前: 画像の縮小
+]
+
+???
+
+- ただし API Level 17 以下では文字描画にハードウェア アクセラレーションが効かないので、一番大きいサイズの文字列で作った画像をスケールして描画
+- cf. CollapsingTextHelper
+
+---
+
+class: normal, chapter-5
+
+# レイアウト まとめ
+
+.card[
+画面更新の際はレイアウトが引き起こされるかどうかを常に意識する
+
+アニメーション中は絶対にレイアウトを引き起こしてはいけない
+
+それ以外の時も最小限に留める
+]
+
+---
+
+class: hero, middle, center, chapter-6
+
+# View を動かす
+
+---
+
+class: normal, chapter-6
+
+# View の位置
+
+.card[
+View が表示される位置を決定する要素
+
+- レイアウト
+- offsetLeftAndRight, offsetTopAndBottom
+- setTranslationX, setTranslationY
+]
+
+---
+
+class: normal, chapter-6
+
+# レイアウト
+
+.card[
+- FrameLayout.LayoutParams<br>
+  margin, gravity
+- LinearLayout.LayoutParams<br>
+  margin, weight, gravity
+- RelativeLayout.LayoutParams<br>
+  alignParent*, above, below, …
+
+- 親の padding
+
+<strong>レイアウトを引き起こす</strong>
+]
+
+---
+
+class: normal, chapter-6
+
+# offsetLeftAndRight, offsetTopAndBottom
+
+.card[
+```java
+ViewCompat.offsetLeftAndRight(view, 100);
+```
+
+指定した値だけ View を現在の位置からずらす
+
+<strong>レイアウトを引き起こさない</strong>
+]
+
+???
+
+- あまり知らない、使ったことがない人が多いのでは
+- 以前のバージョンのプラットフォームでは盛大にバグっていた
+  - Marshmallow でやっとまともに直った
+  - ViewCompat の中にバグ修正版が入っている
+
+---
+
+class: normal, chapter-6
+
+# setTranslationX, setTranslationY
+
+.card[
+```java
+ViewCompat.setTranslationX(view, 100);
+```
+
+View の本来の位置からどれだけずらすかを指定する
+
+<strong>レイアウトを引き起こさない</strong>
+]
+
+---
+
+class: normal, chapter-6
+
+# offsetLeftAndRight/TopAndBottom と setTranslationX/Y の違い
+
+.card[
+```java
+ViewCompat.offsetLeftAndRight(view, 100);
+ViewCompat.offsetLeftAndRight(view, 100);
+```
+
+View は 200 ずれる
+
+```java
+ViewCompat.setTranslationX(view, 100);
+ViewCompat.setTranslationX(view, 100);
+```
+
+View は 100 ずれたまま
+]
+
+---
+
+class: normal, chapter-6
+
+# getLeft/Top と getX/Y の違い
+
+.card[
+```java
+int left = view.getLeft();
+int top = view.getTop();
+```
+
+- レイアウトの値を含む
+- offsetTopAndBottom/LeftAndRight の値を含む
+- translationX/Y の値を含まない (= <strong>base position</strong>)
+
+```java
+int y = ViewCompat.getY(view);
+int x = ViewCompat.getX(view);
+```
+
+- 〃
+- translationX/Y の値を含む (= <strong>transformation position</strong>)
+]
+
+---
+
+class: normal, chapter-6
+
+# offsetT&B/offsetL&R の使い道
+
+.card[
+ユーザーがドラッグする場合
+
+例: ViewDragHelper
+
+ViewGroup の中で子 View をずらしたい場合
+]
+
+---
+
+class: normal, chapter-6
+
+# setTranslationX/Y の使い道
+
+.card[
+アニメーションで一時的に View を動かしたい場合
+
+```java
+ViewCompat.animate(view).translationX(300);
+```
+
+```java
+ObjectAnimator.ofFloat(view, "translationX", 300).start();
+```
+]
+
+---
+
+class: hero, middle, center, chapter-7
+
+# CoordinatorLayout
+
+---
+
+class: normal, chapter-7
+
+# CoordinatorLayout
+
+.card[
+![CoordinatorLayout](coordinatorlayout.png)
+
+Design サポート ライブラリの中心的なコンポーネント
+
+- Keyline
+- Behavior
+- <strong>View inset</strong>
+- <strong>Anchor</strong>
+
+<br><br>
+]
+
+---
+
+class: normal, chapter-7
+
+# FloatingActionButton (FAB)
+
+.card[
+![FAB](design-floatingactionbutton.png)
+
+影付きの丸い ImageButton
+
+```xml
+&lt;a.s.d.w.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fabSize="normal"
+        app:srcCompat="@drawable/ic_done" /&gt;
+```
+]
+
+---
+
+class: normal, chapter-7
+
+# Snackbar
+
+.card[
+![Snackbar](design-snackbar.png)
+
+Toast の進化版
+
+アクションを設定できる
+
+```java
+Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+        .setAction("Action", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // ...
+            }
+        })
+        .show();
+```
+]
+
+???
+
+- 下からスライドでアニメーションしつつ表示される
+
+---
+
+class: normal, chapter-7
+
+# FAB が Snackbar を避ける
+
+.card[
+![FAB](design-snackbar.png)
+FAB を CoodinatorLayout に入れて Snackbar を使うと自動的に発動
+
+アニメーションのリスナーなどをセットする必要はない
+
+Snackbar は setTranslationY でアニメーションしている
+
+FAB は Snackbar をアニメーションしつつ避ける
+
+]
+
+???
+
+- どうやってアニメーションする相手を追跡しているのか
+  - レイアウトが発生しているなら話は簡単。配置しなおせばいいだけ
+  - だがそれだと遅すぎる。レイアウトを引き起こさないようなやり方で動いているはず
+
+---
+
+class: normal, chapter-7
+
+# CoodinatorLayout が取り持つ
+
+.card[
+- FAB は CoodinatorLayout の下端に沿うと宣言 (app:layout_dodgeInsetEdges="bottom")
+- Snackbar は CoordinatorLayout の下端を押し上げると宣言 (app:layout_insetEdge="bottom")
+- CoordinatorLayout は FAB に下端が押し上げられていることを通知
+- FAB が避ける
+
+CoodinatorLayout はどうやって Snackbar の動きを検知している？
+]
+
+---
+
+class: normal, chapter-7
+
+# Anchor
+
+.card[
+![Anchor](design-collapsingtoolbarlayout.png)
+
+FAB が AppBarLayout の下端に anchor されている (app:layout_anchor="@id/ab")
+
+スクロールして AppBarLayout の下端が動けば FAB も追従する
+
+CoodinatorLayout はどうやって AppBarLayout の動きを検知している？
+]
+
+---
+
+class: normal, chapter-7
+
+# ViewTreeObserver.OnPreDrawListener
+
+.card[
+View が描画される度に呼ばれる
+
+CoodinatorLayout は追従すべき View を検知して offsetLeftAndRight/TopAndBottom を使って動かす (= レイアウトが発生しない)
+]
+
+---
+
+class: normal, chapter-7
+
+# 再び beginDelayedTransition
+
+.card[
+```java
+TransitionManager.beginDelayedTransition(root);
+view.setVisibility(View.INVISIBLE);
+```
+
+なぜこれだけでアニメーションできるのか
+
+どうやって setVisibility 前の状態と後の状態を検知しているのか
+]
+
+---
+
+class: normal, chapter-7
+
+# ViewTreeObserver.OnPreDrawListener
+
+.card[
+View が描画される度に呼ばれる
+
+1. 画面変更前の状態を取得
+2. OnPreDrawListener をセットする
+3. (画面を変更)
+4. OnPreDrawListener が呼ばれる = 画面変更後の状態を取得
+5. 変更前と変更後を比較してアニメーションを開始
+6. OnPreDrawListener を外す
+]
+
+---
+
+class: chapter-13, normal
+
+# 伝えたかったこと
+
+.card[
+画面を操作するときはレイアウトの有無を意識するようにする
+
+適切な方法を使って不必要なレイアウトを引き起こさないようにする
+]
+
+---
+
+class: chapter-14, hero
+
+# サポート ライブラリ
+
+## b.android.com
+
+### バグ報告、機能要望はこちらから
+### ※ スクリーンショット重要
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var hljs = remark.highlighter.engine;
+    </script>
+    <script src="http://gnab.github.io/remark/remark.language.js"></script>
+    <script>
+      var slideshow = remark.create({
+        highlightStyle: 'googlecode',
+        highlightLanguage: 'remark',
+        highlightLines: true,
+        highlightSpans: true,
+        navigation: {
+          click: false,
+          scroll: false,
+          touch: true
+        }
+      });
+    </script>
+
+  </body>
+</html>

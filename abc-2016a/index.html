@@ -436,6 +436,26 @@ API レベル 14 (Ice Cream Sandwich) 以降で使える
 
 class: normal, chapter-3
 
+# beginDelayedTransition
+
+.card[
+beginDelayedTransition を呼ぶ
+
+```java
+TransitionManager.beginDelayedTransition(root);
+```
+
+アニメーションしたい変更を行う
+
+```java
+view.setVisibility(View.INVISIBLE);
+```
+]
+
+---
+
+class: normal, chapter-3
+
 # Scene
 
 .card[
@@ -458,27 +478,7 @@ TransitionManager.go(scene);
 
 class: normal, chapter-3
 
-# beginDelayedTransition
-
-.card[
-beginDelayedTransition を呼ぶ
-
-```java
-TransitionManager.beginDelayedTransition(root);
-```
-
-アニメーションしたい変更を行う
-
-```java
-view.setVisibility(View.INVISIBLE);
-```
-]
-
----
-
-class: normal, chapter-3
-
-# バージョン 24.2.0
+# バージョン 25.0.1
 
 .card[
 KitKat で追加された API のみ
@@ -1047,9 +1047,29 @@ class: normal, chapter-7
 # ViewTreeObserver.OnPreDrawListener
 
 .card[
-View が描画される度に呼ばれる (最大 60 FPS)
+View が描画される度に呼ばれる
 
-CoodinatorLayout は追従すべき View を検知して offsetLeftAndRight/TopAndBottom を使って動かす (= レイアウトが発生しない)
+CoodinatorLayout は追従すべき View の位置を取得する
+
+それに従って他の View をずらす
+
+**遅い？**
+]
+
+---
+
+class: normal, chapter-7
+
+# なぜ遅くないか
+
+.card[
+必要な View の位置だけを取得する
+- Anchor 対象
+- View inset 対象
+
+座標計算は高速
+
+View をずらすのは offsetLeftAndRight/TopAndBottom (= **レイアウトが発生しない**)
 ]
 
 ---

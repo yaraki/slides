@@ -89,6 +89,12 @@
         color: white;
       }
 
+      .condensed h1 {
+        transform: scaleX(0.75);
+        transform-origin: left top;
+        white-space: nowrap;
+      }
+
       .normal h2 {
         margin: 0px;
         font-size: 20pt;
@@ -333,7 +339,9 @@ class: chapter-2, normal
 
 ???
 
+- Google が様々なプラットフォームで UI/UX を作ってきた知見の集大成
 - Android だけでなく、各プラットフォームの性質を踏まえつつ一貫性のある体験を提供する
+- このセッションは Android の話です
 
 ---
 
@@ -359,7 +367,30 @@ class: chapter-2, normal
 
 ???
 
-- ガイドラインは「スペック」
+- ☓ 従わなくてはならないもの
+- ○ この内容を踏まえた上で UI/UX を作り出すもの
+- ただ単に従うのではなく、ガイドラインの内容となぜそのようになっているかを理解することが重要
+
+---
+
+class: chapter-2, normal
+
+# [What's new](https://material.io/guidelines/material-design/whats-new.html)
+
+.card[
+[https://material.io/guidelines/material-design/whats-new.html](https://material.io/guidelines/material-design/whats-new.html)
+
+随時更新されている
+
+最近の更新
+
+- Platforms: プラットフォームごとのバリエーション
+- Accessibility: 読み上げについて記載追加
+]
+
+???
+
+- ガイドラインは常にアップデートされている
 
 ---
 
@@ -375,6 +406,26 @@ class: chapter-2, normal
 PDF
 ]
 
+???
+
+- PDF
+
+---
+
+class: chapter-2, normal
+
+# 本日の話
+
+.card[
+マテリアル デザインを形にする
+
+- あるものを活用する
+- カスタマイズする
+- 動かす
+  - 協調動作
+  - 状態変化
+]
+
 ---
 
 class: chapter-3, hero, center, middle
@@ -385,7 +436,9 @@ class: chapter-3, hero, center, middle
 
 class: chapter-3, normal
 
+.condensed[
 # [Components - Buttons: Floating Action Button](https://material.io/guidelines/components/buttons-floating-action-button.html)
+]
 
 .card[
 ![FAB](components_buttons_fab.png)
@@ -393,6 +446,8 @@ class: chapter-3, normal
 - サイズは 40 または 56dp
 - 影
 - 表示・非表示切り替えはスケール アニメーション
+
+→ マテリアル デザイン<br>&emsp;&nbsp;サポート ライブラリ
 ]
 
 ---
@@ -402,19 +457,55 @@ class: chapter-3, normal
 # FloatingActionButton
 
 .card[
-design サポート ライブラリ
+マテリアル デザイン サポート ライブラリ
 
 ```xml
 &lt;android.support.design.widget.FloatingActionButton
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
+    app:fabSize="normal"
     app:srcCompat="@drawable/ic_action" /&gt;
 ```
 
-- ナビゲーションに使わない
+```java
+FloatingActionButton fab = ...;
+fab.show();
+...
+fab.hide();
+```
+]
+
+???
+
+- 影や形はガイドライン通り
+- サイズは normal (56dp) と mini (40dp)
+- show/hide でガイドライン通りのアニメーション
+
+---
+
+class: chapter-3, normal
+
+# 留意点
+
+.card[
+![FAB](components_buttons_fab.png)
+
+ライブラリを使った上での留意点
+
+- その画面での主要なアクション
+  - ナビゲーションに使わない
+  - 特に重要でないアクションに利用しない
 - 右下でなくてもいい
 - 下の要素をふさいでしまわないよう注意
 ]
+
+???
+
+- これらはライブラリでどうにかできることではない
+- ２つあってもいい (Google Maps: 現在地 & 経路)
+- 下の要素をふさぐ
+  - 無限のリストなら大丈夫
+  - リストの一番下にパディングを入れる (例: Google Drive)
 
 ---
 
@@ -435,50 +526,527 @@ class: chapter-3, normal
 
 ???
 
-- いずれもサポートライブラリを使えば基本的にガイドライン通り
+- Components セクションの中の多くは、サポートライブラリを使えば基本的にガイドライン通り
+- それぞれの留意点はガイドラインで確認する
 
 ---
 
 class: chapter-3, normal
 
-# [Components - Snackbars & toasts](https://material.io/guidelines/components/snackbars-toasts.html#snackbars-toasts-usage)
+# [Components - Grid lists](https://material.io/guidelines/components/grid-lists.html)
 
 .card[
+![Grid](components_grids_specs7.png)
 
-]
+画像や文字を含んだアイテム上にタッチ フィードバック
 
----
+```
+&lt;FrameLayout
+    android:id="@+id/item"
+    android:layout_width="256dp"
+    android:layout_height="256dp"
+*   android:foreground=
+*     "?attr/selectableItemBackground"&gt;
 
-class: chapter-3, normal
+    &lt;!-- ImageView など --&gt;
 
-# Components - Grid lists
+&lt;/FrameLayout&gt;
+```
 
-.card[
-
-]
-
----
-
-class: chapter-1, normal
-
-# 意味のある動き
-
-.card[
-![Meaningful Motion](materialdesign_principles_motion.png)
-
-マテリアル デザイン
-
-[Choreography](https://material.google.com/motion/choreography.html) (振り付け)
-
-- ユーザーが操作を行う
-- 画面表示が変わる
-
-両者の関係性を明瞭にするためアニメーションが有効
+ForegroundLinearLayout で検索
 ]
 
 ???
 
-- Android アプリにおけるアニメーションの重要性が高まっている
+- ここからは、プラットフォームの機能を使えば簡単に実現できるのに、できていないアプリをよく見かける例
+
+- L 以降は波紋、K 以前は色の切り替え
+- FrameLayout 以外で android:foreground を使うには ForegroundLinearLayout で検索
+  - Marshmallow 以降なら View がデフォルトでサポート
+  - 試していないがサードパーティで ForegroundView というライブラリがあるらしい
+
+---
+
+class: chapter-3, normal
+
+# [Patterns - Launch screens](https://material.io/guidelines/patterns/launch-screens.html)
+
+.card[
+![Launch screens](patterns_launch_screens.png)
+
+コンマ一秒でも早くユーザーが興味を持つコンテンツを見せるのが大原則
+
+どうしても時間がかかる場合ブランディング画像を表示
+]
+
+???
+
+- YouTube など
+
+---
+
+class: chapter-3, normal
+
+# [Patterns - Launch screens](https://material.io/guidelines/patterns/launch-screens.html)
+
+.card[
+.small[
+[https://plus.google.com/+AndroidDevelopers/posts/Z1Wwainpjhd](https://plus.google.com/+AndroidDevelopers/posts/Z1Wwainpjhd)
+]
+
+```xml
+&lt;style name="Theme.MyApp.Launcher"&gt;
+  &lt;item name="android:windowBackground"&gt;
+    @drawable/launch_screen&lt;/item&gt;
+&lt;/style&gt;
+```
+
+```java
+ @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    setTheme(R.style.Theme_MyApp); // 普通の背景に戻す
+    super.onCreate(savedInstanceState);
+    ...
+```
+]
+
+???
+
+- https://plus.google.com/+AndroidDevelopers/posts/Z1Wwainpjhd
+
+---
+
+class: chapter-4, hero, middle, center
+
+# カスタマイズする
+
+---
+
+class: chapter-4, normal
+
+# スタイルとテーマを理解する
+
+.card[
+XML の中で `@style/foobar` と `?attr/foobar` はそれぞれどういう意味？
+
+スタイルとテーマはどう違う？
+
+FAB の色はどこから来ている？
+]
+
+---
+
+class: chapter-4, normal
+
+# 属性
+
+.card[
+スタイルやテーマの指定に利用するキー
+
+res/values/attrs.xml
+
+```xml
+&lt;declare-styleable name="FloatingActionButton"&gt;
+  &lt;attr name="backgroundTint"/&gt;
+  &lt;attr name="fabSize"&gt;
+    &lt;enum name="auto" value="-1"/&gt;
+    &lt;enum name="normal" value="0"/&gt;
+    &lt;enum name="mini" value="1"/&gt;
+  &lt;/attr&gt;
+  ...
+&lt;/declare-styleable&gt;
+```
+
+型は integer, float, string, boolean, enum, flag, dimension, color, reference, fraction
+]
+
+???
+
+- FAB の例
+
+---
+
+class: chapter-4, normal
+
+# スタイル
+
+.card[
+属性とその値のマッピング
+
+res/values/styles.xml
+
+```xml
+&lt;style name="Widget.MyApp.FloatingActionButton"
+       parent="Widget.Design.FloatingActionButton"&gt;
+  &lt;item name="backgroundTint"&gt;@color/add&lt;/item&gt;
+  &lt;item name="fabSize"&gt;normal&lt;/item&gt;
+&lt;/style&gt;
+```
+
+明示的な継承・暗黙的な継承
+]
+
+???
+
+- スタイルは親を指定して継承できる
+
+---
+
+class: chapter-4, normal
+
+# スタイルの利用
+
+.card[
+レイアウト XML
+
+```xml
+&lt;android.support.design.widget.FloatingActionButton
+  android:id="@+id/fab"
+* style="@style/Widget.MyApp.FloatingActionButton"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  app:srcCompat="@drawable/ic_android"/&gt;
+```
+]
+
+---
+
+class: chapter-4, normal
+
+# テーマ
+
+.card[
+属性とその値のマッピング (= スタイルと同じ)
+
+res/values/themes.xml (styles.xml)
+
+```xml
+&lt;style name="Theme.MyApp"
+       parent="Theme.AppCompat.Light.DarkActionBar"&gt;
+  &lt;item name="colorPrimary"&gt;@color/colorPrimary&lt;/item&gt;
+  &lt;item name="colorPrimaryDark"&gt;@color/colorPrimaryDark&lt;/item&gt;
+  &lt;item name="colorAccent"&gt;@color/colorAccent&lt;/item&gt;
+&lt;/style&gt;
+```
+]
+
+---
+
+class: chapter-4, normal
+
+# テーマの利用
+
+.card[
+AndroidManifest.xml
+
+```xml
+&lt;activity
+    android:name=".MainActivity"
+    android:theme="@style/Theme.MyApp"&gt;
+    ...
+```
+]
+
+---
+
+class: chapter-4, normal
+
+# テーマ内の属性値の利用
+
+.card[
+
+レイアウト XML
+
+```xml
+&lt;android.support.v7.widget.Toolbar
+  android:id="@+id/toolbar"
+  android:layout_width="match_parent"
+  android:layout_height="`?attr/actionBarSize`"
+  android:background="`?attr/colorAccent`"/&gt;
+```
+]
+
+???
+
+- ?attr を使うと、現在のテーマで指定されている様々な属性値を取得できる
+
+---
+
+class: chapter-4, normal
+
+# [Components - Text fields](https://material.io/guidelines/components/text-fields.html)
+
+.card[
+android.support.design.widget.TextInputLayout
+
+.large[
+![TextInputLayout](textinputlayout.png)
+]
+
+エラーのテキスト色をカスタマイズする
+]
+
+---
+
+class: chapter-4, normal
+
+# 例: ドキュメントから (1/2)
+
+.card[
+[TextInputLayout のリファレンス](http://d.android.com/reference/android/support/design/widget/TextInputLayout.html)
+で errorTextAppearance を見つける
+
+レイアウト XML
+
+```xml
+&lt;android.support.design.widget.TextInputLayout
+  android:id="@+id/input"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  `app:errorTextAppearance`="@style/TextAppearance.MyApp.Error"&gt;
+  ...
+```
+]
+
+---
+
+class: chapter-4, normal
+
+# 例: ドキュメントから (2/2)
+
+.card[
+TextAppearance をスタイルとして作成
+
+res/values/styles.mxl
+
+```xml
+&lt;style name="TextAppearance.MyApp.Error"
+       parent="TextAppearance.Design.Error"&gt;
+  &lt;item name="android:textColor"&gt;@color/my_error&lt;/item&gt;
+&lt;/style&gt;
+```
+]
+
+---
+
+class: chapter-4, normal
+
+# 例: ソースコードから (1/4)
+
+.card[
+frameworks/support/design/res/values/styles.xml
+
+```xml
+&lt;style name="Widget.Design.TextInputLayout" parent="android:Widget"&gt;
+  &lt;item name="hintTextAppearance"&gt;@style/TextAppearance.Design.Hint&lt;/item&gt;
+* &lt;item name="errorTextAppearance"&gt;@style/TextAppearance.Design.Error&lt;/item&gt;
+  &lt;item name="counterTextAppearance"&gt;@style/TextAppearance.Design.Counter&lt;/item&gt;
+  &lt;item name="counterOverflowTextAppearance"&gt;@style/TextAppearance.Design.Counter.Overflow&lt;/item&gt;
+  &lt;item name="passwordToggleDrawable"&gt;@drawable/design_password_eye&lt;/item&gt;
+  &lt;item name="passwordToggleTint"&gt;@color/design_tint_password_toggle&lt;/item&gt;
+  &lt;item name="passwordToggleContentDescription"&gt;@string/password_toggle_content_description&lt;/item&gt;
+&lt;/style&gt;
+```
+]
+
+---
+
+class: chapter-4, normal
+
+# 例: ソースコードから (2/4)
+
+.card[
+frameworks/support/design/res/values/styles.xml
+
+```xml
+&lt;style name="TextAppearance.Design.Error"
+       parent="TextAppearance.AppCompat.Caption"&gt;
+  &lt;item name="android:textColor"&gt;`@color/design_error`&lt;/item&gt;
+&lt;/style&gt;
+```
+]
+
+---
+
+class: chapter-4, normal
+
+# 例: ソースコードから (3/4)
+
+.card[
+frameworks/support/design/res/color/design_error.xml
+
+```xml
+&lt;selector xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;item android:state_enabled="false"
+          android:color="?android:attr/textColorTertiary"/&gt;
+    &lt;item android:color="`?attr/textColorError`"/&gt;
+&lt;/selector&gt;
+```
+]
+
+---
+
+class: chapter-4, normal
+
+# 例: ソースコードから (4/4)
+
+.card[
+自分のアプリのテーマで textColorError を指定すれば良い
+
+```xml
+&lt;style name="Theme.MyApp"
+       parent="Theme.AppCompat.Light.DarkActionBar"&gt;
+  ...
+*  &lt;item name="textColorError"&gt;#090&lt;/item&gt;
+&lt;/style&gt;
+```
+]
+
+???
+
+- スタイルとテーマの基本を理解しておけばドキュメントやソースコードから必要な情報を見つけ出すことができる
+
+---
+
+class: chapter-5, hero, middle, center
+
+# View 同士の協調動作
+
+---
+
+class: chapter-5, normal
+
+# Material design - Material properties
+
+.card[
+![Wrong](whatismaterial_properties_physical6.png)
+
+複数の要素が同一の空間 (elevation) に存在してはならない
+
+      <br><br><br><br>
+]
+
+---
+
+class: chapter-5, normal
+
+.condensed[
+# [Material design - Elevation & shadows](https://material.io/guidelines/material-design/elevation-shadows.html)
+]
+
+.card[
+| Elevation (dp) | Component                        |
+|:---------------|:---------------------------------|
+| 24             | Dialog<br>Picker                 |
+| 16             | Nav drawer<br>Modal bottom sheet |
+| ...            | ...                              |
+| 8              | FAB<br>Snackbar                  |
+| ...            | ...                              |
+]
+
+???
+
+- 各コンポーネントの基本的な elevation がまとめられている
+- FAB と Snackbar はどちらも 6dp の elevation
+
+---
+
+class: chapter-5, normal
+
+# [Components - Snackbars & toasts](https://material.io/guidelines/components/snackbars-toasts.html#snackbars-toasts-usage)
+
+.card[
+      <video autoplay loop preload="auto">
+        <source src="https://storage.googleapis.com/material-design/publish/material_v_10/assets/0B6Okdz75tqQsZV9TS3lTVHFzRUE/components_snackbar_usage_fabdo_005.webm" type="video/webm">
+      </video>
+
+Snackbar が出るときに FAB が避ける
+
+FAB を CoordinatorLayout に入れれば自動的に実現
+
+```java
+Snackbar
+  .make(view, "Hello!",
+        Snackbar.LENGTH_SHORT)
+  .show();
+```
+]
+
+???
+
+- Snackbar.make の第一引数は CoordinatorLayout かその子供なんでも
+
+---
+
+class: chapter-5, normal
+
+# FAB と同じように避けたい
+
+.card[
+FAB と同じように、下から出てくる Snackbar を避けたい
+
+CoordinatorLayout の直下で
+
+```xml
+&lt;com.example.yourapp.CustomView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    `app:layout_dodgeInsetEdges="bottom"`/&gt;
+```
+]
+
+???
+
+- フラグでどの辺を避けるか指定できる
+
+---
+
+class: chapter-5, normal
+
+# Snackbar と同じように避けさせたい
+
+.card[
+Snackbar と同じように FAB などを避けさせたい
+
+CoordinatorLayout の直下で
+
+```xml
+&lt;com.example.yourapp.CustomView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|start"
+    `app:layout_insetEdge="bottom"`/&gt;
+```
+]
+
+???
+
+- どの辺から避けさせるか指定できる
+
+---
+
+class: chapter-5, normal
+
+# [Components - Bottom sheets](https://material.io/guidelines/components/bottom-sheets.html#bottom-sheets-persistent-bottom-sheets)
+
+.card[
+![Bottom sheet & FAB](components_bottomsheets_persistent6.png)
+
+```xml
+&lt;a.s.d.w.FloatingActionButton
+  android:id="@+id/pause"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+* app:layout_anchor="@id/bottom_sheet"
+  app:srcCompat="@drawable/ic_pause"/&gt;
+```
+
+<br><br><br><br>
+]
+
+
+
 
 ---
 
@@ -492,11 +1060,6 @@ class: chapter-17, hero
 
 ### バグ報告、機能要望はこちらから
 ### ※ スクリーンショット (動画) 重要
-
-???
-
-- Animator: start() で開始
-- ViewPropertyAnimator: start() しなくても開始
 
     </textarea>
     <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
@@ -520,4 +1083,100 @@ class: chapter-17, hero
     </script>
 
   </body>
+  <!--
+
+
+
+
+
+
+
+
+
+
+
+
+
+     ---
+
+       class: chapter-17, hero, center, middle
+
+       # 墓場
+
+     ---
+
+       class: chapter-3, normal
+
+       # [Style - Icon](https://material.io/guidelines/style/icons.html#icons-system-icons)
+
+       .card[
+       アイコンの色と ?attr/colorPrimary がかぶる
+       ]
+
+     ---
+
+       class: chapter-3, normal
+
+       # [Components - Snackbars & toasts](https://material.io/guidelines/components/snackbars-toasts.html#snackbars-toasts-usage)
+
+       .card[
+
+       ]
+
+     ---
+
+       class: chapter-3, normal
+
+       # [Style - Color](https://material.io/guidelines/style/color.html#color-color-palette)
+
+       .card[
+
+       ```xml
+       &lt;style name="Theme.MyApp" parent="Theme.AppCompat.Light.DarkActionBar"&gt;
+       &lt;item name="colorPrimary"&gt;#673AB7&lt;/item&gt;
+       &lt;item name="colorPrimaryDark"&gt;#512DA8&lt;/item&gt;
+       &lt;item name="colorAccent"&gt;#FF4081&lty/item&gt;
+       &lt;/style&gt;
+       ```
+       ]
+
+     ---
+
+       class: chapter-1, normal
+
+       # 意味のある動き
+
+       .card[
+       ![Meaningful Motion](materialdesign_principles_motion.png)
+
+       マテリアル デザイン
+
+       [Choreography](https://material.google.com/motion/choreography.html) (振り付け)
+
+     - ユーザーが操作を行う
+     - 画面表示が変わる
+
+       両者の関係性を明瞭にするためアニメーションが有効
+       ]
+
+       ???
+
+     - Android アプリにおけるアニメーションの重要性が高まっている
+
+
+
+
+
+
+
+
+
+
+
+
+
+     -->
+
+
 </html>
+

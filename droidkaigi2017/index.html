@@ -910,7 +910,7 @@ class: chapter-4, normal
 
 class: chapter-5, hero, middle, center
 
-# View 同士の協調動作
+# View 同士を強調させて動かす
 
 ---
 
@@ -956,7 +956,7 @@ class: chapter-5, normal
 # [Components - Snackbars & toasts](https://material.io/guidelines/components/snackbars-toasts.html#snackbars-toasts-usage)
 
 .card[
-      <video autoplay loop preload="auto">
+      <video controls="" loop preload="metadata">
         <source src="https://storage.googleapis.com/material-design/publish/material_v_10/assets/0B6Okdz75tqQsZV9TS3lTVHFzRUE/components_snackbar_usage_fabdo_005.webm" type="video/webm">
       </video>
 
@@ -1042,11 +1042,146 @@ class: chapter-5, normal
   app:srcCompat="@drawable/ic_pause"/&gt;
 ```
 
-<br><br><br><br>
+@id/bottom_sheet が動くに連れて追従する
+
+<br><br>
 ]
 
+---
 
+class: chapter-6, hero, middle, center
 
+# 状態の変化を動かす
+
+---
+
+class: chapter-6, normal
+
+# [Motion - Transforming material](https://material.io/guidelines/motion/transforming-material.html#transforming-material-rectangular-transformation)
+
+.card[
+<video controls="" loop preload="metadata">
+  <source src="https://storage.googleapis.com/material-design/publish/material_v_10/assets/0B14F_FSUCc01bHZCWU90ZldMbDQ/Rect_03_Thumbnail_v6-remapped.webm" type="video/webm">
+  <source src="https://storage.googleapis.com/material-design/publish/material_v_10/assets/0B14F_FSUCc01VXVxNm5GNHowbVU/Rect_03_Thumbnail_v6-remapped.mp4" type="video/mp4">
+</video>
+
+画像の拡大縮小アニメーション
+
+どうやって実装する?
+
+- ViewPropertyAnimator?
+  - .small[view.animate()...]
+- Animator?
+  - .small[ObjectAnimator / ValueAnimator]
+
+ユーザーがアニメーション中に切り替えを繰り返す場合にどう対応する？
+]
+
+---
+
+class: chapter-6 normal
+
+# [Transition API](https://developer.android.com/training/transitions/overview.html)
+
+.card[
+API レベル 19 KitKat で導入
+
+Animator に基づいた高レベル アニメーション API
+
+※ Activity 間の Transition だけが Transition ではない
+]
+
+---
+
+class: chapter-6 normal
+
+# Transition API の使い方
+
+.card[
+```java
+ChangeBounds changeBounds = new ChangeBounds();
+...
+TransitionManager.beginDelayedTransition(root, changeBounds);
+
+FrameLayout.LayoutParams lp =
+    (FrameLayout.LayoutParams) v.getLayoutParams();
+lp.width = lp.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+v.setLayoutParams(lp);
+```
+]
+
+---
+
+class: chapter-6 normal
+
+# 様々な Transition
+
+.card[
+| Transition           | アニメーション対象     |
+|:---------------------|:-----------------------|
+| ChangeBounds         | 大きさと位置           |
+| ChangeTransform      | scale, rotation など   |
+| ChangeScroll         | スクロール位置         |
+| ChangeImageTransform | ImageView の scaleType |
+| Fade                 | visibiliy              |
+| Slide                | visibiliy              |
+| Explode              | visibiliy              |
+| TransitionSet        | 組み合わせる           |
+]
+
+---
+
+class: chapter-6 normal
+
+# [Motion– Choreography](https://material.io/guidelines/motion/choreography.html)
+
+.card[
+.large[
+<video controls="" loop="" preload="metadata">
+  <source src="https://storage.googleapis.com/material-design/publish/material_v_10/assets/0B14F_FSUCc01MDBDd3JsRV9kZWM/Continuity_02_SingleShared_v6-remapped.webm" type="video/webm">
+  <source src="https://storage.googleapis.com/material-design/publish/material_v_10/assets/0B14F_FSUCc01VUdTaW40WXFvdGM/Continuity_02_SingleShared_v6-remapped.mp4" type="video/mp4">
+</video>
+]
+]
+
+---
+
+class: chapter-6, normal
+
+# Transition API の機能
+
+.card[
+
+## PathMotion
+
+弧に沿って動かす
+
+## TransitionPropagation
+
+startDelay を調整する
+]
+
+???
+
+- duration, startDelay, interpolator などアニメーションの基本的な機能も使える
+
+---
+
+class: chapter-7 normal
+
+# まとめ
+
+.card[
+- マテリアル デザイン ガイドラインを読みましょう
+- あるものを有効活用しましょう
+  - ライブラリ、プラットフォームの機能
+- カスタマイズ
+  - スタイルとテーマの基本を知れば自在にカスタマイズできる
+- コンポーネント同士の協調動作
+  - CoordinatorLayout が使える
+- 状態の変化をアニメーション
+  - Transition API が使える
+]
 
 ---
 

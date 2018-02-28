@@ -303,10 +303,11 @@ class: chapter-1, normal
 # 予定
 
 .card[
+[github.com/yaraki/CheeseRoom](https://github.com/yaraki/CheeseRoom) をクローンしておく
+
 - これまでのあらすじ
 - Room 概要
-
-- いきなりハンズオン
+- ハンズオン
 - Room 機能 解説
 - 課題
 ]
@@ -944,7 +945,7 @@ class: chapter-7, normal
     fun all(): List&lt;Message&gt;
 
     @Query("SELECT * FROM Message WHERE id = :id")
-    fun byId(id: Long): Message
+    fun byId(id: Long): Message?
 ```
 
 
@@ -1308,6 +1309,7 @@ class MigrationTest {
     <script src="http://gnab.github.io/remark/remark.language.js"></script>
     <script>
       var slideshow = remark.create({
+        ratio: '16:9',
         highlightStyle: 'googlecode',
         highlightLanguage: 'remark',
         highlightLines: true,

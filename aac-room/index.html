@@ -292,7 +292,7 @@ class: chapter-1, hero, center, middle
 
 Architecture Components 勉強会 #4
 
-2018/03/??
+2018/03/19
 
 荒木佑一
 
@@ -325,7 +325,7 @@ class: chapter-2, normal
 # Lifecycle
 
 .card[
-Activity や Fragment のライフサイクルを外部化
+Activity や Fragment のライフサイクルを他のオブジェクトでも扱えるようにする
 
 どのライフサイクル イベントで 自分が何をすればいいか知っているオブジェクトを作る
 ]
@@ -605,12 +605,16 @@ class: chapter-6, normal
 # Entity の必須要素
 
 .card[
+@PrimaryKey が必要
+
 ```kotlin
 @Entity
 data class Cheese(
         `@PrimaryKey`
         val id: Long,
+
         val name: String,
+
         val favorite: Boolean)
 ```
 
@@ -644,6 +648,7 @@ Room が使う入出力
 - ゲッター・セッターやコンストラクター引数の対応は名前で解決。
   - ビルド時に解決される。リフレクションではない。
   - mNantoka にも対応
+- Kotlin ならデータ クラスを使えば大丈夫
 
 ---
 
@@ -755,7 +760,9 @@ class: chapter-6, normal
 data class Message(
         @PrimaryKey
         val id: Long,
+
         val userId: Long,
+
         val content: String
 )
 ```
@@ -779,7 +786,9 @@ data class Address(val province: String, val city: String)
 data class User(
         @PrimaryKey
         val id: Int,
+
         val name: String,
+
         `@Embedded(prefix = "address_")`
         val address: Address
 )
@@ -789,6 +798,35 @@ data class User(
 ???
 
 - SQLite のテーブルには address_province と address_city ができる
+
+---
+
+class: chapter-6, normal
+
+# 複合キー
+
+.card[
+```kotlin
+@Entity(primaryKeys = ["code", "category"])
+data class Product(
+        val category: String,
+        val code: String,
+        val name: String)
+```
+
+または
+
+```kotlin
+data class ProductId(val category: String, val code: String)
+
+@Entity
+data class Product(
+        @PrimaryKey
+        @Embedded
+        val id: ProductId,
+        val name: String)
+```
+]
 
 ---
 
@@ -844,7 +882,7 @@ class: chapter-7, normal
 - @Delete
 - @RawQuery (1.1.0 〜)
 
-具象メソッドに
+抽象/具象メソッドに
 
 - @Transaction
 ]
@@ -988,19 +1026,25 @@ class: chapter-7, normal
 
 .card[
 ```kotlin
-@Entity data class User(@PrimaryKey id: Long, val name: String)
+@Entity
+data class User(
+        @PrimaryKey id: Long,
+        val name: String)
 ```
 
 ```kotlin
 @Entity(foreignKey = [(entity = User::class,
                        parentColumns = ["id"],
                        childColumns = ["userId"])])
-data class Message(@PrimaryKey id: Long,
-                   val userId: Long,
-                   val content: String)
+data class Message(
+        @PrimaryKey id: Long,
+        val userId: Long,
+        val content: String)
 ```
 
-２つのテーブルを JOIN して Message の中に User を埋め込みたい
+Message を SELECT * したいが、User の name もほしい
+
+→ INNER JOIN
 ]
 
 ---
@@ -1141,6 +1185,9 @@ Room 1.1.0 〜
 ```kotlin
     @RawQuery
     fun queryUser(query: String): User
+
+    @RawQuery(observedEntities = [User::class])
+    fun queryUserLive(query: String): LiveData&ltUser&gt;
 ```
 
 ビルド時のカラム検証なし
@@ -1262,7 +1309,7 @@ android {
     sourceSets {
         androidTest.assets.srcDirs +=
           files("$projectDir/schemas".toString())
-   } 
+    }
 }
 ```
 
@@ -1299,6 +1346,47 @@ class MigrationTest {
 ???
 
 - メモリ上データベースでマイグレーションはテストできない。ディスクにアクセスする必要があるため、@MediumTest
+
+---
+
+class: chapter-9, normal
+
+# 課題 A
+
+.card[
+1. playground モジュールにある PlaygroundDatabaseTest を実行
+  - すべて通るはず
+2. PlaygroundDatabase の version を 4 にして再度テスト実行
+  - 4.json ができる (内容は 3.json と同じ)
+3. Entity を追加
+  - Author (id, name)
+  - Book (id, title, author_id)
+4. DAO を追加
+  - BookDao
+  - INSERT, SELECT など基本的なメソッドを追加、テストを書く
+]
+
+---
+
+class: chapter-9, normal
+
+# 課題 B
+
+.card[
+1. DB バージョン 3 から 4 へのマイグレーションを追加
+  - JSON から CREATE TABLE をコピーするだけ
+2. マイグレーションのテスト
+3. @Relation や @Embedded を使ってみる
+  - Book の一覧を Author の name 付きで取得
+  - Author を ID で取得、その Author の Book の一覧も埋め込みで取得
+4. LiveData を返すメソッドのテスト
+]
+
+---
+
+class: chapter-10, hero, middle, center
+
+# ありがとうございました
 
     </textarea>
     <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">

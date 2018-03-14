@@ -338,6 +338,8 @@ class: chapter-2, normal
 
 .card[
 バックグラウンド処理と UI の橋渡し、監視
+
+Lifecycle-aware
 ]
 
 ---
@@ -807,7 +809,7 @@ class: chapter-6, normal
 
 .card[
 ```kotlin
-@Entity(primaryKeys = ["code", "category"])
+@Entity(primaryKeys = ["category", "code"])
 data class Product(
         val category: String,
         val code: String,
@@ -880,7 +882,6 @@ class: chapter-7, normal
 - @Insert
 - @Update
 - @Delete
-- @RawQuery (1.1.0 〜)
 
 抽象/具象メソッドに
 
@@ -1165,33 +1166,11 @@ abstract class UserDao {
     }
 }
 ```
-
-Room 1.1.0 から interface の実装ありメソッドでも動く
 ]
 
 ???
 
 - 
-
----
-
-class: chapter-7, normal
-
-# @RawQuery
-
-.card[
-Room 1.1.0 〜
-
-```kotlin
-    @RawQuery
-    fun queryUser(query: String): User
-
-    @RawQuery(observedEntities = [User::class])
-    fun queryUserLive(query: String): LiveData&ltUser&gt;
-```
-
-ビルド時のカラム検証なし
-]
 
 ---
 
@@ -1239,15 +1218,67 @@ class: chapter-8, hero, center, middle
 
 class: chapter-8, normal
 
-# マイグレーションの基本
+# マイグレーションの前に
 
 .card[
+
+
 ```kotlin
 @Database(entities = [...], `version = 2`)
 abstract class SampleDatabase : RoomDatabase() { ... }
 ```
 
 コード上のデータベース、エンティティー、DAO は最新のスキーマの状態を扱う
+
+過去の状態はコードには現れない
+]
+
+---
+
+class: chapter-8, normal
+
+# スキーマの保存
+
+.card[
+app/build.gradle
+
+```
+android {
+    ...
+    defaultConfig {
+        ...
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation":
+                             "$projectDir/schemas".toString()]
+            }
+        }
+    }
+}
+```
+
+1.json, 2. json がエクスポートされる (VCS に入れておく)
+]
+
+---
+
+class: chapter-8, normal
+
+# スキーマの利用
+
+.card[
+app/build.gradle
+
+```kotlin
+android {
+    sourceSets {
+        androidTest.assets.srcDirs +=
+          files("$projectDir/schemas".toString())
+    }
+}
+```
+
+マイグレーションのテストには過去のスキーマが必要
 ]
 
 ---
@@ -1276,44 +1307,16 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 
 class: chapter-8, normal
 
-# スキーマの保存
-
-.card[
-```
-android {
-    ...
-    defaultConfig {
-        ...
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = ["room.schemaLocation":
-                             "$projectDir/schemas".toString()]
-            }
-        }
-    }
-}
-```
-
-1.json, 2. json がエクスポートされる (VCS に入れておく)
-]
-
----
-
-class: chapter-8, normal
-
-# スキーマの利用
+# マイグレーションしない
 
 .card[
 ```kotlin
-android {
-    sourceSets {
-        androidTest.assets.srcDirs +=
-          files("$projectDir/schemas".toString())
-    }
-}
+Room.databaseBuilder(context, SampleDatabase::class.java, "s.db")
+    `.fallBackToDestructiveMigration()`
+    .build()
 ```
 
-マイグレーションのテストには過去のスキーマが必要
+全テーブルを DROP して CREATE し直す
 ]
 
 ---
@@ -1380,6 +1383,22 @@ class: chapter-9, normal
   - Book の一覧を Author の name 付きで取得
   - Author を ID で取得、その Author の Book の一覧も埋め込みで取得
 4. LiveData を返すメソッドのテスト
+]
+
+---
+
+class: chapter-10, normal
+
+# Room 1.1.0
+
+.card[
+予定
+
+- Write-Ahead Logging のサポート
+- DAO の @RawQuery で実行時に組み立てたクエリを使える
+- RoomDatabaseBuilder#fallBackToDestructiveMigrationFrom(1, 2, 3)
+- @Transaction が インターフェイスの実装メソッドでも使える (Java 8, Kotlin)
+- RoomDatabase#clearAllTables()
 ]
 
 ---

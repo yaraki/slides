@@ -444,6 +444,8 @@ class: chapter-2, normal
 # 移行手順: 自動
 
 .card[
+Refactor to AndroidX
+
 .large[
 ![Refactor to AndroidX](refactor.png)
 ]
@@ -799,15 +801,161 @@ class: chapter-9, hero, center, middle
 
 ---
 
+class: chapter-9, normal
+
+# WorkManager
+
+.card[
+バックグラウンド処理
+
+アプリが裏に回されても完了してほしい処理
+
+- データのダウンロード・アップロード
+- 時間のかかる処理
+]
+
+---
+
+class: chapter-9, normal
+
+# Worker
+
+.card[
+バックグラウンドで処理したい内容を Worker として実装
+
+```kotlin
+class MyWorker : Worker() {
+
+  override fun doWork(): WorkerResult {
+
+    // 処理
+
+    return WorkerResult.SUCCESS
+  }
+
+}
+```
+]
+
+---
+
+class: chapter-9, normal
+
+# Worker を実行
+
+.card[
+
+```kotlin
+val work = OneTimeWorkRequestBuilder&lt;MyWorker&gt;()
+    .setConstraints() // ネットワーク、充電中、アイドル状態
+    .setBackoffCriteria()
+    .setInputData(
+      mapOf("foo" to "Bar").toWorkData()
+    )
+    .build()
+
+WorkManager.getInstance().enqueue(work)
+```
+]
+
+---
+
+class: chapter-9, normal
+
+# バックグラウンド処理使い分け
+
+.card[
+画面に表示するものをバックグラウンドで読み込み<br>
+→ Executor など
+
+画面に表示しないかもしれないが、バックグラウンドで処理<br>
+→ WorkManager
+
+バックグラウンドで継続的に処理<br>
+→ Foreground Service
+]
+
+---
+
 class: chapter-10, hero, center, middle
 
 # Navigation
 
 ---
 
+class: chapter-10, normal
+
+# Navigation
+
+.card[
+Activity/Fragment による画面遷移を宣言的に
+
+- バックスタック
+- Up ボタン
+- 型安全な引数
+- ディープ・リンク (ACTION_VIEW)
+
+Android Studio 3.2 でサポート
+]
+
+---
+
 class: chapter-11, hero, center, middle
 
-# Fragment 2018
+# Fragment について
+
+---
+
+class: chapter-11, normal
+
+# Fragment
+
+.card[
+android.app.Fragment は deprecated
+
+androidx.fragment.app.Fragment はこれからも発展
+
+Activity = アプリの入り口<br>
+Fragment = アプリのコンテンツを表示するもの
+]
+
+---
+
+class: chapter-11, normal
+
+# 昔の Fragment
+
+.card[
+UI を保持・制御<br>
+
+Activity のライフサイクルを分担<br>
+　
+
+画面遷移 (Fragment Transaction)<br>
+　
+
+データの読み込み・保持 (retainInstance = true)<br>
+　
+]
+
+---
+
+class: chapter-11, normal
+
+# これからの Fragment
+
+.card[
+UI を保持・制御
+
+<s>Activity のライフサイクルを分担</s><br>
+→ Lifecycle
+
+<s>画面遷移 (Fragment Transaction)</s><br>
+→ Navigation
+
+<s>データの読み込み・保持 (retainInstance = true)</s><br>
+→ ViewModel
+]
 
 ---
 

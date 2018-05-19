@@ -663,7 +663,7 @@ class: chapter-7, normal
 
 API 19+
 
-まずは 検索ボックスの結果から
+まずは 検索ボックスの結果から<br><br><br><br>
 ]
 
 ---
@@ -683,48 +683,16 @@ AndroidManifest.xml
 
 ```kotlin
 class MySlideProvider : SliceProvider() {
-  override fun onBindSlice(uri: Uri): Slice? {
+  override fun onBindSlice(sliceUri: Uri): Slice? {
     if (uri.path == "/weather") {
-      return buildSlice(uri)
+      return ListBuilder(context, sliceUri, ListBuilder.INFINITY)
+                 .addRow { it.setTitle("Hello") }
+                 .build()
     }
     return null
   }
 }
 ```
-]
-
----
-
-class: chapter-7, normal
-
-# Slice を提供する
-
-.card[
-```kotlin
-fun buildSlice(uri: Uri): Slice {
-  val listBuilder = ListBuilder(context, uri)
-  return listBuilder
-    .setHeader(ListBuilder.HeaderBuilder(listBuilder)
-      .setTitle("松山")
-      .setSummary("晴れ")
-      .build())
-    .build()
-}
-```
-]
-
----
-
-class: chapter-7, normal
-
-# Slice その他
-
-.card[
-実際に表示される内容は抜粋される可能性がある
-
-Slice を提供するアプリを制限する (権限を設定する)
-
-SliceView を使って Slice を表示する
 ]
 
 ---
@@ -959,6 +927,24 @@ UI を保持・制御
 
 ---
 
+class: chapter-12, normal
+
+# まとめ
+
+.card[
+サポート ライブラリ とアーキテクチャー コンポーネントは AndroidX に<br>
+プレビュー版で試すことができる
+
+- Slices
+- Paging
+- WorkManager
+- Navigation
+
+不具合報告、要望は issuetracker.google.com から
+]
+
+---
+
 class: chapter-12, hero, middle, center
 
 # ありがとうございました
@@ -972,7 +958,7 @@ class: chapter-12, hero, middle, center
     <script src="http://gnab.github.io/remark/remark.language.js"></script>
     <script>
       var slideshow = remark.create({
-        ratio: '4:3',
+        ratio: '16:10',
         highlightStyle: 'googlecode',
         highlightLanguage: 'remark',
         highlightLines: true,

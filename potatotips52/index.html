@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>Room InvalidationTracker potatotips #52</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+      @import url(http://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
+
+      body {
+        font-family: 'Noto Sans Japanese', sans-serif;
+      }
+
+      a {
+        text-decoration: none;
+        color: blue;
+      }
+
+      a:visited {
+        color: blue;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      li {
+        line-height: 1.8;
+      }
+
+      h1, h2, h3 {
+        font-family: 'Noto Sans Japanese', sans-serif;
+        font-weight: bold;
+      }
+
+      /* ページ番号 */
+      .remark-slide-number {
+        color: #CCCCCC;
+        font-size: 12pt;
+        opacity: 1;
+      }
+
+      .hero {
+        background-color: var(--bg-color);
+        color: #fff;
+      }
+
+      .hero h1, .hero h2, .hero h3 {
+        color: #FFFFFF;
+      }
+
+      .hero h2 {
+        margin-left: 1em;
+      }
+
+      .normal {
+        background-image:
+        url("../android-icon-72x72.png"),
+        linear-gradient(180deg, var(--bg-color) 50%, #FFFFFF 50%);
+        background-position:
+        right 0.4em bottom 1em,
+        right 0em bottom 8em;
+      }
+
+      .normal h1 {
+        color: white;
+        margin-top: 0px;
+        margin-left: 1em;
+        font-size: 28pt;
+      }
+
+      .normal h1 a {
+        color: white;
+      }
+
+      .condensed h1 {
+        transform: scaleX(0.75);
+        transform-origin: left top;
+        white-space: nowrap;
+      }
+
+      .normal h2 {
+        margin: 0px;
+        font-size: 20pt;
+      }
+
+      .normal {
+        font-size: 18pt;
+      }
+
+      .faq {
+        background-color: var(--bg-color);
+        font-size: 20pt;
+        color: #fff;
+      }
+
+      .faq h1 {
+        font-size: 28pt;
+      }
+
+      .faq a {
+        color: #fff;
+      }
+
+      .remark-code, .remark-inline-code {
+        font-family: monospace;
+      }
+
+      code {
+        border-radius: 4px;
+        max-height: 400px;
+      }
+
+      .hljs-googlecode .hljs {
+        background-color: #EEEEEE;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .level {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: #fff;
+        color: var(--bg-color);
+      }
+
+      .level::before {
+        content: "API レベル: ";
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 0.1em;
+        padding: 1em 2em;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+      }
+
+      .card img {
+        float: right;
+        margin-left: 1em;
+        max-width: 45%;
+        max-height: 45%;
+      }
+
+      .card video {
+        float: right;
+        margin-left: 1em;
+        max-width: 32%;
+        max-height: 32%;
+      }
+
+      .card .large img {
+        float: none;
+        max-width: 70%;
+        max-height: 100%;
+      }
+
+      .card .large video {
+        float: none;
+        max-width: 90%;
+        max-height: 100%;
+      }
+
+      .card .small {
+        font-size: 16pt;
+      }
+
+      .card .tiny {
+        font-size: 14pt;
+      }
+
+      .card .small img {
+        margin-top: 30%;
+        max-width: 20%;
+        max-height: 20%
+      }
+
+      .card .medium img {
+        float: right;
+        margin-left: 1em;
+        max-width: 70%;
+        max-height: 70%;
+      }
+
+      .chapter-1 {
+        --bg-color: #2196F3;
+      }
+
+      .chapter-2 {
+        --bg-color: #3F51B5;
+      }
+
+      .chapter-3 {
+        --bg-color: #009688;
+      }
+
+      .chapter-4 {
+        --bg-color: #FF5722;
+      }
+
+      .chapter-5 {
+        --bg-color: #F44336;
+      }
+
+      .chapter-6 {
+        --bg-color: #E91E63;
+      }
+
+      .chapter-7 {
+        --bg-color: #9C27B0;
+      }
+
+      .chapter-8 {
+        --bg-color: #EF6C00;
+      }
+
+      .chapter-9 {
+        --bg-color: #673AB7;
+      }
+
+      .chapter-10 {
+        --bg-color: #607D8B;
+      }
+
+      .chapter-11 {
+        --bg-color: #039BE5;
+      }
+
+      .chapter-12 {
+        --bg-color: #00838F;
+      }
+
+      .chapter-13 {
+        --bg-color: #43A047;
+      }
+
+      .chapter-14 {
+        --bg-color: #757575;
+      }
+
+      .chapter-15 {
+        --bg-color: #827717;
+      }
+
+      .chapter-16 {
+        --bg-color: #795548;
+      }
+
+      .chapter-17 {
+        --bg-color: #689F38;
+      }
+
+      table {
+        width:100%;
+        border-collapse: separate;
+        border-spacing: 0px;
+      }
+
+      th {
+        padding: 6px;
+        background-color: #eee;
+        border: 1px solid #b9b9b9;
+      }
+
+      td {
+        padding: 6px;
+        background-color: #fff;
+        border: 1px solid #b9b9b9;
+      }
+
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+class: chapter-1, hero, center, middle
+
+# <nobr>Room のできるまで</nobr>
+
+potatotips #52
+
+2018/06/21
+
+荒木佑一
+
+---
+
+class: chapter-1, normal
+
+# 自己紹介
+
+.card[
+荒木佑一<br>
+@yuichi_araki
+
+Google Developer Relations<br>
+Developer Programs Engineer
+
+- AndroidX (Transition, Room)
+- developer.android.com や GitHub のサンプルコード
+- Android Studio のテンプレート
+- Google I/O アプリ、サンタ トラッカー
+]
+
+---
+
+class: chapter-2, normal
+
+# Room とは
+
+.card[
+Android 向け O/R マッパー
+
+- Android の SQLite をラップする
+- アノテーション プロセッサーで実装を生成
+- SQL を隠蔽しない
+  - ビルド時にクエリ検証
+]
+
+---
+
+class: chapter-3, normal
+
+# LiveData による監視
+
+.card[
+```kotlin
+@Dao
+interface UserDao {
+  @Query("SELECT * FROM User")
+  fun all(): LiveData&lt;List&lt;User&gt;&gt;&gt;
+}
+```
+
+```kotlin
+  viewModel.users.observe(this, Observer {
+    // User テーブルに変更があるたびに呼ばれる
+    adapter.submit(it)
+  })
+```
+
+Room はどうやってテーブルを監視しているのか
+]
+
+---
+
+class: chapter-4, normal
+
+# [候補 1] DAO から通知する
+
+.card[
+クエリを実行するメソッドの実装は Room が生成しているのだから、その中で通知するようにすればいい
+]
+
+---
+
+class: chapter-4, normal
+
+# [候補 1] DAO から通知する
+
+.card[
+クエリを実行するメソッドの実装は Room が生成しているのだから、その中で通知するようにすればいい
+
+☓ 直接クエリを投げたときに対応できない
+
+```kotlin
+    database.openHelper.writableDatabase.run {
+        execSQL("INSERT INTO User VALUES (1, 'Pooh')")
+    }
+```
+]
+
+---
+
+class: chapter-5, normal
+
+# [候補 2] SQLite の拡張機能を使う
+
+.card[
+[Data Change Notification Callbacks](https://www.sqlite.org/c3ref/update_hook.html)
+
+```c
+void *sqlite3_update_hook(
+  sqlite3*,
+  void(*)(void *,int ,char const *,char const *,sqlite3_int64),
+  void*
+);
+```
+]
+
+---
+
+class: chapter-5, normal
+
+# [候補 2] SQLite の拡張機能を使う
+
+.card[
+[Data Change Notification Callbacks](https://www.sqlite.org/c3ref/update_hook.html)
+
+```c
+void *sqlite3_update_hook(
+  sqlite3*,
+  void(*)(void *,int ,char const *,char const *,sqlite3_int64),
+  void*
+);
+```
+
+☓ Android では使えない (API が開いていない)
+]
+
+---
+
+class: chapter-6, normal
+
+# [実際の方法] トリガー
+
+.card[
+1. 変更ログのテーブルを作っておく
+2. 各テーブルに変更があるたびに変更ログに記入されるようなトリガーを仕掛ける
+3. トランザクション終了時にログを確認する<br>
+   (Room ではすべての書き込みはトランザクションで処理される)
+4. 変更があれば通知する
+]
+
+---
+
+class: chapter-6, normal
+
+# room_table_modification_log
+
+.card[
+ログ テーブル
+```sql
+CREATE TEMP TABLE room_table_modification_log (
+  version INTEGER PRIMARY KEY AUTOINCREMENT,
+  table_id INTEGER
+)
+```
+
+トリガー
+
+```sql
+CREATE TEMP TRIGGER IF NOT EXISTS room_table_modification_trigger_User_INSERT
+AFTER INSERT ON User
+BEGIN INSERT OR REPLACE INTO room_table_modification_log VALUES (null, 1);
+```
+
+UPDATE と DELETE 用のトリガーも作る
+]
+
+---
+
+class: chapter-6, normal
+
+# InvalidationTracker
+
+.card[
+- ログテーブルおよびトリガーの管理
+- テーブル変更の検知・通知
+
+endTransaction でログ テーブルを走査し、変更を検知する
+
+```kotlin
+  database.invalidationTracker.addObserver(object: InvalidationTracker.Observer("User") {
+    override fun onInvalidated(tables: Set&lt;String&gt;) {
+      // 変更があった
+    }
+  })
+```
+]
+
+---
+
+class: chapter-7, normal
+
+# 今後の課題
+
+.card[
+- インスタンスやプロセスをまたぐと動かない
+- 他のスレッドが長時間書き込んでいる (トランザクションを掴んでいる) 途中は Observer を開始できない
+
+不具合報告・要望は [issuetracker.google.com](https://issuetracker.google.com) から
+]
+
+---
+
+class: chapter-17, hero, middle, center
+
+# ありがとうございました
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var hljs = remark.highlighter.engine;
+    </script>
+    <script src="http://gnab.github.io/remark/remark.language.js"></script>
+    <script>
+      var slideshow = remark.create({
+        ratio: '16:9',
+        highlightStyle: 'googlecode',
+        highlightLanguage: 'remark',
+        highlightLines: true,
+        highlightSpans: true,
+        navigation: {
+          click: false,
+          scroll: false,
+          touch: true
+        }
+      });
+    </script>
+  </body>
+</html>  

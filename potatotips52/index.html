@@ -352,7 +352,7 @@ interface UserDao {
 ```kotlin
   viewModel.users.observe(this, Observer {
     // User テーブルに変更があるたびに呼ばれる
-    adapter.submit(it)
+    adapter.submitList(it)
   })
 ```
 

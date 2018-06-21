@@ -294,6 +294,8 @@ class: chapter-1, hero, center, middle
 
 # <nobr>Room のできるまで</nobr>
 
+## 〜 InvalidationTracker 編 〜
+
 potatotips #52
 
 2018/06/21
@@ -350,6 +352,10 @@ interface UserDao {
 ```
 
 ```kotlin
+  // ViewModel
+  val users = userDao.all()
+
+  // Fragment, etc
   viewModel.users.observe(this, Observer {
     // User テーブルに変更があるたびに呼ばれる
     adapter.submitList(it)
@@ -361,12 +367,97 @@ Room はどうやってテーブルを監視しているのか
 
 ---
 
-class: chapter-4, normal
+class: chapter-3, normal
 
-# [候補 1] DAO から通知する
+# LiveData による監視
 
 .card[
-クエリを実行するメソッドの実装は Room が生成しているのだから、その中で通知するようにすればいい
+```java
+  @Override
+  public LiveData&lt;List&lt;User&gt;&gt; all() {
+    final String _sql = "SELECT * FROM User";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    return new ComputableLiveData&lt;List&lt;User&gt;&gt;(__db.getQueryExecutor()) {
+      private Observer _observer;
+
+      @Override
+      protected List&lt;User&gt; compute() {
+        if (_observer == null) {
+          _observer = `new Observer("User")` {
+            @Override
+            public void onInvalidated(@NonNull Set&lt;String&gt; tables) {
+              invalidate();
+            }
+          };
+          __db.getInvalidationTracker().addWeakObserver(_observer);
+        }
+        final Cursor _cursor = __db.query(_statement);
+        try {
+          final int _cursorIndexOfMId = _cursor.getColumnIndexOrThrow("mId");
+          final int _cursorIndexOfMName = _cursor.getColumnIndexOrThrow("mName");
+          final int _cursorIndexOfMLastName = _cursor.getColumnIndexOrThrow("mLastName");
+          final int _cursorIndexOfMAge = _cursor.getColumnIndexOrThrow("mAge");
+          final int _cursorIndexOfMAdmin = _cursor.getColumnIndexOrThrow("mAdmin");
+          final int _cursorIndexOfMWeight = _cursor.getColumnIndexOrThrow("mWeight");
+          final int _cursorIndexOfMBirthday = _cursor.getColumnIndexOrThrow("mBirthday");
+          final int _cursorIndexOfMCustomField = _cursor.getColumnIndexOrThrow("custommm");
+          final int _cursorIndexOfMWorkDays = _cursor.getColumnIndexOrThrow("mWorkDays");
+          final List&lt;User&gt; _result = new ArrayList&lt;User&gt;(_cursor.getCount());
+          while(_cursor.moveToNext()) {
+            final User _item;
+            _item = new User();
+            final int _tmpMId;
+            _tmpMId = _cursor.getInt(_cursorIndexOfMId);
+            _item.setId(_tmpMId);
+            final String _tmpMName;
+            _tmpMName = _cursor.getString(_cursorIndexOfMName);
+            _item.setName(_tmpMName);
+            final String _tmpMLastName;
+            _tmpMLastName = _cursor.getString(_cursorIndexOfMLastName);
+            _item.setLastName(_tmpMLastName);
+            final int _tmpMAge;
+            _tmpMAge = _cursor.getInt(_cursorIndexOfMAge);
+            _item.setAge(_tmpMAge);
+            final boolean _tmpMAdmin;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfMAdmin);
+            _tmpMAdmin = _tmp != 0;
+            _item.setAdmin(_tmpMAdmin);
+            final float _tmpMWeight;
+            _tmpMWeight = _cursor.getFloat(_cursorIndexOfMWeight);
+            _item.setWeight(_tmpMWeight);
+            final Date _tmpMBirthday;
+            final Long _tmp_1;
+            if (_cursor.isNull(_cursorIndexOfMBirthday)) {
+              _tmp_1 = null;
+            } else {
+              _tmp_1 = _cursor.getLong(_cursorIndexOfMBirthday);
+            }
+            _tmpMBirthday = __converters.fromTimestamp(_tmp_1);
+            _item.setBirthday(_tmpMBirthday);
+            final String _tmpMCustomField;
+            _tmpMCustomField = _cursor.getString(_cursorIndexOfMCustomField);
+            _item.setCustomField(_tmpMCustomField);
+            final Set&lt;Day&gt; _tmpMWorkDays;
+            final int _tmp_2;
+            _tmp_2 = _cursor.getInt(_cursorIndexOfMWorkDays);
+            _tmpMWorkDays = __converters.decomposeDays(_tmp_2);
+            _item.setWorkDays(_tmpMWorkDays);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    }.getLiveData();
+  }
+```
 ]
 
 ---
@@ -376,7 +467,45 @@ class: chapter-4, normal
 # [候補 1] DAO から通知する
 
 .card[
-クエリを実行するメソッドの実装は Room が生成しているのだから、その中で通知するようにすればいい
+書き込みメソッドの実装は Room が生成している → その中から通知する
+]
+
+---
+
+class: chapter-4, normal
+
+# [候補 1] DAO から通知する
+
+.card[
+書き込みメソッドの実装は Room が生成している → その中から通知する
+
+```java
+  @Insert
+  void insert(User user);
+```
+
+```java
+  @Override
+  public void insert(User user) {
+    __db.beginTransaction();
+    try {
+      __insertionAdapterOfUser.insert(user);
+      __db.setTransactionSuccessful();
+    } finally {
+      __db.endTransaction();
+    }
+  }
+```
+]
+
+---
+
+class: chapter-4, normal
+
+# [候補 1] DAO から通知する
+
+.card[
+書き込みメソッドの実装は Room が生成している → その中から通知する
 
 ☓ 直接クエリを投げたときに対応できない
 
@@ -385,6 +514,8 @@ class: chapter-4, normal
         execSQL("INSERT INTO User VALUES (1, 'Pooh')")
     }
 ```
+
+☓ トリガーにも対応できない
 ]
 
 ---
@@ -399,7 +530,7 @@ class: chapter-5, normal
 ```c
 void *sqlite3_update_hook(
   sqlite3*,
-  void(*)(void *,int ,char const *,char const *,sqlite3_int64),
+  void(*)(void *, int, char const *, char const *, sqlite3_int64),
   void*
 );
 ```
@@ -417,7 +548,7 @@ class: chapter-5, normal
 ```c
 void *sqlite3_update_hook(
   sqlite3*,
-  void(*)(void *,int ,char const *,char const *,sqlite3_int64),
+  void(*)(void *, int, char const *, char const *, sqlite3_int64),
   void*
 );
 ```
@@ -436,7 +567,7 @@ class: chapter-6, normal
 2. 各テーブルに変更があるたびに変更ログに記入されるようなトリガーを仕掛ける
 3. トランザクション終了時にログを確認する<br>
    (Room ではすべての書き込みはトランザクションで処理される)
-4. 変更があれば通知する
+4. Observer に通知する
 ]
 
 ---
@@ -473,9 +604,9 @@ class: chapter-6, normal
 
 .card[
 - ログテーブルおよびトリガーの管理
+  - 古いログは消す
 - テーブル変更の検知・通知
-
-endTransaction でログ テーブルを走査し、変更を検知する
+  - endTransaction でログ テーブルを走査し、変更を検知する
 
 ```kotlin
   database.invalidationTracker.addObserver(object: InvalidationTracker.Observer("User") {
@@ -488,20 +619,61 @@ endTransaction でログ テーブルを走査し、変更を検知する
 
 ---
 
+class: chapter-6, normal
+
+# InvalidationTracker.ObservedTableTracker
+
+.card[
+監視する必要のないテーブルにトリガーを仕掛けるのはムダ
+
+監視されているかどうかを監視する
+- 監視されているときだけトリガーを仕掛ける
+- すべての監視が解かれたらトリガーを消す
+]
+
+---
+
+class: chapter-6, normal
+
+# [再] LiveData による監視
+
+.card[
+```kotlin
+@Dao
+interface UserDao {
+  @Query("SELECT * FROM User")
+  fun all(): LiveData&lt;List&lt;User&gt;&gt;&gt;
+}
+```
+
+```kotlin
+  // ViewModel
+  val users = userDao.all()
+
+  // Fragment, etc
+  viewModel.users.observe(this, Observer {
+    // User テーブルに変更があるたびに呼ばれる
+    adapter.submitList(it)
+  })
+```
+]
+
+---
+
 class: chapter-7, normal
 
 # 今後の課題
 
 .card[
 - インスタンスやプロセスをまたぐと動かない
-- 他のスレッドが長時間書き込んでいる (トランザクションを掴んでいる) 途中は Observer を開始できない
+- 他のスレッドが長時間書き込んでいる (トランザクションを掴んでいる) 途中は新規の Observer を開始できない
 
 不具合報告・要望は [issuetracker.google.com](https://issuetracker.google.com) から
 ]
 
 ---
 
-class: chapter-17, hero, middle, center
+class: chapter-7, hero, middle, center
 
 # ありがとうございました
 

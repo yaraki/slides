@@ -431,7 +431,7 @@ class: chapter-3, normal
 
 ???
 
-- どんなコレクションが使える?
+- どんなコレクションが使える？
 
 ---
 
@@ -530,7 +530,95 @@ Room が自動的に複数パラメーターを展開
 
 class: chapter-4, normal
 
+# 外部キー制約
 
+```kotlin
+@Entity
+data class Author(@PrimaryKey val id: Long, val name: String)
+
+@Entity(
+        foreignKeys = [
+            ForeignKey(
+                    entity = Author::class,
+                    childColumns = ["authorId"],
+                    parentColumns = ["id"])],
+        indices = [Index("authorId")])
+data class Book(
+        @PrimaryKey
+        val id: Long,
+        val title: String,
+        val authorId: Long
+)
+```
+
+---
+
+class: chapter-4, normal
+
+# 外部キー制約エラー
+
+```kotlin
+    db.author().insertAll(listOf(
+            Author(id = 1L, name = "芥川")))
+
+    db.book().insertAll(listOf(
+            Book(id = 1L, title = "芋粥", authorId = 1L),
+            Book(id = 2L, title = "お伽草紙", authorId = 2L)))
+```
+
+SQLiteConstraintException で トランザクションはロールバックされる
+
+順番を守って挿入しないといけない
+
+---
+
+class: chapter-4, normal
+
+# 外部キー制約エラー？
+
+```kotlin
+    db.runInTransaction {
+
+        db.book().insertAll(listOf(
+                Book(id = 1L, title = "芋粥", authorId = 1L),
+                Book(id = 2L, title = "お伽草紙", authorId = 2L)))
+
+        db.author().insertAll(listOf(
+                Author(id = 1L, name = "芥川"),
+                Author(id = 2L, name = "太宰")))
+
+    }
+```
+
+---
+
+class: chapter-4, normal
+
+# 外部キー制約を一時的に保留
+
+```kotlin
+    val sqlite = db.openHelper.writableDatabase
+
+    db.runInTransaction {
+
+        `sqlite.execSQL("PRAGMA defer_foreign_keys = TRUE")`
+
+        db.book().insertAll(listOf(
+                Book(id = 1L, title = "芋粥", authorId = 1L),
+                Book(id = 2L, title = "お伽草紙", authorId = 2L)))
+
+        db.author().insertAll(listOf(
+                Author(id = 1L, name = "芥川"),
+                Author(id = 2L, name = "太宰")))
+
+    }
+```
+
+.small[Kitkat 以前では `PRAGMA foreign_keys = FALSE` しておいて、終わってから `PRAGMA foreign_keys = TRUE` する]
+
+???
+
+- ただし defer_foreign_keys は Lollipop 以降
 
 ---
 

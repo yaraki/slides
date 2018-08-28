@@ -528,7 +528,7 @@ Room が自動的に複数パラメーターを展開
 
 ---
 
-class: chapter-4, normal
+class: chapter-5, normal
 
 # 外部キー制約
 
@@ -553,7 +553,7 @@ data class Book(
 
 ---
 
-class: chapter-4, normal
+class: chapter-5, normal
 
 # 外部キー制約エラー
 
@@ -572,7 +572,7 @@ SQLiteConstraintException で トランザクションはロールバックさ�
 
 ---
 
-class: chapter-4, normal
+class: chapter-5, normal
 
 # 外部キー制約エラー？
 
@@ -592,7 +592,7 @@ class: chapter-4, normal
 
 ---
 
-class: chapter-4, normal
+class: chapter-5, normal
 
 # 外部キー制約を一時的に保留
 
@@ -619,6 +619,141 @@ class: chapter-4, normal
 ???
 
 - ただし defer_foreign_keys は Lollipop 以降
+
+---
+
+class: chapter-7, normal
+
+# 必要な情報だけ取ってくる
+
+```kotlin
+@Entity
+data class Author(
+        @PrimaryKey
+        val id: Long,
+        val name: String,
+        val dateOfBirth: Date,
+        val dateOfDeath: Date,
+        val placeOfBirth: String,
+        val description: String,
+        /* まだまだ続く */
+)
+```
+
+```kotlin
+    @Query("SELECT * FROM Author")
+    fun liveAll(): LiveData&lt;List&lt;Author&gt;&gt;
+```
+
+一覧画面で必要なのは ID と名前だけ
+
+---
+
+class: chapter-7, normal
+
+# POJO
+
+```kotlin
+// @Entity ではない
+data class AuthorSummary(
+        val id: Long,
+        val name: String
+)
+```
+
+```kotlin
+    @Query("SELECT id, name FROM Author")
+    fun liveAll(): LiveData&lt;List&lt;`AuthorSummary`&gt;&gt;
+```
+
+テーブル監視も正しく動く
+
+カラムの名前と型が一致していれば、返す値は Entity でなくて良い
+
+---
+
+class: chapter-7, normal
+
+# POJO
+
+```kotlin
+data class BookWithAuthorName(
+        val id: Long,
+        val title: String,
+        val authorId: Long,
+        val authorName: String
+)
+```
+
+```kotlin
+    @Query("""
+        SELECT
+            Book.id
+          , Book.title
+          , Book.authorId
+          , Author.name AS authorName
+        FROM Book
+        INNER JOIN Author ON Book.authorId = Author.id
+    """)
+    fun liveAllWithAuthor(): LiveData&lt;List&lt;BookWithAuthorName&gt;&gt;
+```
+
+---
+
+class: chapter-7, normal
+
+# @Relation
+
+```kotlin
+data class AuthorWithBooks(
+        @Embedded
+        val author: Author) {
+    @Relation(entity = Book::class,
+              parentColumn = "id",
+              entityColumn = "authorId")
+    lateinit var books: List&lt;Book&gt;
+}
+```
+
+```kotlin
+    @Transaction
+    @Query("SELECT * FROM Author WHERE id = :id")
+    fun byIdWithBooks(id: Long): AuthorWithBooks?
+```
+
+以下の SQL が @Relation の中に入る
+
+```sql
+SELECT * FROM Book WHERE authorId IN (:id)
+```
+
+---
+
+class: chapter-7, normal
+
+# @Relation
+
+```kotlin
+data class AuthorWithBooks(
+        @Embedded
+        val author: Author) {
+    @Relation(entity = Book::class,
+              parentColumn = "id",
+              entityColumn = "authorId")
+    `lateinit var` books: List&lt;Book&gt;
+}
+```
+
+```kotlin
+data class AuthorWithBooks(
+        @Embedded
+        val author: Author,
+        @Relation(entity = Book::class,
+                  parentColumn = "id",
+                  entityColumn = "authorId")
+        val books: List&lt;Book&gt;
+)
+```
 
 ---
 

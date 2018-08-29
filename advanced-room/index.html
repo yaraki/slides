@@ -73,6 +73,10 @@
         right 0em bottom 8em;
       }
 
+      .nologo {
+        background-image: linear-gradient(180deg, var(--bg-color) 40%, #FFFFFF 40%);
+      }
+
       .normal h1 {
         color: white;
         margin-top: 0px;
@@ -119,7 +123,7 @@
 
       code {
         border-radius: 4px;
-        max-height: 400px;
+        max-height: 580px;
       }
 
       .hljs-googlecode .hljs {
@@ -755,13 +759,207 @@ data class AuthorWithBooks(
 )
 ```
 
+???
+
+- 現在は @Relation の付くフィールドは var でないといけない
+- バージョン 2.1 から val でも大丈夫になる
+
+---
+
+class: chapter-8, normal
+
+# テスト
+
+```kotlin
+@RunWith(AndroidJUnit4::class)
+@SmallTest
+class AuthorDaoTest {
+    private lateinit var db: LiteratureDatabase
+
+    @Before
+    fun openDatabase() {
+        db = Room.`inMemoryDatabaseBuilder`(
+                        InstrumentationRegistry.getTargetContext()
+                        LiteratureDatabase::class.java)
+                 .build()
+    }
+
+    @Test
+    fun author() {
+        db.author().insert(Author(1L, "芥川"))
+        assertThat(db.author().byId(1L)!!, \`is`(equalTo(Author(1L, "芥川"))))
+    }
+}
+```
+
+---
+
+class: chapter-8, normal
+
+# LiveData のテスト
+
+```kotlin
+    @Test
+    fun liveAuthor() {
+        db.author().insert(Author(1L, "芥川"))
+        assertThat(db.author().`liveById(1L).value`,
+                   \`is`(equalTo(Author(1L, "芥川"))))
+    }
+```
+
+→ null
+
+どうにかして待ち合わせる必要がある
+
+---
+
+class: chapter-8, normal
+
+# InstantTaskExecutorRule
+
+```gradle
+    androidTestImplementation 'android.arch.core:core-testing:1.1.1'
+```
+
+```kotlin
+class AuthorDaoTest {
+    `@get:Rule val executorRule = InstantTaskExecutorRule()`
+    
+    @Test
+    fun liveAuthor() {
+        db.author().insert(Author(1L, "芥川"))
+        val liveData = db.author().liveById(1L)
+        liveData.observeForever(object : Observer&lt;Author&gt; {
+            override fun onChanged(t: Author?) {
+                assertThat(t, \`is`(equalTo(Author(1L, "芥川"))))
+                liveData.removeObserver(this)
+            }
+        })
+    }
+}
+```
+
+```kotlin
+    db = Room.inMemoryDatabaseBuilder(context, LiteratureDatabase::class.java)
+        .`allowMainThreadQueries`().build()
+```
+
+---
+
+class: chapter-8, normal
+
+# Mockito
+
+```kotlin
+    @Test
+    fun testLiveData() {
+        db.author().insert(Author(1L, "芥川"))
+
+        @Suppress("UNCHECKED_CAST")
+        val observer = mock(Observer::class.java) as Observer&lt;Author&gt;
+
+        val liveData = db.author().liveById(1L)
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            liveData.observeForever(observer)
+        }
+
+        verify(observer, timeout(300L).atLeastOnce())
+            .onChanged(eq(Author(1L, "芥川")))
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            liveData.removeObserver(observer)
+        }
+    }
+```
+
+???
+
+- ちょっと遅い
+
+---
+
+class: chapter-8, normal
+
+# CountDownLatch
+
+```kotlin
+    @Test
+    fun testLiveData() {
+        db.author().insert(Author(1L, "芥川"))
+        assertThat(db.author().liveById(1L).`await`(),
+                   \`is`(equalTo(Author(1L, "芥川"))))
+    }
+
+    private fun &lt;T&gt; LiveData&lt;T&gt;.await(): T {
+        val latch = CountDownLatch(1)
+        val result = AtomicReference&lt;T&gt;()
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            observeForever(object : Observer&lt;T&gt; {
+                override fun onChanged(t: T?) {
+                    if (t != null) {
+                        result.set(t)
+                        removeObserver(this)
+                    } } })
+        }
+        latch.await(300L, TimeUnit.MILLISECONDS)
+        return result.get()
+    }
+```
+
+---
+
+class: chapter-16, normal
+
+# [予定] インスタンス間の監視
+
+複数のデータベース インスタンス間でテーブル変更を通知し合う
+
+```kotlin
+val db = Room.databaseBuilder(context, LiteratureDatabase.class, "l.db")
+             .`enableMultiInstanceInvalidation()`
+             .build()
+```
+
+プロセスをまたいでも OK
+
+---
+
+class: chapter-16, normal
+
+# [予定] View
+
+```kotlin
+@DatabaseView("""
+    SELECT
+        Book.id
+      , Book.name
+      , Book.authorId
+      , Author.name AS authorName
+    FROM
+        Book INNER JOIN Author ON Book.authorId = Author.id
+""")
+data class BookDetail(
+        val id: Long,
+        val name: String,
+        val authorId: Long,
+        val authorName: String
+)
+```
+
+```kotlin
+    @Query("SELECT * FROM BookDetail WHERE id = :id")
+    fun detailById(id: Long): BookDetail?
+```
+
 ---
 
 class: chapter-17, normal
 
 # まとめ
 
-不具合報告・要望は [issuetracker.google.com](https://issuetracker.google.com) から
+不具合報告・要望は [issuetracker.google.com](https://issuetracker.google.com/issues/new?component=192731&template=842428) から
+
+[AOSP AndroidX Contribution Guide](https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev/README.md)
 
 ---
 

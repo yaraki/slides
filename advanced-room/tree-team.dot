@@ -1,0 +1,36 @@
+digraph {
+        dir="back";
+        node [shape=rect]
+
+        A
+        B
+        C
+        D
+        E
+        F
+        G[fillcolor=yellow style=filled]
+        H
+        I
+        J[fillcolor=yellow style=filled]
+        K[fillcolor=yellow style=filled]
+        L[fillcolor=yellow style=filled]
+        M[fillcolor=yellow style=filled]
+
+        A -> B [dir=back]
+        A -> C [dir=back]
+
+        B -> D [dir=back]
+        B -> E [dir=back]
+        B -> F [dir=back]
+
+        C -> G [dir=back]
+        C -> H [dir=back]
+
+        D -> I [dir=back]
+
+        G -> J [dir=back]
+        G -> K [dir=back]
+
+        J -> L [dir=back]
+        J -> M [dir=back]
+}

@@ -1,0 +1,22 @@
+digraph {
+        dir="back";
+        node [shape=rect]
+
+        A -> B [dir=back]
+        A -> C [dir=back]
+
+        B -> D [dir=back]
+        B -> E [dir=back]
+        B -> F [dir=back]
+
+        C -> G [dir=back]
+        C -> H [dir=back]
+
+        D -> I [dir=back]
+
+        G -> J [dir=back]
+        G -> K [dir=back]
+
+        J -> L [dir=back]
+        J -> M [dir=back]
+}

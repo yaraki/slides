@@ -159,6 +159,12 @@
         max-height: 32%;
       }
 
+      .center img {
+        float: none;
+        max-width: 40%;
+        max-height: 40%;
+      }
+
       .large img {
         float: none;
         max-width: 70%;
@@ -466,7 +472,7 @@ class: chapter-3, normal
 
 class: chapter-3, normal
 
-# UPSERT
+# 上書き
 
 サーバーと同期するとき
 
@@ -678,7 +684,7 @@ data class AuthorSummary(
 
 class: chapter-7, normal
 
-# POJO
+# 1:N の N 側から
 
 ```kotlin
 data class BookWithAuthorName(
@@ -706,7 +712,7 @@ data class BookWithAuthorName(
 
 class: chapter-7, normal
 
-# @Relation
+# 1:N の 1 側から
 
 ```kotlin
 data class AuthorWithBooks(
@@ -768,6 +774,66 @@ data class AuthorWithBooks(
 
 class: chapter-8, normal
 
+# @Dao
+
+インターフェイス
+
+```kotlin
+@Dao
+interface BookDao {
+    @Insert
+    fun insert(book: Book)
+}
+```
+
+抽象クラス
+
+```kotlin
+@Dao
+abstract class AuthorDao {
+    @Insert
+    abstract fun insert(author: Author)
+}
+```
+
+具象メソッドを作ることができる
+
+---
+
+class: chapter-8, normal
+
+# @Transaction
+
+```kotlin
+@Entity
+data class Author(@PrimaryKey val id: Long,
+                  val name: String,
+                  val money: Long)
+```
+
+```kotlin
+    @Query("UPDATE Author SET money = money + :delta WHERE id = :id")
+    abstract fun adjustMoney(id: Long, delta: Long): Int
+
+    `@Transaction`
+    open fun sendMoney(from: Long, to: Long, amount: Long) {
+        val decrease = adjustMoney(from, -amount)
+        if (decrease != 1) throw IllegalArgumentException("No author: $from")
+        val increase = adjustMoney(to, amount)
+        if (increase != 1) throw IllegalArgumentException("No author: $to")
+    }
+```
+
+```
+        db.author().insert(Author(1L, "井伏", money = 1000L))
+        db.author().insert(Author(2L, "太宰", money = 0L))
+        db.author().sendMoney(1L, 2L, 200L)
+```
+
+---
+
+class: chapter-11, normal
+
 # テスト
 
 ```kotlin
@@ -794,7 +860,7 @@ class AuthorDaoTest {
 
 ---
 
-class: chapter-8, normal
+class: chapter-11, normal
 
 # LiveData のテスト
 
@@ -813,7 +879,7 @@ class: chapter-8, normal
 
 ---
 
-class: chapter-8, normal
+class: chapter-11, normal
 
 # InstantTaskExecutorRule
 
@@ -846,7 +912,7 @@ class AuthorDaoTest {
 
 ---
 
-class: chapter-8, normal
+class: chapter-11, normal
 
 # Mockito
 
@@ -878,7 +944,7 @@ class: chapter-8, normal
 
 ---
 
-class: chapter-8, normal
+class: chapter-11, normal
 
 # CountDownLatch
 
@@ -908,19 +974,144 @@ class: chapter-8, normal
 
 ---
 
-class: chapter-16, normal
+class: chapter-12, normal
 
-# [予定] インスタンス間の監視
+# ツリー構造
 
-複数のデータベース インスタンス間でテーブル変更を通知し合う
+![ツリー](tree.svg)
+
+同一のエンティティーがツリー構造をなす
+
+- 従業員の組織構造
+- 掲示板の返信
+- TODO 依存関係
+
+---
+
+class: chapter-12, normal
+
+# テーブルとして表現
 
 ```kotlin
-val db = Room.databaseBuilder(context, LiteratureDatabase.class, "l.db")
-             .`enableMultiInstanceInvalidation()`
-             .build()
+@Entity(
+        foreignKeys = [
+            ForeignKey(
+                    entity = Employee::class,
+                    childColumns = ["managerId"],
+                    parentColumns = ["id"])
+        ],
+        indices = [Index("managerId")]
+)
+data class Employee(
+        @PrimaryKey
+        val id: Long,
+        val name: String,
+        val managerId: Long?
+)
 ```
 
-プロセスをまたいでも OK
+---
+
+class: chapter-12, normal
+
+# 再帰的なクエリー 1
+
+![ツリー](tree-chain.svg)
+
+```kotlin
+    // id: 10L = "J"
+    val chain = db.employee().chain(10L)
+
+    // J, G, C, A のリスト
+```
+
+---
+
+class: chapter-12, normal
+
+# 再帰的なクエリー 1
+
+```kotlin
+    @Query("""
+      WITH RECURSIVE r AS (
+        SELECT * FROM Employee WHERE id = :id
+        UNION ALL
+        SELECT Employee.* FROM Employee, r WHERE Employee.id = r.managerId
+      )
+      SELECT * FROM r
+    """)
+    fun chain(id: Long): List&lt;Employee&gt;
+```
+
+.center[![ツリー](tree-chain.svg)]
+
+---
+
+class: chapter-12, normal
+
+# 再帰的なクエリー 2
+
+![ツリー](tree-team.svg)
+
+```kotlin
+    // id: 7L = "G"
+    val team = db.employee().team(7L)
+
+    // G, J, K, L, M のリスト
+```
+
+---
+
+class: chapter-12, normal
+
+# 再帰的なクエリー 2
+
+```kotlin
+    @Query("""
+      WITH RECURSIVE r AS (
+        SELECT * FROM Employee WHERE id = :id
+        UNION ALL
+        SELECT Employee.* FROM Employee, r WHERE Employee.managerId = r.id
+      )
+        SELECT * FROM r
+    """)
+    fun team(id: Long): List&lt;Employee&gt;
+```
+
+.center[![ツリー](tree-team.svg)]
+
+---
+
+class: chapter-12, normal
+
+# Fizz Buzz
+
+```kotlin
+    @Query("""
+        WITH RECURSIVE sequence1(x) AS (
+          SELECT 1
+          UNION ALL
+          SELECT x + 1 FROM sequence1
+          LIMIT :max
+        )
+        SELECT
+          CASE
+            WHEN x % 15 = 0 THEN 'fizzbuzz'
+            WHEN x % 3 = 0 THEN 'fizz'
+            WHEN x % 5 = 0 THEN 'buzz'
+            ELSE x END AS fizzbuzz
+        FROM sequence1;
+    """)
+    fun fizzbuzz(max: Int): List&lt;String&gt;
+```
+
+---
+
+class: chapter-16, hero, middle, center
+
+# 予定
+
+※ あくまで予定
 
 ---
 
@@ -950,6 +1141,28 @@ data class BookDetail(
     @Query("SELECT * FROM BookDetail WHERE id = :id")
     fun detailById(id: Long): BookDetail?
 ```
+
+---
+
+class: chapter-16, normal
+
+# [予定] その他
+
+- FTS (全文検索)
+- @Relation の強化
+- マルチ インスタンス 通知
+
+複数のデータベース インスタンス間でテーブル変更を通知し合う
+
+```kotlin
+val db = Room.databaseBuilder(context, LiteratureDatabase.class, "l.db")
+             .`enableMultiInstanceInvalidation()`
+             .build()
+```
+
+プロセスをまたいでも OK
+
+※ 予定
 
 ---
 

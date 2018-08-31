@@ -474,8 +474,6 @@ class: chapter-3, normal
 
 # 上書き
 
-サーバーと同期するとき
-
 主キーが重複するときは上書き
 
 ```kotlin
@@ -632,6 +630,85 @@ class: chapter-5, normal
 
 ---
 
+class: chapter-6, normal
+
+# 抽象クラス @Dao の活用
+
+インターフェイス
+
+```kotlin
+@Dao
+interface BookDao {
+    @Insert
+    fun insert(book: Book)
+}
+```
+
+抽象クラス
+
+```kotlin
+@Dao
+abstract class AuthorDao {
+    @Insert
+    abstract fun insert(author: Author)
+}
+```
+
+具象メソッドを作ることができる
+
+---
+
+class: chapter-6, normal
+
+# 具象メソッドの活用
+
+```kotlin
+@Entity
+data class Author(
+        @PrimaryKey
+        val id: Long,
+        val name: String,
+        val money: Long
+)
+```
+
+```
+    db.author().insertAll(listOf(
+            Author(1L, "井伏", money = 1000L),
+            Author(2L, "太宰", money = 0L))
+
+    db.author().sendMoney(1L, 2L, 200L)
+```
+
+---
+
+class: chapter-6, normal
+
+# 他のメソッドを組み合わせる
+
+```kotlin
+    @Query("UPDATE Author SET money = money + :delta WHERE id = :id")
+    abstract fun adjustMoney(id: Long, delta: Long): Int
+
+    @Transaction
+    open fun sendMoney(from: Long, to: Long, amount: Long) {
+        val decrease = adjustMoney(from, -amount)
+        if (decrease != 1)
+            throw IllegalArgumentException("No author: $from")
+
+        val increase = adjustMoney(to, amount)
+        if (increase != 1)
+            throw IllegalArgumentException("No author: $to")
+    }
+```
+
+???
+
+- @Transaction: sendMoney をトランザクションで囲った実装が生成される
+  - そのために open が必要
+
+---
+
 class: chapter-7, normal
 
 # 必要な情報だけ取ってくる
@@ -772,66 +849,6 @@ data class AuthorWithBooks(
 
 ---
 
-class: chapter-8, normal
-
-# @Dao
-
-インターフェイス
-
-```kotlin
-@Dao
-interface BookDao {
-    @Insert
-    fun insert(book: Book)
-}
-```
-
-抽象クラス
-
-```kotlin
-@Dao
-abstract class AuthorDao {
-    @Insert
-    abstract fun insert(author: Author)
-}
-```
-
-具象メソッドを作ることができる
-
----
-
-class: chapter-8, normal
-
-# @Transaction
-
-```kotlin
-@Entity
-data class Author(@PrimaryKey val id: Long,
-                  val name: String,
-                  val money: Long)
-```
-
-```kotlin
-    @Query("UPDATE Author SET money = money + :delta WHERE id = :id")
-    abstract fun adjustMoney(id: Long, delta: Long): Int
-
-    `@Transaction`
-    open fun sendMoney(from: Long, to: Long, amount: Long) {
-        val decrease = adjustMoney(from, -amount)
-        if (decrease != 1) throw IllegalArgumentException("No author: $from")
-        val increase = adjustMoney(to, amount)
-        if (increase != 1) throw IllegalArgumentException("No author: $to")
-    }
-```
-
-```
-        db.author().insert(Author(1L, "井伏", money = 1000L))
-        db.author().insert(Author(2L, "太宰", money = 0L))
-        db.author().sendMoney(1L, 2L, 200L)
-```
-
----
-
 class: chapter-11, normal
 
 # テスト
@@ -929,8 +946,8 @@ class: chapter-11, normal
             liveData.observeForever(observer)
         }
 
-        verify(observer, timeout(300L).atLeastOnce())
-            .onChanged(eq(Author(1L, "芥川")))
+*       verify(observer, timeout(300L).atLeastOnce())
+*           .onChanged(eq(Author(1L, "芥川")))
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             liveData.removeObserver(observer)
@@ -1008,6 +1025,32 @@ data class Employee(
         val name: String,
         val managerId: Long?
 )
+```
+
+---
+
+class: chapter-12, normal
+
+# テーブルとして表現
+
+![ツリー](tree.svg)
+
+```kotlin
+    db.employee().insertAll(listOf(
+            Employee(1L, "A", null),
+            Employee(2L, "B", 1L),
+            Employee(5L, "E", 2L),
+            Employee(4L, "D", 2L),
+            Employee(3L, "C", 1L),
+            Employee(6L, "F", 2L),
+            Employee(7L, "G", 3L),
+            Employee(8L, "H", 3L),
+            Employee(9L, "I", 4L),
+            Employee(10L, "J", 7L),
+            Employee(11L, "K", 7L),
+            Employee(12L, "L", 10L),
+            Employee(13L, "M", 10L)
+    ))
 ```
 
 ---

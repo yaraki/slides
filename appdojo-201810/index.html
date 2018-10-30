@@ -350,10 +350,8 @@ class: chapter-3, normal
 - 一つの辺に複数存在することはない
 
 ```java
-view.setOnApplyWindowInsetsListener(
-                            (v, windowInsets) -> {
-  DisplayCutout cutout = windowInsets
-                            .getDisplayCutout();
+view.setOnApplyWindowInsetsListener((v, windowInsets) -> {
+  DisplayCutout cutout = windowInsets.getDisplayCutout();
 
   List&lt;Rect&gt; rects = cutout.getBoundingRects();
   // rects が切り欠きの情報
@@ -552,8 +550,7 @@ class: chapter-6, normal
 .small[![返信](reply.jpg)]
 
 ```kotlin
-val action = NotificationCompat.Action
-                                 .Builder(
+val action = NotificationCompat.Action.Builder(
   R.drawable.ic_android, "Reply", intent)
   .setSemanticAction(NotificationCompat
       .Action.SEMANTIC_ACTION_REPLY)
@@ -598,8 +595,7 @@ class: chapter-6, normal
 ![Slice](slice-hello.png)
 
 ```kotlin
-override fun onBindSlice(sliceUri: Uri?)
-    : Slice? {
+override fun onBindSlice(sliceUri: Uri?): Slice? {
   if (sliceUri == null ||
       sliceUri.path == null) {
     return null
@@ -661,7 +657,7 @@ class: chapter-17, hero, middle, center
     <script src="http://gnab.github.io/remark/remark.language.js"></script>
     <script>
       var slideshow = remark.create({
-        ratio: '4:3',
+        ratio: '16:9',
         highlightStyle: 'googlecode',
         highlightLanguage: 'remark',
         highlightLines: true,

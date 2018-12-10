@@ -132,6 +132,15 @@
         overflow-x: hidden;
       }
 
+      .version {
+        position: absolute;
+        top: 13px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: #fff;
+        color: var(--bg-color);
+      }
+
       .level {
         position: absolute;
         top: 20px;
@@ -340,28 +349,9 @@ Android Studio 3.2 メニューの [Refactor] - [Migrate to AndroidX]
 
 サポート ライブラリ 28.1.0 は出ません
 
-
 ---
 
-class: chapter-10, hero, middle, center
-
-# Room
-
----
-
-class: chapter-10, normal
-
-# 全文検索
-
----
-
-class: chapter-10, normal
-
-# ビュー
-
----
-
-class: chapter-16, normal
+class: chapter-4, normal
 
 # 関連動画
 
@@ -374,6 +364,150 @@ class: chapter-16, normal
 - [Preferential Practices for Preferences](https://www.youtube.com/watch?v=PS9jhuHECEQ)
 - [The Components of Material Design](https://www.youtube.com/watch?v=DPH3F0v1jB0)
 - [Single Activity: Why, When, and How](https://www.youtube.com/watch?v=2k8x8V77CrU)
+
+???
+
+---
+
+class: chapter-10, hero, middle, center
+
+# The Room in the House
+
+---
+
+class: chapter-10, normal
+
+# 全文検索
+
+.version[2.1.0-alpha01]
+
+データベース内のテキストを全文検索
+
+```kotlin
+@Entity
+@`Fts4`
+data class Mail(
+    @PrimaryKey
+    val id: Long,
+    val subject: String,
+    val body: String,
+    val timestamp: Long
+)
+```
+
+```kotlin
+@Dao
+interface MailDao {
+    @Query("SELECT * FROM Mail WHERE Mail `MATCH` :q")
+    search(q: String) List&lt;Mail&gt;
+}
+```
+
+???
+
+- LIKE '%なんとか%' より高速
+
+---
+
+class: chapter-10, normal
+
+# 複数インスタンス間のテーブル監視
+
+.version[2.1.0-alpha01]
+
+Room のデータベースは通常一つのインスタンスを参照する形で使う
+
+サービスなどを使っていてプロセスを分けている場合、一つのインスタンスを参照できない
+(= テーブル監視が動かない)
+
+```kotlin
+Room.databaseBuilder(context, MyDatabase::class.java, DB_NAME)
+    .`enableMultiInstanceInvalidation()`
+    .build()
+```
+
+プロセス間通信でテーブル監視を同期する
+
+---
+
+class: chapter-10, normal
+
+# ビュー
+
+.version[2.1.0-alpha01]
+
+```kotlin
+@Entity
+data class Employee(
+    @PrimaryKey val id: Long,
+    val name: String,
+    val teamId: Long)
+
+@Entity
+data class Team(
+    @PrimaryKey val id: Long,
+    val name: String)
+
+*@DatabaseView("""
+*    SELECT e.id, e.name, e.teamId,
+*           t.name AS teamName
+*    FROM Employee AS e LEFT JOIN Team AS t ON e.teamId = t.id
+*""")
+data class EmployeeDetail(
+    val id: Long,
+    val name: String,
+    val teamId: Long,
+    val teamName: String
+)
+```
+
+???
+
+- JOIN 以外でも大丈夫
+
+---
+
+class: chapter-10, normal
+
+# コルーチン
+
+.version[2.1.0-alpha03]
+
+`androidx.room.room-coroutines:2.1.0-alpha03` が必要
+
+```kotlin
+@Dao
+interface BookDao {
+    @Insert
+    `suspend` fun insert(book: Book)
+
+    @Query("SELECT * FROM Book")
+    `suspend` fun allBooks(): List&lt;Book&gt;
+}
+```
+
+```kotlin
+scope.launch {
+    insert(Book(1, "芋粥"))
+    val books = dao.allBooks()
+    liveData.value = books
+}
+```
+
+???
+
+- 現状 一回の実行のみ (チャンネルは未サポート)
+- 実行はバックグラウンド スレッドで行われる
+
+<!--
+WorkManager
+ * 新機能
+   * Operation: enqueue や cancel の状態
+     != WorkInfo: Worker 自体の状態
+   * ListenableWorker: 非同期なワーカー (普通の Worker はバックグラウンドで同期)
+   * CoroutineWorker
+   * enqueueUniqueWork()
+-->
 
 ---
 

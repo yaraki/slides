@@ -535,9 +535,12 @@ abstract class MyDatabase : RoomDatabase() {
 
     companion object {
         private var instance: MyDatabase? = null
-        fun getInstance() = instance ?:
-            Room.databaseBuilder(MyDatabase::class.java, "my.db")
-                .build().also { instance = it }
+        fun getInstance(context: Context): MyDatabase {
+            return instance ?: synchronized(this) {
+                instance ?: Room.databaseBuilder(context, MyDatabase::class.java, "my.db")
+                    .build().also { instance = it }
+            }
+        }
     }
 }
 ```

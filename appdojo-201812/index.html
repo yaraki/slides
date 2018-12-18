@@ -361,7 +361,7 @@ class: chapter-3, normal
 
 android.support.\* から androidx.\* への移行
 
-Android Studio 3.2 メニューの [Refactor] - [Migrate to AndroidX]
+Android Studio 3.2 以降のメニューの [Refactor] - [Migrate to AndroidX]
 
 問題は [issuetracker.google.com](https://issuetracker.google.com) まで
 
@@ -622,7 +622,7 @@ data class EmployeeDetail(
 ```kotlin
 @Database(entities = [...], views = [EmployeeDetial::class], version = 1)
 abstract class Mydatabase : RoomDatabase() {
-    // ...
+    // …
 }
 ```
 
@@ -694,33 +694,320 @@ class MyWorker(context : Context, params : WorkerParameters)
 バックグラウンドで実行
 
 ```kotlin
-    val work = OneTimeWorkRequestBuilder&lt;MyWork&gt;().build()
+    val work: OneTimeWorkRequest = OneTimeWorkRequestBuilder&lt;MyWork&gt;().build()
     WorkManager.getInstance().enqueue(work)
 ```
 
+---
+
+class: chapter-11, normal
+
+# 実行条件
+
+```kotlin
+val constraints = Constraints.Builder()
+        // デバイスがアイドル状態のとき
+        .setRequiresDeviceIdle(true)
+        // 充電につながれているとき
+        .setRequiresCharging(true)
+        // WiFi などに接続されているとき
+        .setRequiredNetworkType(NetworkType.UNMETERED)
+        .build()
+
+val work = OneTimeWorkRequestBuilder&lt;MyWork&gt;()
+      .setConstraints(constraints)
+      .build()
+```
+
+```kotlin
+val periodicWork = PeriodicWorkRequestBuilder&lt;MyWorker&gt;(7L, TimeUnit.DAYS)
+      .build()
+```
+
+---
+
+class: chapter-11, normal
+
+#  ListenableWorker
+
+.version[1.0.0-alpha10]
+
+```kotlin
+class MyWorker(context: Context, params: WorkerParameters)
+    : Worker(context, params) {
+    override fun doWork(): Result {
+        // 何か時間のかかる処理
+        return Result.success()
+    }
+}
+```
+
+```kotlin
+class MyListenableWorker(context: Context, params: WorkerParameters)
+    : ListenableWorker(context, params) {
+    override fun startWork(): ListenableFuture&lt;Result&gt; {
+        val future: ResolvableFuture&lt;Result&gt; = ResolvableFuture.create()
+        // なんらかの方法でバックグラウンド実行
+        thread {
+            // 何か時間のかかる処理
+            future.set(Result.success())
+        }
+        return future
+    }
+}
+```
+
+---
+
+class: chapter-11, normal
+
+# コルーチン
+
+.version[1.0.0-alpha11]
+
+```kotlin
+class MyCoroutineWorker(context: Context, params: WorkerParameters)
+    : CoroutineWorker(context, params) {
+
+    override suspend fun doWork(): Result {
+        // 何か時間のかかる処理
+        // 中断関数を使う
+        return Result.success()
+    }
+}
+```
+
+Dispatchers.DEFAULT で実行される
+
 ???
 
-# WorkManager
+---
 
-- 新機能
-  - Operation: enqueue や cancel の状態
-    != WorkInfo: Worker 自体の状態
-  - ListenableWorker: 非同期なワーカー (普通の Worker はバックグラウンドで同期)
-  - CoroutineWorker
-  - enqueueUniqueWork()
+class: chapter-11, normal
+
+# WorkInfo
+
+Worker の状態を UI で表示したいとき
+
+ViewModel など
+
+```kotlin
+private val work = OneTimeWorkRequestBuilder&lt;MyWorker&gt;().build()
+
+val workInfo: LiveData&lt;WorkInfo&gt; = WorkManager.getInstance().getWorkInfoByIdLiveData(work.id)
+```
+
+Fragment など
+
+```kotlin
+workInfo.observe { info ->
+    // UI を更新
+}
+```
+
+---
+
+class: chapter-11, normal
+
+# Operation
+
+.version[1.0.0-alpha11]
+
+Worker をキューに入れるときの非同期処理を監視
+
+```kotlin
+val operation: Operation = workManager.enqueue(work)
+```
+
+UI に表示
+
+```kotlin
+operation.state.observe(this, Observer { state ->
+    // UI を更新
+})
+```
+
+コルーチン内で待ち合わせ
+
+```kotlin
+operation.await()
+```
+
+---
+
+class: chapter-11, normal
+
+# enqueueUniqueWork
+
+.version[1.0.0-alpha11]
+
+同じ Worker が重複するときどうするか指定
+
+```kotlin
+    workManager.enqueueUniqueWork("myWork", ExistingWorkPolicy.REPLACE, work)
+```
+
+定期実行の場合
+
+```kotlin
+    workManager.enqueueUniquePeriodicWork(
+        "myPeriodicWork", ExistingPeriodicWorkPolicy.REPLACE, periodicWork)
+```
+
+- REPLACE (前の Worker を消して新しい Worker を登録)
+- KEEP (前の Worker を残して新しい Worker は無視)
+- APPEND (前の Worker に加えて新しい Worker も登録)
 
 ---
 
 class: chapter-12, hero, center, middle
 
-# Single Activity: Why, When, and How
+# Single Activity: <nobr>Why, When, and How</nobr>
+
+---
+
+class: chapter-12, normal
+
+# Single Activity
+
+Navigation ライブラリの考え方
+
+Activity は基本的にアプリ全体で一つ
+
+画面遷移は Fragment の切り替えで行う
+
+---
+
+class: chapter-12, normal
+
+# Fragment の役割の変化
+
+UI を保持・制御<br>
+　
+
+Activity のライフサイクルを分担<br>
+　
+
+データの読み込み・保持 (retainInstance = true)<br>
+　
+
+画面遷移 (Fragment Transaction)<br>
+　
+---
+
+class: chapter-12, normal
+
+# Fragment の役割の変化
+
+UI を保持・制御<br>
+　
+
+Activity のライフサイクルを分担<br>
+→ Lifecycle
+
+データの読み込み・保持 (retainInstance = true)<br>
+→ ViewModel
+
+画面遷移 (Fragment Transaction)<br>
+→ Navigation
+
+---
+
+class: chapter-12, normal
+
+# Activity と Fragment
+
+## Activity
+
+プラットフォームからアプリへのエントリー ポイント
+
+## Fragment
+
+画面 (の一部)
+
+---
+
+class: chapter-12, normal
+
+# それでも複数 Activity を使うべきとき
+
+## タスクを分けるとき
+
+```xml
+&lt;activity
+    android:name=".OpenDocumentActivity"
+    android:documentLaunchMode="intoExisting"&gt;
+    &lt;!-- intent-filter など --&gt;
+&lt;/activity&gt;
+```
+
+- 開く: android:documentLaunchMode="intoExisting"
+- 新規作成: android:documentLaunchMode="always"
+
+## Picture in Picture
+
+ビデオなど
+
+---
+
+class: chapter-12, normal
+
+# Fragment のコンストラクター引数
+
+Fragment のコンストラクターは必ず空であるべき
+
+```kotlin
+class MyFragment(`/* 空 */`) : Fragment() {
+    // …
+}
+```
+
+- Fragment はサポート ライブラリが生成・破棄する
+  - 再生成時はリフレクションで空のコンストラクターを呼ぶ
+- 引数を渡すには setArguments(Bundle) を使うべき
+
+---
+
+class: chapter-12, normal
+
+# FragmentFactory
+
+.version[1.0.0]
+
+````kotlin
+class MyFragmentFactory : FragmentFactory() {
+    override fun instantiate(classLoader: ClassLoader, className: String, args: Bundle?): Fragment {
+        return when (className) {
+            "com.mycompany…" -> MyFragment(/* 引数を渡す */)
+            else -> super.instantiate(classLoader, className, args)
+        }
+    }
+}
+```
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        supportFragmentManager.fragmentFactory = MyFragmentFactory()
+
+        // setContentView など
+    }
+}
+```
+
+
+```kotlin
+class MyFragment(`private val id: String`) : Fragment() {
+    // …
+}
+```
 
 ???
 
-# Navigation
-
-- FragmentFactory
-- 複数 Activity を使いたいのはどういうときか
+- Navigation コンポーネントはまだ FragmentFactory をサポートしていない
+  - サポート ライブラリ 28.0.0 を見ているから
+  - FragmentNavigator の instantiateFragment をオーバーライドすればできる
 
 ---
 

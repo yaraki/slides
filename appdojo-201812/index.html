@@ -421,11 +421,12 @@ class: chapter-5, normal
 
 # アンチパターン
 
-Transformations.map/switchMap は重い処理に向かない<br>
+Transformations.map は重い処理に向かない<br>
 → LiveData を作るバックグラウンド処理の中ですべき
 
 一つの LiveData を Repository の中に入れて複数の Activity から監視したりしない<br>
-→ 基本的に ViewModel が LiveData を保持すべき
+→ 基本的に ViewModel が LiveData を保持すべき<br>
+　 複数の ViewModel が一つの LiveData のインスタンスを参照するのは避ける
 
 UI に関係しない場合 LiveData の意味は薄い<br>
 → Executor / コルーチン / RxJava
@@ -972,7 +973,7 @@ class: chapter-12, normal
 
 # FragmentFactory
 
-.version[1.0.0]
+.version[fragment:1.0.0]
 
 ````kotlin
 class MyFragmentFactory : FragmentFactory() {

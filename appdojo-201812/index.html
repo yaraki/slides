@@ -309,6 +309,24 @@ class: chapter-1, hero, center, middle
 
 ---
 
+class: chapter-1, normal
+
+# 自己紹介
+
+荒木佑一
+
+@yuichi_araki
+
+Developers Programs Engineer @ Google
+
+- androidx.transition
+- androidx.room
+- Android のサンプル ([d.android.com/samples](https://developers.android.com/samples))
+- Google I/O アプリ
+- Santa Tracker (サンタを追いかけよう) Android アプリ
+
+---
+
 class: chapter-2, normal
 
 # Jetpack とは
@@ -353,25 +371,118 @@ Android Studio 3.2 メニューの [Refactor] - [Migrate to AndroidX]
 
 class: chapter-4, normal
 
-# 関連動画
+# Android Dev Summit 関連動画
 
 - [Fun with LiveData](https://www.youtube.com/watch?v=2rO4r-JOQtA)
 - [The Room in the House](https://www.youtube.com/watch?v=sU-ot_Oz3AE)
+- [Working with WorkManager](https://www.youtube.com/watch?v=83a4rYXsDs0)
+- [Single Activity: Why, When, and How](https://www.youtube.com/watch?v=2k8x8V77CrU)
+
+
 - [Level Up with Data Binding](https://www.youtube.com/watch?v=qc_QNQzMSCE)
 - [Android Slices Best Practices](https://www.youtube.com/watch?v=JX87-Oxy0_E)
 - [Use Android Text Like a Pro](https://www.youtube.com/watch?v=vXqwRhjd7b4)
-- [Working with WorkManager](https://www.youtube.com/watch?v=83a4rYXsDs0)
 - [Preferential Practices for Preferences](https://www.youtube.com/watch?v=PS9jhuHECEQ)
 - [The Components of Material Design](https://www.youtube.com/watch?v=DPH3F0v1jB0)
-- [Single Activity: Why, When, and How](https://www.youtube.com/watch?v=2k8x8V77CrU)
 
 ???
+
+---
+
+class: chapter-5, hero, middle, center
+
+# Fun with LiveData
+
+---
+
+class: chapter-5, normal
+
+# ViewModel のライフサイクル
+
+![ViewModel のライフサイクル](viewmodel-lifecycle.png)
+
+Activity や Fragment は画面回転などでさまざまなライフサイクルを経て破棄・再生成される
+
+画面に表示するデータは ViewModel に LiveData の形で保持する
+
+UI は LiveData を observe する
+
+```kotlin
+   vm = ViewModelProviders.of(this)
+       .get(MyViewModel::class.java)
+   vm.myLiveData.observe(viewLifecycleOwner, Observer {
+       // UI を更新
+   })
+```
+
+---
+
+class: chapter-5, normal
+
+# アンチパターン
+
+Transformations.map/switchMap は重い処理に向かない<br>
+→ LiveData を作るバックグラウンド処理の中ですべき
+
+一つの LiveData を Repository の中に入れて複数の Activity から監視したりしない<br>
+→ 基本的に ViewModel が LiveData を保持すべき
+
+UI に関係しない場合 LiveData の意味は薄い<br>
+→ Executor / コルーチン / RxJava
 
 ---
 
 class: chapter-10, hero, middle, center
 
 # The Room in the House
+
+---
+
+class: chapter-10, normal
+
+# Room これまでのまとめ
+
+## 1.0
+
+- コンパイル時にクエリ検証
+- LiveData によるテーブル監視
+
+## 1.1
+
+- Write-Ahead Logging
+- Paging のサポート
+
+## 2.0
+
+- AndroidX パッケージに移行
+
+---
+
+class: chapter-10, normal
+
+# テキストで検索
+
+```kotlin
+@Entity
+data class Mail(
+    @PrimaryKey
+    val id: Long,
+    val subject: String,
+    val body: String,
+    val timestamp: Long
+)
+```
+
+```kotlin
+@Dao
+interface MailDao {
+    @Query("SELECT * FROM Mail WHERE subject LIKE '%' | :q | '%'")
+    searchBySubject(q: String) List&lt;Mail&gt;
+
+    @Query("SELECT * FROM Mail WHERE body LIKE '%' | :q | '%'")
+    searchByBody(q: String) List&lt;Mail&gt;
+}
+```
 
 ---
 
@@ -405,7 +516,32 @@ interface MailDao {
 
 ???
 
-- LIKE '%なんとか%' より高速
+- すべてのカラムが検索用にインデックスされる
+
+---
+
+class: chapter-10, normal
+
+# データベースのインスタンス
+
+アプリ全体で一つのインスタンスを参照するべき
+
+例: シングルトン
+
+```kotlin
+@Database(entities = [...], version = 1)
+abstract class MyDatabase : RoomDatabase() {
+
+    companion object {
+        private var instance: MyDatabase? = null
+        fun getInstance() = instance ?:
+            Room.databaseBuilder(MyDatabase::class.java, "my.db")
+                .build().also { instance = it }
+    }
+}
+```
+
+インスタンスが違うとテーブル監視が動作しない
 
 ---
 
@@ -432,9 +568,7 @@ Room.databaseBuilder(context, MyDatabase::class.java, DB_NAME)
 
 class: chapter-10, normal
 
-# ビュー
-
-.version[2.1.0-alpha01]
+# 複雑なクエリー
 
 ```kotlin
 @Entity
@@ -448,11 +582,35 @@ data class Team(
     @PrimaryKey val id: Long,
     val name: String)
 
-*@DatabaseView("""
-*    SELECT e.id, e.name, e.teamId,
-*           t.name AS teamName
-*    FROM Employee AS e LEFT JOIN Team AS t ON e.teamId = t.id
-*""")
+data class EmployeeDetail(
+    val id: Long,
+    val name: String,
+    val teamId: Long,
+    val teamName: String)
+```
+
+```kotlin
+    @Query("""
+        SELECT e.id, e.name, e.teamId,t t.name AS teamName
+        FROM Employee AS e LEFT JOIN Team AS t ON e.teamId = t.id
+    """)
+    fun employeeDetails(): List&lt;EmployeeDetail&gt;
+```
+
+---
+
+class: chapter-10, normal
+
+# ビュー
+
+.version[2.1.0-alpha01]
+
+```kotlin
+@DatabaseView("""
+    SELECT e.id, e.name, e.teamId,
+           t.name AS teamName
+    FROM Employee AS e LEFT JOIN Team AS t ON e.teamId = t.id
+""")
 data class EmployeeDetail(
     val id: Long,
     val name: String,
@@ -461,9 +619,17 @@ data class EmployeeDetail(
 )
 ```
 
+```kotlin
+@Database(entities = [...], views = [EmployeeDetial::class], version = 1)
+abstract class Mydatabase : RoomDatabase() {
+    // ...
+}
+```
+
 ???
 
 - JOIN 以外でも大丈夫
+- LiveData を返せば元になっているテーブルをすべて監視できる
 
 ---
 
@@ -499,15 +665,62 @@ scope.launch {
 - 現状 一回の実行のみ (チャンネルは未サポート)
 - 実行はバックグラウンド スレッドで行われる
 
-<!--
-WorkManager
- * 新機能
-   * Operation: enqueue や cancel の状態
-     != WorkInfo: Worker 自体の状態
-   * ListenableWorker: 非同期なワーカー (普通の Worker はバックグラウンドで同期)
-   * CoroutineWorker
-   * enqueueUniqueWork()
--->
+???
+
+---
+
+class: chapter-11, hero, center, middle
+
+# Working with WorkManager
+
+---
+
+class: chapter-11, normal
+
+# WorkManager の基礎
+
+時間のかかる処理を Worker として実装
+
+```kotlin
+class MyWorker(context : Context, params : WorkerParameters)
+    : Worker(context, params) {
+    override fun doWork(): Result {
+        // 何か時間のかかる処理
+        return Result.success()
+    }
+}
+```
+
+バックグラウンドで実行
+
+```kotlin
+    val work = OneTimeWorkRequestBuilder&lt;MyWork&gt;().build()
+    WorkManager.getInstance().enqueue(work)
+```
+
+???
+
+# WorkManager
+
+- 新機能
+  - Operation: enqueue や cancel の状態
+    != WorkInfo: Worker 自体の状態
+  - ListenableWorker: 非同期なワーカー (普通の Worker はバックグラウンドで同期)
+  - CoroutineWorker
+  - enqueueUniqueWork()
+
+---
+
+class: chapter-12, hero, center, middle
+
+# Single Activity: Why, When, and How
+
+???
+
+# Navigation
+
+- FragmentFactory
+- 複数 Activity を使いたいのはどういうときか
 
 ---
 

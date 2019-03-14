@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>Paging - Architecture Components 勉強会 #6</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+      @import url(http://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
+
+      body {
+        font-family: 'Noto Sans Japanese', sans-serif;
+      }
+
+      a {
+        text-decoration: none;
+        color: blue;
+      }
+
+      a:visited {
+        color: blue;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      li {
+        line-height: 1.8;
+      }
+
+      h1, h2, h3 {
+        font-weight: bold;
+      }
+
+      /* ページ番号 */
+      .remark-slide-number {
+        color: #CCCCCC;
+        font-size: 12pt;
+        opacity: 1;
+      }
+
+      .hero {
+        background-color: var(--bg-color);
+        color: #fff;
+      }
+
+      .hero h1, .hero h2, .hero h3 {
+        color: #FFFFFF;
+      }
+
+      .normal {
+        background-image:
+        url("../android-icon-72x72.png"),
+        linear-gradient(180deg, var(--bg-color) 40%, #FFFFFF 40%);
+        background-position:
+        right 0.4em bottom 1em,
+        right 0em bottom 8em;
+      }
+
+      .nologo {
+        background-image: linear-gradient(180deg, var(--bg-color) 40%, #FFFFFF 40%);
+      }
+
+      .normal h1 {
+        color: white;
+        margin-top: 0px;
+        margin-bottom: 1em;
+        font-size: 24pt;
+      }
+
+      .normal h1 a {
+        color: white;
+      }
+
+      .condensed h1 {
+        transform: scaleX(0.75);
+        transform-origin: left top;
+        white-space: nowrap;
+      }
+
+      .normal h2 {
+        margin: 0px;
+        font-size: 20pt;
+      }
+
+      .normal {
+        font-size: 18pt;
+      }
+
+      .faq {
+        background-color: var(--bg-color);
+        font-size: 20pt;
+        color: #fff;
+      }
+
+      .faq h1 {
+        font-size: 28pt;
+      }
+
+      .faq a {
+        color: #fff;
+      }
+
+      .remark-code, .remark-inline-code {
+        font-family: monospace;
+      }
+
+      code {
+        border-radius: 4px;
+        max-height: 580px;
+      }
+
+      .hljs-googlecode .hljs {
+        background-color: #EEEEEE;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .level {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: #fff;
+        color: var(--bg-color);
+      }
+
+      .level::before {
+        content: "API レベル: ";
+      }
+
+      img {
+        float: right;
+        margin-left: 1em;
+        max-width: 40%;
+        max-height: 40%;
+      }
+
+      video {
+        float: right;
+        margin-left: 1em;
+        max-width: 32%;
+        max-height: 32%;
+      }
+
+      .center img {
+        float: none;
+        max-width: 40%;
+        max-height: 40%;
+      }
+
+      .large img {
+        float: none;
+        max-width: 70%;
+        max-height: 100%;
+      }
+
+      .large video {
+        float: none;
+        max-width: 90%;
+        max-height: 100%;
+      }
+
+      .small {
+        font-size: 16pt;
+      }
+
+      .tiny {
+        font-size: 14pt;
+      }
+
+      .small img {
+        margin-top: 30%;
+        max-width: 20%;
+        max-height: 20%
+      }
+
+      .card .medium img {
+        float: right;
+        margin-left: 1em;
+        max-width: 70%;
+        max-height: 70%;
+      }
+
+      .chapter-1 {
+        --bg-color: #2196F3;
+      }
+
+      .chapter-2 {
+        --bg-color: #3F51B5;
+      }
+
+      .chapter-3 {
+        --bg-color: #009688;
+      }
+
+      .chapter-4 {
+        --bg-color: #FF5722;
+      }
+
+      .chapter-5 {
+        --bg-color: #F44336;
+      }
+
+      .chapter-6 {
+        --bg-color: #E91E63;
+      }
+
+      .chapter-7 {
+        --bg-color: #9C27B0;
+      }
+
+      .chapter-8 {
+        --bg-color: #EF6C00;
+      }
+
+      .chapter-9 {
+        --bg-color: #673AB7;
+      }
+
+      .chapter-10 {
+        --bg-color: #607D8B;
+      }
+
+      .chapter-11 {
+        --bg-color: #039BE5;
+      }
+
+      .chapter-12 {
+        --bg-color: #00838F;
+      }
+
+      .chapter-13 {
+        --bg-color: #43A047;
+      }
+
+      .chapter-14 {
+        --bg-color: #757575;
+      }
+
+      .chapter-15 {
+        --bg-color: #827717;
+      }
+
+      .chapter-16 {
+        --bg-color: #795548;
+      }
+
+      .chapter-17 {
+        --bg-color: #689F38;
+      }
+
+      table {
+        width:100%;
+        border-collapse: separate;
+        border-spacing: 0px;
+      }
+
+      th {
+        padding: 6px;
+        background-color: #eee;
+        border: 1px solid #b9b9b9;
+      }
+
+      td {
+        padding: 6px;
+        background-color: #fff;
+        border: 1px solid #b9b9b9;
+      }
+
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+class: chapter-1, hero, center, middle
+
+# <nobr>Paging</nobr>
+
+Architecture Components 勉強会 #6
+
+2019/04/??
+
+荒木佑一
+
+---
+
+class: chapter-2, hero, center, middle
+
+# ここまでのあらすじ
+
+---
+
+class: chapter-2, normal
+
+# Lifecycle
+
+Activity や Fragment のライフサイクルを他のオブジェクトでも扱えるようにする
+
+どのライフサイクル イベントで 自分が何をすればいいか知っているオブジェクトを作る
+
+---
+
+class: chapter-2, normal
+
+# ViewModel
+
+![ViewModel のライフサイクル](viewmodel-lifecycle.png)
+
+Activity や Fragment が再生成されてもずっと生きている
+
+UI に表示する動的な情報を読み込んで保持するのに最適
+
+---
+
+class: chapter-2, normal
+
+# LiveData
+
+## バックグラウンド処理と UI の橋渡し、監視
+
+画面に表示する情報は ViewModel が LiveData の形で保持する
+
+UI は LiveData を observe することで表示
+
+## Lifecycle-aware
+
+画面が表示されてないときに必要のない処理は行わない
+
+---
+
+class: chapter-3, hero, center, middle
+
+# Room の復習
+
+---
+
+class: chapter-3, normal
+
+# Room とは何か
+
+![Jetpack](jetpack-hero.svg)
+
+データベース ライブラリ
+
+- アノテーション プロセッサーで処理を生成
+- できる限りコンパイル時に検証
+  - SQL と Java/Kotlin を型安全に対応
+- LiveData でのテーブル監視
+- テスト
+- マイグレーション
+- RxJava もサポート
+
+---
+
+class: chapter-3, normal
+
+# Room とは何でないか
+
+- SQL を隠蔽しない
+  - Java で SQL クエリを組み立てたりはしない
+- 透過的なバックグラウンド処理はない
+  - クエリは基本的に同期的に実行
+  - LiveData や RxJava などに任せる
+- Lazy Load を自動的に行わない
+
+---
+
+class: chapter-3, normal
+
+# Room の構成
+
+データベース
+
+```kotlin
+@Database(version = 1, entities = [Cheese::class])
+abstract class CheeseDatabase : RoomDatabase {
+    abstract fun cheese(): CheeseDao
+}
+```
+
+Entity: テーブルのスキーマを決める。そのテーブルの 1 行分のデータ。
+
+```kotlin
+@Entity
+data class Cheese(@PrimaryKey val id: Long, val name: String)
+```
+
+DAO: SQL と Java/Kotlin の橋渡し
+
+```kotlin
+@Dao
+interface CheeseDao {
+    @Insert fun add(cheese: Cheese)
+}
+```
+
+---
+
+class: chapter-3, normal
+
+# データベース
+
+```kotlin
+@Database(version = 1, entities = [Cheese::class])
+abstract class CheeseDatabase : RoomDatabase {
+    abstract fun cheese(): CheeseDao
+}
+```
+
+そのデータベースで利用する Entity と DAO を作る
+
+```kotlin
+val db = Room.databaseBuilder(context, CheeseDatabase::class.java, "cheese.db")
+             .build()
+```
+
+アプリ全体で一つのインスタンスを参照するようにする
+
+???
+
+シングルトンにする/シングルトンに入れる
+
+---
+
+class: chapter-3, normal
+
+# Entity
+
+```kotlin
+@Entity
+data class Cheese(
+    @PrimaryKey
+    val id: Long,
+    val name: String,
+    val favorite: Boolean)
+)
+```
+
+@PrimaryKey は必須
+
+Java で private なフィールドを使う場合、適切な getter/setter が必要
+
+???
+
+- @ColumnInfo で SQLite 上でのフィールド名を変更
+- @ForeignKey で外部キー制約
+- @Index でインデックス
+- @Embedded で他のクラスを埋め込み
+
+---
+
+class: chapter-3, normal
+
+# Dao 読み込み
+
+```kotlin
+@Dao
+interface CheeseDao {
+    @Query("SELECT * FROM Cheese")
+    fun all(): List&lt;Cheese&gt;
+
+    @Query("SELECT * FROM Cheese WHERE id = :id")
+    fun find(id: Long): Cheese
+
+    @Query("SELECT * FROM Cheese")
+    fun liveAll(): LiveData&lt;List&lt;Cheese&gt&gt;
+
+    @Query("SELECT COUNT(*) FROM Cheese")
+    fun count(): Int
+}
+```
+
+???
+
+- SQL の SELECT 文の返り値と Java/Kotlin のメソッドの返り値を比べて、名前と型が一致していれば OK
+
+---
+
+class: chapter-3, normal
+
+# Dao 書き込み
+
+```kotlin
+@Dao
+interface CheeseDao {
+    @Insert
+    fun insert(cheese: Cheese)
+
+    @Insert
+    fun insert(cheeses: List&lt;Cheese&gt;)
+
+    @Update
+    fun update(cheese: Cheese)
+
+    @Delete
+    fun delete(cheese: Cheese)
+
+    @Query("UPDATE Cheese SET name = :name WHERE id = :id")
+    fun updateName(id: Long, name: String)
+
+    @Query("DELETE FROM Cheese")
+    fun deleteAll()
+}
+```
+
+???
+
+- @Insert/@Udpate の引数は Entity またはそのリストか配列
+- リストを渡した場合、トランザクションで処理
+- @Query は UPDATE か DELETE だけだったが、最近は INSERT もできる
+
+---
+
+class: chapter-4, hero, center, middle
+
+# Room の新機能
+
+---
+
+class: chapter-4, normal
+
+# ビュー
+
+```kotlin
+@DatabaseView("""
+    SELECT m.id, m.body, m.userId, u.id AS user_id, m.name AS user_name
+    FROM Message AS m
+    LEFT INNER JOIN User AS u ON m.userId = u.id
+""")
+data class MessageDetail(
+    @Embedded
+    val message: Message,
+    @Embedded(prefix = "user_")
+    val user: User
+)
+```
+
+```kotlin
+@Dao
+interface MessageDao {
+    @Query("SELECT * FROM MessageDetail WHERE id = :id")
+    fun detailById(id: Long): LiveData&lt;MessageDetail&gt;
+}
+```
+
+???
+
+- JOIN に限らず SELECT 文でかければ何でも OK
+- 書き込みできない以外は Entity と同じように扱える
+  - LiveData で監視もできる
+
+---
+
+class: chapter-4, normal
+
+# 全文検索
+
+
+
+---
+
+class: chapter-4, normal
+
+# その他の新機能
+
+## RxJava のさらなるサポート
+
+@Insert や @Update も Rx で非同期化
+
+## Kotlin コルーチン
+
+Dao メソッドを `suspend` で定義すればコルーチンになる
+
+## enableMultiInstanceInvalidation()
+
+プロセス間で Room のデータベースを同期
+
+???
+
+<!--
+    - PositionalDataSource: 複数のページを並列に読める
+    - ItemKeyedDataSource, PageKeyedDataSource: ページを順番に読むしかできない
+-->
+
+---
+
+class: chapter-5, hero, middle, center
+
+# Paging
+
+---
+
+class: chapter-5, normal
+
+# Paging とは
+
+![データのとり方](paging-library-data-flow.webp)
+
+androidx.paging
+
+RecyclerView に大量の項目を表示するとき、データベースやネットワークから一定数個ごとに分割してデータを取得し、表示する
+
+- ネットワーク
+- データベース
+- 組み合わせ
+
+```groovy
+dependencies {
+  // ……
+  implementation \
+    'androidx.paging:paging-runtime-ktx:2.1.0'
+}
+```
+
+---
+
+class: chapter-5, normal
+
+# トピック
+
+- データベースから取得する (Room)
+- 表示する
+  - プレースホルダー
+- ネットワークから取得する (カスタム)
+  - 項目の順番が固定
+  - 項目が並ぶ
+  - ページが順番に並ぶ
+- データベースとネットワークを組み合わせる
+
+---
+
+class: chapter-6, normal
+
+# データベースから取得する
+
+```kotlin
+@Dao
+interface CheeseDao {
+
+    // 通常: リストを LiveData でクエリ
+    @Query("SELECT * FROM Cheese")
+    fun all(): LiveData&lt;List&lt;Cheese&gt;&gt;
+
+    // Paging に対応したクエリ
+    @Query("SELECT * FROM Cheese")
+    fun allPaged(): `DataSource.Factory&lt;Int, Cheese&gt;`
+}
+```
+
+テーブル変更の監視もそのまま動く
+
+---
+
+class: chapter-6, normal
+
+# DataSource と DataSource.Factory
+
+## DataSource
+
+データ自体ではなく、データを取得する手段を抽象化したもの
+
+データベースなどの **その時の状態** (snapshot) を表す
+  - データに変更があると無効化 (invalidate) される
+
+## DataSource.Factory
+
+DataSource を生成する
+
+DataSource が無効化された時に再生成するために必要
+
+---
+
+class: chapter-7, normal
+
+# 表示する
+
+## DataSource.Factory から LiveData を作る
+
+```kotlin
+// ViewModel や Repository で
+
+val factory: DataSource.Factory&lt;Int, Cheese&gt; = dao.allPaged()
+
+val cheeses: LiveData&lt;`PagedList`&lt;Cheese&gt;&gt; = factory.`toLiveData`(pageSize = 10)
+```
+
+UI はこの LiveData を observe する
+
+## PagedList
+
+List
+
+ページごとに DataSource からデータを取得する
+
+---
+
+class: chapter-7, normal
+
+# 表示する
+
+## RecyclerView 用の Adapter
+
+```kotlin
+class CheeseAdapter : `PagedListAdapter`&lt;Cheese, CheeseViewHolder&gt;(DIFF_CALLBACK) {
+    override fun onCreateViewHolder(parent: ViewGroup) = CheeseViewHolder(parent)
+
+    override fun onBindViewHolder(holder: CheeseViewHolder, position: Int) {
+        val cheese: `Cheese?` = getItem(position)
+        holder.name = cheese.name
+    }
+}
+```
+
+getItem の返り値が null になり得ることに注意 (null のときはプレースホルダー)
+
+```kotlin
+    // Fragment など
+    // viewModel.cheeses は LiveData&lt;PagedList&lt;Cheese&gt;&gt;
+    viewModel.cheeses.observe(viewLifecycleObserver, Observer { cheeses ->
+        cheeseAdapter.submitList(cheeses)
+    })
+```
+
+---
+
+class: chapter-7, normal
+
+# ここまでのまとめ
+
+## Room で Paging を使う方法
+
+DAO メソッドの返り値を `DataSource.Factory&lt;Int, Cheese&gt;` にする
+
+`DataSource.Factory` を `toLiveData(pageSize = n)` で `LiveData&lt;PagedList&lt;Cheese&gt;&gt;` にする
+
+RecyclerView の Adapter は PagedListAdapter を継承する
+
+Adapter の getItem が null になることに注意
+
+---
+
+class: chapter-8, normal
+
+# ネットワークから取得する
+
+カスタムの DataSource と DataSource.Factory を作る
+
+## PositionalDataSource
+
+「n 番目から m 個を取得」という要求に応えられる場合 (ランダムアクセス)
+
+## ItemKeyedDataSource
+
+「この項目の前 / 後の m 個を取得」という要求に応えられる場合 (隣接リスト)
+
+## PageKeyedDataSource
+
+「このページの前 / 後のページを取得」という要求に応えられる場合<br />
+
+---
+
+class: chapter-8, normal
+
+# PositionalDataSource
+
+```kotlin
+class CheeseDataSource: PositionalDataSource&lt;Cheese&gt;() {
+
+  // 初回
+  override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback&lt;Cheese&gt;) {
+    val startPosition = params.requestedStartPosition // 最初は 0
+    val loadSize = params.requestedLoadSize
+
+    // …… (API を呼んでデータを取得)
+
+    val cheeses: List&lt;Cheese&gt; = // 取得したデータ
+    val totalCount = // 全件の数 (このページの項目数ではない)
+    callback.onResult(cheeses, startPosition, totalCount)
+  }
+
+  // 2 回目以降
+  override fun loadRange(params: LoadRangeParams, callback: LoadRangeCallback&lt;Cheese&gt;) {
+     // …… (API を呼んでデータを取得)
+     callback.onResult(cheeses)
+  }
+}
+```
+
+???
+
+- これらのメソッドはバックグラウンド スレッドで呼ばれる
+- totalCount が分からないときは 2 引数のメソッドを呼べばいい
+- loadInitial は invalidate された後の初回でも呼ばれる
+
+---
+
+class: chapter-8, normal
+
+# ItemKeyedDataSource
+
+```kotlin
+class CheeseDataSource: ItemKeyedDataSource&lt;Long, Cheese&gt;() {
+
+  override fun getKey(item: Cheese): Long = item.id
+
+  override fun loadInitial(params: LoadInitialParams&lt;Long&gt;, callback: LoadInitialCallback&lt;Cheese&gt;) {
+    val initialKey = params.requestedInitialKey ?: 1L
+    // …… (API を呼んでデータを取得)
+    callback.onResult(cheeses, position, totalCount)
+  }
+
+  override fun loadAfter(params: LoadParams&lt;Long&gt;, callback: LoadCallback&lt;Cheese&gt;) {
+    val lastKnownKey = params.key
+    // …… (API を呼んでデータを取得)
+    callback.onResult(cheeses)
+  }
+
+  override fun loadBefore(params: LoadParams&lt;Long&gt;, callback: LoadCallback&lt;Cheese&gt;) {
+    val firstKnownKey = params.key
+    // …… (API を呼んでデータを取得)
+    callback.onResult(cheeses)
+  }
+}
+```
+
+---
+
+class: chapter-8, normal
+
+# PageKeyedDataSource
+
+## 例えばこんな API
+
+Google Calendar API ([developers.google.com/calendar/v3/pagination](https://developers.google.com/calendar/v3/pagination))
+
+```http
+GET /calendars/primary/events?maxResults=10&singleEvents=true
+```
+
+結果の JSON
+
+```json
+{
+  // ……
+  "nextPageToken": "`CiAKGjBpNDd2Nmp2Zml2cXRwYjBpOXA`",
+}
+```
+
+次のページを取得するには
+
+```http
+GET /calendars/primary/events?maxResults=10&amp;singleEvents=true&amp;pageToken=`CiAKGjBpNDd2Nmp2Zml2cXRwYjBpOXA`
+```
+
+---
+
+class: chapter-8, normal
+
+# PageKeyedDataSource
+
+```kotlin
+class CheeseDataSource: PageKeyedDataSource&lt;String, Cheese&gt;() {
+
+  override fun loadInitial(params: LoadInitialParams&lt;String&gt;, callback: LoadInitialCallback&lt;String, Cheese&gt;) {
+    val previousPageKey = result["previousPageToken"]
+    val nextPageKey = result["nextPageToken"]
+    // …… (API を呼んでデータを取得)
+    callback.onResult(cheeses, position, totalCount, previousPageKey, nextPageKey)
+  }
+
+  override fun loadAfter(params: LoadParams&lt;String&gt;, callback: LoadCallback&lt;String, Cheese&gt;) {
+    val pageKey = params.key
+    // …… (API を呼んでデータを取得)
+    val nextPageKey = result["nextPageToken"]
+    callback.onResult(cheeses, nextPageKey)
+  }
+
+  override fun loadBefore(params: LoadParams&lt;String&gt;, callback: LoadCallback&lt;String, Cheese&gt;) {
+    val pageKey = params.key
+    // …… (API を呼んでデータを取得)
+    val previousPageKey = result["previousPageToken"]
+    callback.onResult(cheeses, previousPageKey)
+  }
+}
+```
+
+---
+
+class: chapter-8, normal
+
+# DataSource.Factory と LiveData
+
+```kotlin
+  fun listCheesesFromNetwork(): LiveData&lt;PagedList&lt;Cheese&gt;&gt; {
+    val factory = object : DataSource.Factory&lt;Int, Cheese&gt;() {
+      override fun create(): DataSource&lt;Int, Cheese&gt; {
+        return CheeseDataSource()
+      }
+    }
+    return factory.toLiveData(pageSize = 10)
+  }
+```
+
+???
+
+- Room のときといっしょ
+
+---
+
+class: chapter-8, normal
+
+# カスタム DataSource のまとめ
+
+利用する API の形態によって適切な DataSource を選んで継承する
+
+- PositionalDataSource
+- ItemKeyedDataSource
+- PageKeyedDataSource
+
+DataSource (と Factory) を作れば、使い方は Room の場合と同様
+
+---
+
+class: chapter-9, normal
+
+# データベース + ネットワーク
+
+1. 自分でカスタム DataSource を作って頑張る
+  - データベースにあれば返す
+  - なければネットワークから取得して返す
+     - 同時にデータベースに保存
+  - データベースへの書き込みを検知して DataSource を invalidate する
+
+2. 基本的に Room から返す
+  - Room のテーブルに*もうページがないとき*だけネットワークから取得し、Room に保存する
+  - 書き込みの反映は Room がしてくれる
+
+もうページがないとき?
+
+---
+
+class: chapter-9, normal
+
+# PagedList.BoundaryCallback
+
+```kotlin
+    fun listCheeses(): LiveData&lt;PagedList&lt;Cheese&gt;&gt; {
+        return db.cheese().allPaged().toLiveData(
+            pageSize = 10,
+            boundaryCallback = object : `PagedList.BoundaryCallback`&lt;Cheese&gt;() {
+
+                private val loading = AtomicBoolean(false)
+
+                override fun onItemAtEndLoaded(itemAtEnd: CheeseSummary) {
+                    if (loading.compareAndSet(false, true)) {
+                        val cheeses: List&lt;Cheese&gt; = // API から取得
+                        db.cheese().insert(cheeses) // Room で保存
+                        loading.set(false)
+                    }
+                }
+            })
+    }
+```
+
+---
+
+class: chapter-17, normal
+
+# まとめ
+
+不具合報告・要望は [issuetracker.google.com](https://issuetracker.google.com/issues/new?component=192731&template=842428) から
+
+[AOSP AndroidX Contribution Guide](https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev/README.md)
+
+---
+
+class: chapter-17, hero, middle, center
+
+# ありがとうございました
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var hljs = remark.highlighter.engine;
+    </script>
+    <script src="http://gnab.github.io/remark/remark.language.js"></script>
+    <script>
+      var slideshow = remark.create({
+        ratio: '16:10',
+        highlightStyle: 'googlecode',
+        highlightLanguage: 'remark',
+        highlightLines: true,
+        highlightSpans: true,
+        navigation: {
+          click: false,
+          scroll: false,
+          touch: true
+        }
+      });
+    </script>
+  </body>
+</html>  

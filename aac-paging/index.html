@@ -370,19 +370,6 @@ class: chapter-3, normal
 
 class: chapter-3, normal
 
-# Room とは何でないか
-
-- SQL を隠蔽しない
-  - Java で SQL クエリを組み立てたりはしない
-- 透過的なバックグラウンド処理はない
-  - クエリは基本的に同期的に実行
-  - LiveData や RxJava などに任せる
-- Lazy Load を自動的に行わない
-
----
-
-class: chapter-3, normal
-
 # Room の構成
 
 データベース
@@ -476,7 +463,7 @@ interface CheeseDao {
     fun all(): List&lt;Cheese&gt;
 
     @Query("SELECT * FROM Cheese WHERE id = :id")
-    fun find(id: Long): Cheese
+    fun find(id: Long): Cheese?
 
     @Query("SELECT * FROM Cheese")
     fun liveAll(): LiveData&lt;List&lt;Cheese&gt&gt;
@@ -571,7 +558,25 @@ class: chapter-4, normal
 
 # 全文検索
 
+```kotlin
+@Entity
+@Fts4
+data class Mail {
+    @PrimaryKey
+    val id: Long,
+    val subject: String,
+    val body: String,
+    val timestamp: Long
+}
+```
 
+```kotlin
+@Dao
+interface MailDao {
+    @Query("SELECT * FROM Mail WHERE Mail `MATCH` :q")
+    fun search(q: String): List&lt;Mail&gt;
+}
+```
 
 ---
 
@@ -602,11 +607,71 @@ Dao メソッドを `suspend` で定義すればコルーチンになる
 
 class: chapter-5, hero, middle, center
 
-# Paging
+# 最近の RecyclerView の使い方
 
 ---
 
 class: chapter-5, normal
+
+# ListAdapter と DiffUtil.ItemCallback
+
+```kotlin
+class CheeseAdapter: `ListAdapter`&lt;Cheese, CheeseViewHolder&gt;(DIFF_CALLBACK) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheeseViewHolder {
+        // ……
+    }
+
+    override fun onBindViewHolder(holder: CheeseViewHolder, position: Int) {
+        // ……
+    }
+}
+
+private DIFF_CALLBACK = object : `DiffUtil.ItemCallback`&lt;Cheese&gt;() {
+    override fun areItemsTheSame(oldItem: Cheese, newItem: Cheese): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Cheese, newItem: Cheese): Boolean {
+        return oldItem == newItem
+    }
+}
+```
+
+???
+
+- androidx.recyclerview.widget.ListAdapter
+
+---
+
+class: chapter-5, normal
+
+# LiveData を observe して Adapter に渡す
+
+ViewModel がリストの LiveData を持つ
+
+```kotlin
+class CheeseListViewModel: ViewModel() {
+    val cheeses: LiveData&lt;List&lt;Cheese&gt;&gt; = // ……
+}
+```
+
+Fragment などで
+
+```kotlin
+    viewModel.cheeses.observe(viewLifecycleObserver, Observer { cheeses: List&lt;Cheese&gt; -&gt;
+        adapter.`submitList`(cheeses)
+    })
+```
+
+---
+
+class: chapter-6, hero, middle, center
+
+# Paging
+
+---
+
+class: chapter-6, normal
 
 # Paging とは
 
@@ -630,7 +695,7 @@ dependencies {
 
 ---
 
-class: chapter-5, normal
+class: chapter-6, normal
 
 # トピック
 
@@ -645,7 +710,7 @@ class: chapter-5, normal
 
 ---
 
-class: chapter-6, normal
+class: chapter-7, normal
 
 # データベースから取得する
 
@@ -667,7 +732,7 @@ interface CheeseDao {
 
 ---
 
-class: chapter-6, normal
+class: chapter-7, normal
 
 # DataSource と DataSource.Factory
 
@@ -686,7 +751,7 @@ DataSource が無効化された時に再生成するために必要
 
 ---
 
-class: chapter-7, normal
+class: chapter-8, normal
 
 # 表示する
 
@@ -710,7 +775,7 @@ List
 
 ---
 
-class: chapter-7, normal
+class: chapter-8, normal
 
 # 表示する
 
@@ -739,7 +804,7 @@ getItem の返り値が null になり得ることに注意 (null のときは�
 
 ---
 
-class: chapter-7, normal
+class: chapter-8, normal
 
 # ここまでのまとめ
 
@@ -755,7 +820,7 @@ Adapter の getItem が null になることに注意
 
 ---
 
-class: chapter-8, normal
+class: chapter-9, normal
 
 # ネットワークから取得する
 
@@ -775,7 +840,7 @@ class: chapter-8, normal
 
 ---
 
-class: chapter-8, normal
+class: chapter-9, normal
 
 # PositionalDataSource
 
@@ -810,7 +875,7 @@ class CheeseDataSource: PositionalDataSource&lt;Cheese&gt;() {
 
 ---
 
-class: chapter-8, normal
+class: chapter-9, normal
 
 # ItemKeyedDataSource
 
@@ -841,7 +906,7 @@ class CheeseDataSource: ItemKeyedDataSource&lt;Long, Cheese&gt;() {
 
 ---
 
-class: chapter-8, normal
+class: chapter-9, normal
 
 # PageKeyedDataSource
 
@@ -870,7 +935,7 @@ GET /calendars/primary/events?maxResults=10&amp;singleEvents=true&amp;pageToken=
 
 ---
 
-class: chapter-8, normal
+class: chapter-9, normal
 
 # PageKeyedDataSource
 
@@ -902,7 +967,7 @@ class CheeseDataSource: PageKeyedDataSource&lt;String, Cheese&gt;() {
 
 ---
 
-class: chapter-8, normal
+class: chapter-9, normal
 
 # DataSource.Factory と LiveData
 
@@ -923,7 +988,7 @@ class: chapter-8, normal
 
 ---
 
-class: chapter-8, normal
+class: chapter-9, normal
 
 # カスタム DataSource のまとめ
 
@@ -937,7 +1002,7 @@ DataSource (と Factory) を作れば、使い方は Room の場合と同様
 
 ---
 
-class: chapter-9, normal
+class: chapter-10, normal
 
 # データベース + ネットワーク
 
@@ -955,7 +1020,7 @@ class: chapter-9, normal
 
 ---
 
-class: chapter-9, normal
+class: chapter-10, normal
 
 # PagedList.BoundaryCallback
 
@@ -977,6 +1042,106 @@ class: chapter-9, normal
             })
     }
 ```
+
+---
+
+class: chapter-16, hero, middle, center
+
+# ハンズオン
+
+---
+
+class: chapter-16, normal
+
+# CheesePage
+
+[github.com/yaraki/CheesePage](https://github.com/yaraki/CheesePage)
+
+チーズのタウンページ的なことです
+
+---
+
+![詳細](detail.png)
+
+![リスト](list.png)
+
+
+---
+
+class: chapter-16, normal
+
+# 開始状態
+
+Run configurations で **"app-start" を選択**
+
+Room で一度に全件取ってきて RecyclerView に表示している。
+
+まだ Paging を導入していない。
+
+データベースには最初の 150 件しかない。残りは API で順に取ってこないといけない。
+
+---
+
+class: chapter-16, normal
+
+# 構成
+
+## UI
+
+- MainActivity
+  - CheeseListFragment
+     - CheeseListViewModel : リスト読み込み
+  - CheeseDetailFragment
+     - CheeseDetailViewModel : 一件読み込み、書き込み
+
+## データ
+
+- CheeseRepository
+  - CheeseDatabase
+  - CheeseApi
+
+---
+
+class: chapter-16, normal
+
+# やること
+
+コード中の TODO に従ってすすめる (Android Studio 左下の TODO を開くと楽)
+
+
+
+## TODO(1): DAO メソッドの返り値
+
+DAO メソッドの返り値が `LiveData&lt;List&lt;CheeseSummary&gt;&gt;` では全件取ってきてしまう。ページごとに取得するには?
+
+## TODO(2): LiveData を作るには
+
+DataSource.Factory から LiveData を作って UI 側に渡したい。
+
+## TODO(3): LiveData の型
+
+型が `LiveData&lt;List&lt;CheeseSummary&gt;&gt;` ではなくなった
+
+
+---
+
+class: chapter-16, normal
+
+# やること 続
+
+## TODO(4): RecyclerView の ListAdapter
+
+通常の ListAdapter では Paging に対応できない。Paging に対応するには?<br />
+この時点で実行するとどうなるか (ビルドは通るはず)
+
+## TODO(5): Adapter で null に備える
+
+null が渡されるときはその項目をプレースホルダーとして表示したい。<br />
+この時点で Room + Paging が動く
+
+## TODO(6): ネットワークから取得する
+
+API 上にはまだチーズがある。リストの最後が来たら API を呼んでデータベースにチーズを追加したい。
 
 ---
 

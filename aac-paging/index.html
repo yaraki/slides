@@ -132,7 +132,16 @@
         overflow-x: hidden;
       }
 
-      .level {
+      .version {
+        position: absolute;
+        top: 13px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: #fff;
+        color: var(--bg-color);
+      }
+
+     .level {
         position: absolute;
         top: 20px;
         right: 20px;
@@ -294,15 +303,34 @@ class: chapter-1, hero, center, middle
 
 Architecture Components 勉強会 #6
 
-2019/04/??
+2019/04/22
 
 荒木佑一
 
 ---
 
+class: chapter-1, normal
+
+# はじめに
+
+今日の課題のリポジトリ
+
+[github.com/yaraki/CheesePage](https://github.com/yaraki/CheesePage)
+
+あらかじめクローンして Android Studio で開いておくと後で楽です
+
+## Architecture Components 勉強会
+
+第5回: Lifecycle, ViewModel, LiveData の復習 (@yanzm)<br />
+**第6回: Room の復習、Paging (@yuichi_araki)** ← 今ココ<br />
+第7回: WorkManager (@t_egg)<br />
+第8回: Navigation (@wasabeef_jp)<br />
+
+---
+
 class: chapter-2, hero, center, middle
 
-# ここまでのあらすじ
+# これまでのあらすじ
 
 ---
 
@@ -311,6 +339,8 @@ class: chapter-2, normal
 # Lifecycle
 
 Activity や Fragment のライフサイクルを他のオブジェクトでも扱えるようにする
+
+onCreate / onStart / onResume / onPause / onStop / onDestroy
 
 どのライフサイクル イベントで 自分が何をすればいいか知っているオブジェクトを作る
 
@@ -514,6 +544,31 @@ interface CheeseDao {
 
 ---
 
+class: chapter-3, normal
+
+# リポジトリについて
+
+![リポジトリ](repository.png)
+
+```kotlin
+class CheeseRepository(
+  private val db: CheeseDatabase,
+  private val api: CheeseApi,
+  private val executor: Executor
+) {
+
+  fun listCheeses(): LiveData&lt;Cheese&gt; {
+    executor.execute {
+      val cheeses = api.fetchCheeses()
+      db.cheese().insert(cheeses)
+    }
+    return db.cheese().all()
+  }
+}
+```
+
+---
+
 class: chapter-4, hero, center, middle
 
 # Room の新機能
@@ -523,6 +578,8 @@ class: chapter-4, hero, center, middle
 class: chapter-4, normal
 
 # ビュー
+
+.version[2.1.0]
 
 ```kotlin
 @DatabaseView("""
@@ -558,6 +615,8 @@ class: chapter-4, normal
 
 # 全文検索
 
+.version[2.1.0]
+
 ```kotlin
 @Entity
 @Fts4
@@ -584,6 +643,8 @@ class: chapter-4, normal
 
 # その他の新機能
 
+.version[2.1.0]
+
 ## RxJava のさらなるサポート
 
 @Insert や @Update も Rx で非同期化
@@ -597,11 +658,6 @@ Dao メソッドを `suspend` で定義すればコルーチンになる
 プロセス間で Room のデータベースを同期
 
 ???
-
-<!--
-    - PositionalDataSource: 複数のページを並列に読める
-    - ItemKeyedDataSource, PageKeyedDataSource: ページを順番に読むしかできない
--->
 
 ---
 
@@ -943,9 +999,9 @@ class: chapter-9, normal
 class CheeseDataSource: PageKeyedDataSource&lt;String, Cheese&gt;() {
 
   override fun loadInitial(params: LoadInitialParams&lt;String&gt;, callback: LoadInitialCallback&lt;String, Cheese&gt;) {
+    // …… (API を呼んでデータを取得)
     val previousPageKey = result["previousPageToken"]
     val nextPageKey = result["nextPageToken"]
-    // …… (API を呼んでデータを取得)
     callback.onResult(cheeses, position, totalCount, previousPageKey, nextPageKey)
   }
 
@@ -1074,11 +1130,26 @@ class: chapter-16, normal
 
 Run configurations で **"app-start" を選択**
 
-Room で一度に全件取ってきて RecyclerView に表示している。
+まだ Paging を導入していない<br />
+Room で一度に全件取ってきて RecyclerView に表示している
 
-まだ Paging を導入していない。
+:app モジュールは答え (まだ見ない)
 
-データベースには最初の 150 件しかない。残りは API で順に取ってこないといけない。
+---
+
+class: chapter-16, normal
+
+# リーディング
+
+1. Activity, Fragment, ViewModel はそれぞれいくつあるか
+2. どんな LiveData をどのように使っているか
+3. データベースのインスタンスはどこにあるか
+  - どうやってアプリ全体で一つのインスタンスが使われることを保証しているか
+4. Entity (テーブル) はいくつあるか
+5. データはいつどうやって API からロードしているか
+6. 評価はどこでどうやって保存されているか
+7. 評価が即座にリスト画面に反映されるのはなぜか
+8. データを毎度消して API からロードしているが、評価が消えないのはなぜか
 
 ---
 
@@ -1086,7 +1157,7 @@ class: chapter-16, normal
 
 # 構成
 
-## UI
+## 
 
 - MainActivity
   - CheeseListFragment
@@ -1148,6 +1219,8 @@ API 上にはまだチーズがある。リストの最後が来たら API を�
 class: chapter-17, normal
 
 # まとめ
+
+Paging ライブラリを使えばデータを一定数個ごとに取得するプログラムが簡単にできる
 
 不具合報告・要望は [issuetracker.google.com](https://issuetracker.google.com/issues/new?component=192731&template=842428) から
 

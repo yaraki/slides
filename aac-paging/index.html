@@ -682,7 +682,7 @@ class CheeseAdapter: `ListAdapter`&lt;Cheese, CheeseViewHolder&gt;(DIFF_CALLBACK
     }
 }
 
-private DIFF_CALLBACK = object : `DiffUtil.ItemCallback`&lt;Cheese&gt;() {
+private val DIFF_CALLBACK = object : `DiffUtil.ItemCallback`&lt;Cheese&gt;() {
     override fun areItemsTheSame(oldItem: Cheese, newItem: Cheese): Boolean {
         return oldItem.id == newItem.id
     }
@@ -714,8 +714,10 @@ class CheeseListViewModel: ViewModel() {
 Fragment などで
 
 ```kotlin
+    val cheeseAdapter = CheeseAdapter()
+    recyclerView.adapter = cheeseAdapter
     viewModel.cheeses.observe(viewLifecycleObserver, Observer { cheeses: List&lt;Cheese&gt; -&gt;
-        adapter.`submitList`(cheeses)
+        cheeseAdapter.`submitList`(cheeses)
     })
 ```
 
@@ -737,8 +739,8 @@ androidx.paging
 
 RecyclerView に大量の項目を表示するとき、データベースやネットワークから一定数個ごとに分割してデータを取得し、表示する
 
-- ネットワーク
 - データベース
+- ネットワーク
 - 組み合わせ
 
 ```groovy
@@ -843,7 +845,7 @@ class CheeseAdapter : `PagedListAdapter`&lt;Cheese, CheeseViewHolder&gt;(DIFF_CA
 
     override fun onBindViewHolder(holder: CheeseViewHolder, position: Int) {
         val cheese: `Cheese?` = getItem(position)
-        holder.name = cheese.name
+        // … holder 内の View に cheese の内容を反映
     }
 }
 ```
@@ -853,7 +855,7 @@ getItem の返り値が null になり得ることに注意 (null のときは�
 ```kotlin
     // Fragment など
     // viewModel.cheeses は LiveData&lt;PagedList&lt;Cheese&gt;&gt;
-    viewModel.cheeses.observe(viewLifecycleObserver, Observer { cheeses ->
+    viewModel.cheeses.observe(viewLifecycleObserver, Observer { cheeses: PagedList&lt;Cheese&gt; ->
         cheeseAdapter.submitList(cheeses)
     })
 ```
@@ -872,7 +874,7 @@ DAO メソッドの返り値を `DataSource.Factory&lt;Int, Cheese&gt;` にす�
 
 RecyclerView の Adapter は PagedListAdapter を継承する
 
-Adapter の getItem が null になることに注意
+Adapter の getItem が null になり得ることに注意
 
 ---
 

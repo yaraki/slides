@@ -1092,9 +1092,11 @@ class: chapter-10, normal
 
                 override fun onItemAtEndLoaded(itemAtEnd: CheeseSummary) {
                     if (loading.compareAndSet(false, true)) {
-                        val cheeses: List&lt;Cheese&gt; = // API から取得
-                        db.cheese().insert(cheeses) // Room で保存
-                        loading.set(false)
+                        executor.execute {
+                            val cheeses: List&lt;Cheese&gt; = // API から取得
+                            db.cheese().insert(cheeses) // Room で保存
+                            loading.set(false)
+                        }
                     }
                 }
             })
